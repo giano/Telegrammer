@@ -19,6 +19,7 @@ nginx
 redis
 
 node_modules
+config/*
 
 dump.rdb
 npm-debug.log
