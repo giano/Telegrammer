@@ -1,0 +1,35 @@
+########################
+# node
+########################
+.tmp
+.live-archive
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.map
+
+pids
+logs
+results
+nginx
+redis
+
+node_modules
+
+dump.rdb
+npm-debug.log
+newrelic_agent.log
+
+########################
+# misc / editors
+########################
+*~
+*#
+.DS_STORE
+.netbeans
+nbproject
+.idea
