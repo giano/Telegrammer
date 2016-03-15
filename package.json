@@ -16,10 +16,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
-    "glob-fs-dotfiles": "^0.1.6",
+    "glob": "^7.0.3",
     "nconf": "^0.8.4",
     "promise": "^7.1.1",
-    "telegram-bot-api": "^1.0.0"
+    "telegram-bot-api": "^1.0.0",
+    "underscore": "^1.8.3"
   }
 }
