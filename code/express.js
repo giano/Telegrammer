@@ -9,10 +9,12 @@ _.mixin(s.exports());
 
 const Promise = require('promise');
 const express = require("express");
+const bodyParser = require('body-parser');
 
 var api = null;
 var app = null;
 var express_hooks = {};
+let hooks = null;
 
 const authorized = function (req, res) {
   if (config.get("express:auth") && config.get("express:auth_token_name")) {
@@ -35,7 +37,7 @@ const express_service = {
   },
   init: function (params) {
     api = params.api;
-    let hooks = params.hooks;
+    hooks = params.hooks;
 
     express_hooks = _.indexBy(hooks.filter(function (el) {
       return el.has_web_hook;
@@ -43,6 +45,12 @@ const express_service = {
 
     let promise = new Promise(function (resolve, reject) {
       app = express();
+
+      app.use(bodyParser.urlencoded({
+        extended: false
+      }));
+      app.use(bodyParser.json());
+
       let port = (process.env.PORT || config.get("express:port") || 3000);
       app.listen(port, function (error) {
         if (error) {
@@ -70,6 +78,23 @@ const express_service = {
             }
           });
 
+          for (let route_path in express_hooks) {
+            if (express_hooks.hasOwnProperty(route_path)) {
+              let hook = express_hooks[route_path];
+              let router = _.bind(hook.route, hook);
+              app.post(route_path, function (req, res) {
+                if (authorized(req, res)) {
+                  router(req, res, api, function (error, content) {
+                    if (error) {
+                      return res.status(500).send(error.message || error);
+                    } else if (content) {
+                      res.json(content);
+                    }
+                  });
+                }
+              });
+            }
+          }
           resolve(true);
         }
       });

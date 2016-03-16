@@ -129,7 +129,7 @@ const telegram_service = {
                     logger.log(`Executing ${hook.full_name}`);
                     hook.action(message, telegram_service, [], function (error, response) {
                       if (error) {
-                        loggererror(`Error executing ${hook.full_name}: ${error}`);
+                        logger.error(`Error executing ${hook.full_name}: ${error}`);
                       } else {
                         logger.log(`Executed ${hook.full_name}`);
                       }
@@ -143,7 +143,7 @@ const telegram_service = {
                     let matches = regex_to_match.exec(message_text);
                     hook.action(message, telegram_service, matches, function (error, response) {
                       if (error) {
-                        loggererror(`Error executing ${hook.full_name}: ${error}`);
+                        logger.error(`Error executing ${hook.full_name}: ${error}`);
                       } else {
                         logger.log(`Executed ${hook.full_name}`);
                       }

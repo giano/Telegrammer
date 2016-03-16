@@ -22,63 +22,79 @@ hooks.load().then(function (hooks) {
     return el.has_command_line_hook
   });
 
-  let help = "";
-
-  let cla = [{
-    name: 'help'
-  }, {
-    name: 'start'
-  }];
-
-  help += getUsage([], {
-    header: ansi.format(ansi.format(header, 'white')),
-    description: [`${package_desc.name} v${package_desc.version}`, `${package_desc.description}`]
-  });
-
-  help += "\n" + getUsage([], {
-    description: "This Help",
-    title: "Command: help"
-  });
-
-  help += "\n" + getUsage([], {
-    description: "Start the server",
-    title: "Command: start or ''"
-  });
-
-  for (let i = 0; i < cm_hooks.length; i++) {
-    let cml = cm_hooks[i];
-    if (cml.commandline === true) {
-      cla.push({
-        name: cml.full_name
-      });
-      help += "\n" + getUsage([], {
-        description: cml.description,
-        title: `Command: ${cml.cmd_name}`
-      });
-    } else {
-      cla.push({
-        name: cml.full_name,
-        definitions: cml.commandline
-      });
-      help += "\n" + getUsage(cml.commandline, {
-        description: cml.description,
-        title: `Command: ${cml.cmd_name}`
-      });
-    }
-  }
-
-  const cli = commandLineCommands(cla);
-
-  const cli_common = commandLineArgs([{
+  const cli_common_conf = [{
     name: 'verbose',
     alias: 'v',
     type: Boolean,
     defaultOption: false
   }, {
     name: 'telegramid',
-    alias: 'tcid',
+    alias: 'T',
     type: String
-  }]);
+  }];
+
+  let help = "";
+  let footer = "-----------------------------";
+
+  let cla = [{
+    name: 'help',
+    definitions: cli_common_conf
+  }, {
+    name: 'start',
+    definitions: cli_common_conf
+  }];
+
+  help += getUsage(cli_common_conf, {
+    header: ansi.format(ansi.format(header, 'cyan')),
+    description: [ansi.format(`${package_desc.name} v${package_desc.version}`, 'bold'), `${package_desc.description}`],
+    synopsis: "Those are the common options",
+    footer: "=================================="
+  });
+
+  help += getUsage([], {
+    description: "This Help",
+    title: "Command: help",
+    synopsis: "The output of this help will change according to installed hooks",
+    footer: footer
+  });
+
+  help += getUsage([], {
+    description: "Start the server",
+    title: "Command: start or ''",
+    synopsis: "Will start the main receiving server",
+    footer: footer
+  });
+
+  for (let i = 0; i < cm_hooks.length; i++) {
+    let cml = cm_hooks[i];
+    if (cml.commandline === true) {
+      cla.push({
+        name: cml.full_name,
+        definitions: cli_common_conf
+      });
+      help += getUsage([], {
+        description: cml.description,
+        synopsis: cml.help,
+        title: `Command: ${cml.cmd_name}`,
+        footer: footer
+      });
+    } else {
+      cla.push({
+        name: cml.full_name,
+        definitions: _.extend(cli_common_conf, cml.commandline)
+      });
+      help += getUsage(cml.commandline, {
+        description: cml.description,
+        synopsis: cml.help,
+        title: `Command: ${cml.cmd_name}`,
+        footer: footer
+      });
+    }
+  }
+
+  const cli = commandLineCommands(cla);
+
+  const cli_common = commandLineArgs(cli_common_conf);
 
   const command_common = cli_common.parse();
   const command = cli.parse();

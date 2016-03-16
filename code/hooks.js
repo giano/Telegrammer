@@ -68,12 +68,14 @@ const work_hook = function (hook_def, hook_path) {
         let action_command = hook_def.action;
         let action_fn = _.bind(function (message, service, matches, cb) {
           const exec = require('child_process').exec;
+
           matches = matches || [];
           let result_command = action_command;
           for (let i = 0; i < matches.length; i++) {
             let placeholder = new RegExp(`@${i}@`, 'mgi');
             result_command = result_command.replace(placeholder, matches[i]);
           }
+
           let child = exec(result_command, function (error, stdout, stderr) {
             let error_msg = hook_def.error || "Error: @error@";
             let has_error = false;
@@ -97,8 +99,8 @@ const work_hook = function (hook_def, hook_path) {
 
             if (has_error) {
               cb(stdout_str, null);
-            } else if (_.isString(hook_def.response)) {
-              cb(stdout_str, stdout_str);
+            } else if (hook_def.response !== false) {
+              cb(stderr_str, stdout_str);
             }
 
           });
@@ -107,7 +109,7 @@ const work_hook = function (hook_def, hook_path) {
         hook_def.action = action_fn;
       }
 
-      if (hook_def.action) {
+      if (_.isFunction(hook_def.action)) {
         let _action = _.bind(hook_def.action, hook_def);
 
         hook_def.action = _.bind(function (message, service, matches, cb) {
@@ -135,15 +137,16 @@ const work_hook = function (hook_def, hook_path) {
               });
             } else {
               if (error) {
-                return service.respond(message, error_msg.replace(/@error@/mgi, (error.message || error)));
+                return service.respond(message, error_msg.replace(/@error@/mi, (error.message || error)));
               } else {
                 output = output || "";
-                return service.respond(message, response_msg.replace(/@response@/mgi, output));
+                return service.respond(message, response_msg.replace(/@response@/mi, output));
               }
             }
           })
         }, hook_def);
       }
+
       return hook_def;
     }
   }
