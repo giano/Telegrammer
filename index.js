@@ -69,7 +69,7 @@ hooks.load().then(function (hooks) {
 
   const cli = commandLineCommands(cla);
 
-  const clicommon = commandLineArgs([{
+  const cli_common = commandLineArgs([{
     name: 'verbose',
     alias: 'v',
     type: Boolean,
@@ -80,7 +80,7 @@ hooks.load().then(function (hooks) {
     type: String
   }]);
 
-  const commandcommon = clicommon.parse();
+  const command_common = cli_common.parse();
   const command = cli.parse();
 
   command.name = command.name || "";
