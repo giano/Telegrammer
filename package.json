@@ -1,7 +1,7 @@
 {
-  "name": "telegrammer",
+  "name": "Telegrammer",
   "version": "1.0.0",
-  "description": "Manage your rPi using Telegram. Two way communication!",
+  "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -16,12 +16,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "ansi-escape-sequences": "^2.2.2",
+    "command-line-commands": "^0.1.2",
+    "command-line-usage": "^2.0.3",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
     "glob": "^7.0.3",
     "nconf": "^0.8.4",
     "promise": "^7.1.1",
     "telegram-bot-api": "^1.0.0",
-    "underscore": "^1.8.3"
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4"
   }
 }

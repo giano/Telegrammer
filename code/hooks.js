@@ -1,9 +1,13 @@
 "use strict";
 
 const config = require('./config');
+const logger = require('./logger');
+
 const Promise = require('promise');
 const escape_string_regexp = require('escape-string-regexp');
 const _ = require('underscore');
+const s = require("underscore.string");
+_.mixin(s.exports());
 
 const hooks = {
   load: function () {
@@ -41,12 +45,16 @@ const work_hook = function (hook_def, hook_path) {
       const path = require('path');
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
-      hook_def.full_name = `${hook_def.namespace}/${hook_def.name}`;
-      hook_def.has_telegram_hook = hook_def.action !== null;
-      hook_def.has_page_hook = hook_def.hook !== null;
+      hook_def.full_name = `${_.underscored(_.slugify(hook_def.namespace))}/${_.underscored(_.slugify(hook_def.name))}`;
+      hook_def.route_path = _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/");
+      hook_def.cmd_name = _.replaceAll(hook_def.route_path, "/", ":").toLowerCase();
+
+      hook_def.has_telegram_hook = hook_def.action != null;
+      hook_def.has_web_hook = hook_def.route != null;
+      hook_def.has_command_line_hook = hook_def.commandline != null;
 
       if (hook_def.match && _.isString(hook_def.match)) {
-        hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "igm");
+        hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "im");
       }
 
       if (hook_def.command) {
@@ -104,7 +112,7 @@ const work_hook = function (hook_def, hook_path) {
 
         hook_def.action = _.bind(function (message, service, matches, cb) {
           let error_msg = hook_def.error || "Error: @error@";
-          let response_msg = hook_def.response || "@response@";
+          let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
 
           _action(message, service, matches, function (error, output) {
             cb(error, output);
@@ -113,11 +121,25 @@ const work_hook = function (hook_def, hook_path) {
               return;
             }
 
-            if (error) {
-              return service.respond(message, error_msg.replace(/@error@/mgi, (error.message || error)));
+            if (_.isFunction(hook_def.response)) {
+              hook_def.response(message, error, output, function (error, output) {
+                if (!error && !output) {
+                  return;
+                }
+                if (error) {
+                  return service.respond(message, (error.message || error));
+                } else {
+                  output = output || "";
+                  return service.respond(message, output);
+                }
+              });
             } else {
-              output = output || "";
-              return service.respond(message, response_msg.replace(/@response@/mgi, output));
+              if (error) {
+                return service.respond(message, error_msg.replace(/@error@/mgi, (error.message || error)));
+              } else {
+                output = output || "";
+                return service.respond(message, response_msg.replace(/@response@/mgi, output));
+              }
             }
           })
         }, hook_def);
