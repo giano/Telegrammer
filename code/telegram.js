@@ -16,14 +16,28 @@ let telegram_hooks = [];
 
 const telegram_service = {
 
+  get_hook_id: function () {
+    return process.env.TEL_CID || config.get("telegram:chat_id")
+  },
+
+  is_hooked: function () {
+    return !!(telegram_service.get_hook_id() || 0);
+  },
+
+  set_hook_id: function (id) {
+    process.env.TEL_CID = id;
+    config.set("telegram:chat_id", id);
+    return telegram_service.get_hook_id();
+  },
+
   respond: function (message, content) {
-    let chat_id = (message.chat.id || config.get("telegram:chat_id"));
+    let chat_id = (message.chat.id || telegram_service.get_hook_id());
     if (chat_id) {
       api.sendMessage({
         parse_mode: config.get("telegram:parse_mode"),
         reply_to_message_id: message.id,
         text: content,
-        chat_id: (message.chat.id || config.get("telegram:chat_id"))
+        chat_id: chat_id
       }).catch(function (error) {
         logger.error(error);
       });
@@ -33,11 +47,11 @@ const telegram_service = {
   },
 
   send: function (content) {
-    if (config.get("telegram:chat_id")) {
+    if (telegram_service.is_hooked()) {
       api.sendMessage({
         parse_mode: config.get("telegram:parse_mode"),
         text: content,
-        chat_id: config.get("telegram:chat_id")
+        chat_id: telegram_service.get_hook_id()
       }).catch(function (error) {
         logger.error(error);
       });
@@ -46,11 +60,15 @@ const telegram_service = {
     }
   },
 
-  init: function (hooks) {
+  init: function (hooks, tcid) {
 
     telegram_hooks = hooks.filter(function (el) {
       return el.has_telegram_hook
     });
+
+    if(tcid){
+      telegram_service.set_hook_id(tcid);
+    }
 
     let promise = new Promise(function (resolve, reject) {
       var token = config.get("telegram:token");
@@ -66,8 +84,8 @@ const telegram_service = {
 
       api.getMe().then(function (data) {
         data = data || {};
-        if (config.get("telegram:chat_id")) {
-          logger.log(`Hooked to chat id #${config.get("telegram:chat_id")}`);
+        if (telegram_service.is_hooked()) {
+          logger.log(`Hooked to chat id #${telegram_service.get_hook_id()}`);
         } else {
           logger.log(`Telegram not hooked. Waiting first message to hook to chat.`);
         }
@@ -98,12 +116,10 @@ const telegram_service = {
 
             to_device = _.trim(to_device);
 
-            if (!config.get("telegram:chat_id") && message.chat && message.chat.id) {
-              config.set("telegram:chat_id", message.chat.id);
-              logger.log(`Hooked to chat id #${message.chat.id}`);
+            if (!telegram_service.is_hooked() && message.chat && message.chat.id) {
+              telegram_service.set_hook_id(message.chat.id);
+              logger.log(`Hooked to chat id #${telegram_service.get_hook_id()}`);
             }
-
-
 
             for (let hook_id in telegram_hooks) {
               let hook = telegram_hooks[hook_id];

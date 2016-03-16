@@ -17,6 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "ansi-escape-sequences": "^2.2.2",
+    "command-line-args": "^2.1.6",
     "command-line-commands": "^0.1.2",
     "command-line-usage": "^2.0.3",
     "escape-string-regexp": "^1.0.5",

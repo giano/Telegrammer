@@ -1,6 +1,7 @@
 "use strict";
 
 const commandLineCommands = require('command-line-commands');
+const commandLineArgs = require('command-line-commands');
 const getUsage = require("command-line-usage");
 const Promise = require('promise');
 const config = require('./code/config');
@@ -11,10 +12,11 @@ const commandline = require('./code/commandline');
 const logger = require('./code/logger');
 const ansi = require('ansi-escape-sequences');
 const header = require('./assets/ansi-header');
-
 const package_desc = require('./package.json');
 
 hooks.load().then(function (hooks) {
+
+  let tcid = null;
 
   let cm_hooks = hooks.filter(function (el) {
     return el.has_command_line_hook
@@ -30,7 +32,7 @@ hooks.load().then(function (hooks) {
 
   help += getUsage([], {
     header: ansi.format(ansi.format(header, 'white')),
-    description: [`${package_desc.name} v${package_desc.version}`,`${package_desc.description}`]
+    description: [`${package_desc.name} v${package_desc.version}`, `${package_desc.description}`]
   });
 
   help += "\n" + getUsage([], {
@@ -67,6 +69,18 @@ hooks.load().then(function (hooks) {
 
   const cli = commandLineCommands(cla);
 
+  const clicommon = commandLineArgs([{
+    name: 'verbose',
+    alias: 'v',
+    type: Boolean,
+    defaultOption: false
+  }, {
+    name: 'telegramid',
+    alias: 'tcid',
+    type: String
+  }]);
+
+  const commandcommon = clicommon.parse();
   const command = cli.parse();
 
   command.name = command.name || "";
@@ -77,14 +91,15 @@ hooks.load().then(function (hooks) {
     break
   case '':
   case 'start':
-    telegram.init(hooks).then(express.init).then(function () {
-      logger.log("Server Started");
+    logger.log(`${package_desc.name} v${package_desc.version} starting...`);
+    telegram.init(hooks, tcid).then(express.init).then(function () {
+      logger.log(`${package_desc.name} v${package_desc.version} started.`);
     }).catch(function (error) {
       logger.error(error);
     });
     break
   default:
-    telegram.init(hooks).then(commandline.init).then(function () {
+    telegram.init(hooks, tcid).then(commandline.init).then(function () {
       commandline.execute(command.name, command.options, function (error, result) {
         if (error) {
           logger.error(error);
