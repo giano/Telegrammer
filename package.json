@@ -24,6 +24,7 @@
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
     "glob": "^7.0.3",
+    "jade": "^1.11.0",
     "nconf": "^0.8.4",
     "promise": "^7.1.1",
     "telegram-bot-api": "^1.0.0",

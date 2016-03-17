@@ -11,10 +11,9 @@ const Promise = require('promise');
 const express = require("express");
 const bodyParser = require('body-parser');
 
-var api = null;
-var app = null;
-var express_hooks = {};
-let hooks = null;
+let api = null;
+let app = null;
+let express_hooks = {};
 
 const authorized = function (req, res) {
   if (config.get("express:auth") && config.get("express:auth_token_name")) {
@@ -32,12 +31,22 @@ const authorized = function (req, res) {
 const express_service = {
   list_methods: function (req, res) {
     if (authorized(req, res)) {
-
+      let commandline_hooks = require("./commandline").get_hooks();
+      let telegram_hooks = require("./telegram").get_hooks();
+      let express_hooks = express_service.get_hooks();
+      res.view({
+        commandline_hooks: commandline_hooks,
+        telegram_hooks: telegram_hooks,
+        express_hooks: express_hooks
+      });
     }
   },
+  get_hooks: function(){
+    return express_hooks;
+  },
+
   init: function (params) {
     api = params.api;
-    hooks = params.hooks;
 
     express_hooks = _.indexBy(hooks.filter(function (el) {
       return el.has_web_hook;
@@ -46,12 +55,16 @@ const express_service = {
     let promise = new Promise(function (resolve, reject) {
       app = express();
 
+      app.set('view engine', 'jade');
+      app.set('views', '../views');
+
       app.use(bodyParser.urlencoded({
         extended: false
       }));
       app.use(bodyParser.json());
 
       let port = (process.env.PORT || config.get("express:port") || 3000);
+
       app.listen(port, function (error) {
         if (error) {
           reject(error);

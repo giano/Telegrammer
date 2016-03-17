@@ -12,6 +12,9 @@ const Promise = require('promise');
 let cm_hooks = {};
 
 const commandline_service = {
+  get_hooks: function(){
+    return cm_hooks;
+  },
 
   execute: function (command, params, cb) {
     command = command.toLowerCase();

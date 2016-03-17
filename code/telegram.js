@@ -16,6 +16,10 @@ let telegram_hooks = [];
 
 const telegram_service = {
 
+  get_hooks: function(){
+    return telegram_service;
+  },
+
   get_hook_id: function () {
     return process.env.TEL_CID || config.get("telegram:chat_id")
   },
@@ -33,6 +37,9 @@ const telegram_service = {
   respond: function (message, content) {
     let chat_id = (message.chat.id || telegram_service.get_hook_id());
     if (chat_id) {
+      if (config.get("telegram:attach_device_name")) {
+        content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
+      }
       api.sendMessage({
         parse_mode: config.get("telegram:parse_mode"),
         reply_to_message_id: message.id,
@@ -48,6 +55,9 @@ const telegram_service = {
 
   send: function (content) {
     if (telegram_service.is_hooked()) {
+      if (config.get("telegram:attach_device_name")) {
+        content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
+      }
       api.sendMessage({
         parse_mode: config.get("telegram:parse_mode"),
         text: content,
@@ -66,7 +76,7 @@ const telegram_service = {
       return el.has_telegram_hook
     });
 
-    if(tcid){
+    if (tcid) {
       telegram_service.set_hook_id(tcid);
     }
 
@@ -99,22 +109,24 @@ const telegram_service = {
       });
 
       api.on('message', function (message) {
-        if (message.from && message.from.username == config.get('device_owner_username')) {
+        if (message.from && (config.get('allowed_usernames') && _.contains(config.get('allowed_usernames'), message.from.username.toLowerCase()))) {
           let message_text = message.text || message.caption;
           if (message_text) {
             let to_device = "all";
 
             if (device_regex.test(message_text)) {
               let dev_match = device_regex.exec(message_text);
-              console.log(dev_match);
               if (dev_match) {
                 to_device = (dev_match[1] || "!!!").toString().toLowerCase();
               } else {
                 to_device = ("!!!").toString().toLowerCase();
               }
+              message_text.replace(device_regex, "");
             }
 
             to_device = _.trim(to_device);
+
+            message_text = _.clean(message_text)
 
             if (!telegram_service.is_hooked() && message.chat && message.chat.id) {
               telegram_service.set_hook_id(message.chat.id);
