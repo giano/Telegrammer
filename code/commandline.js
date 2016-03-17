@@ -12,32 +12,35 @@ const Promise = require('promise');
 let cm_hooks = {};
 
 const commandline_service = {
-  get_hooks: function(){
+  get_hooks: function () {
     return cm_hooks;
   },
 
-  execute: function (command, params, cb) {
+  execute: function (command, params) {
     command = command.toLowerCase();
 
     if (!api.is_hooked()) {
-      return cb("Telegram service not hooked. Send first message.", null);
+      let error = new Exception("Telegram service not hooked. Send first message.");
+      return Promise.reject(error);
     }
 
     if (cm_hooks[command]) {
       let command_hook = cm_hooks[command];
       if (command_hook.exec) {
-        command_hook.exec(params, api, cb);
+        return command_hook.exec(params, api);
       } else {
-        cb("Command not implemented", null);
+        let error = new Exception("Command not implemented.");
+        return Promise.reject(error);
       }
     } else {
-      cb("Command not found", null);
+      let error = new Exception("Command not found.");
+      return Promise.reject(error);
     }
   },
 
   init: function (params) {
     let promise = new Promise(function (resolve, reject) {
-      if(config.get("commandline:active") == false){
+      if (config.get("commandline:active") == false) {
         return resolve(false);
       }
       api = params.api;

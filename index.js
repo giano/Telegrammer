@@ -1,9 +1,8 @@
 "use strict";
 
-const commandLineCommands = require('command-line-commands');
-const commandLineArgs = require('command-line-commands');
-const getUsage = require("command-line-usage");
 const Promise = require('promise');
+const commandLineCommands = require('command-line-commands');
+const getUsage = require("command-line-usage");
 const config = require('./code/config');
 const telegram = require('./code/telegram');
 const hooks = require('./code/hooks');
@@ -13,6 +12,10 @@ const logger = require('./code/logger');
 const ansi = require('ansi-escape-sequences');
 const header = require('./assets/ansi-header');
 const package_desc = require('./package.json');
+
+const _ = require('underscore');
+const s = require("underscore.string");
+_.mixin(s.exports());
 
 hooks.load().then(function (hooks) {
 
@@ -70,7 +73,7 @@ hooks.load().then(function (hooks) {
       let cml = cm_hooks[i];
       if (cml.commandline === true) {
         cla.push({
-          name: cml.full_name,
+          name: cml.cmd_name,
           definitions: cli_common_conf
         });
         help += getUsage([], {
@@ -81,7 +84,7 @@ hooks.load().then(function (hooks) {
         });
       } else {
         cla.push({
-          name: cml.full_name,
+          name: cml.cmd_name,
           definitions: _.extend(cli_common_conf, cml.commandline)
         });
         help += getUsage(cml.commandline, {
@@ -95,11 +98,9 @@ hooks.load().then(function (hooks) {
   }
 
   const cli = commandLineCommands(cla);
-
-  const cli_common = commandLineArgs(cli_common_conf);
-
-  const command_common = cli_common.parse();
   const command = cli.parse();
+
+  tcid = command.telegramid;
 
   command.name = command.name || "";
 
@@ -107,7 +108,6 @@ hooks.load().then(function (hooks) {
   case 'help':
     console.log(help);
     break
-  case '':
   case 'start':
     logger.log(`${package_desc.name} v${package_desc.version} starting...`);
     telegram.init(hooks, tcid).then(express.init).then(function () {
@@ -119,13 +119,11 @@ hooks.load().then(function (hooks) {
   default:
     if (config.get("commandline:active") !== false) {
       telegram.init(hooks, tcid).then(commandline.init).then(function () {
-        commandline.execute(command.name, command.options, function (error, result) {
-          if (error) {
-            logger.error(error);
-          } else {
-            logger.notify();
-          };
-        });
+        commandline.execute(command.name, command.options).catch(function () {
+          logger.error(error);
+        }).finally(function () {
+          process.exit();
+        })
       }).catch(function (error) {
         logger.error(error);
       });

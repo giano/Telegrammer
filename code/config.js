@@ -3,6 +3,9 @@
 const nconf = require('nconf');
 const path = require('path');
 const dir = path.resolve(__dirname, '..');
+const _ = require('underscore');
+const s = require("underscore.string");
+_.mixin(s.exports());
 
 nconf.argv().env('__');
 

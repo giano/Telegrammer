@@ -5,7 +5,7 @@ const s = require("underscore.string");
 _.mixin(s.exports());
 
 const logger = _.extend({}, console, {
-  verbose: function () {
+  notify: function () {
     console.log.apply(console, _.toArray(arguments));
   }
 });

@@ -41,13 +41,13 @@ const express_service = {
       });
     }
   },
-  get_hooks: function(){
+  get_hooks: function () {
     return express_hooks;
   },
 
   init: function (params) {
     let promise = new Promise(function (resolve, reject) {
-      if(config.get("express:active") == false){
+      if (config.get("express:active") == false) {
         return resolve(false);
       }
 
@@ -66,6 +66,7 @@ const express_service = {
       app.use(bodyParser.urlencoded({
         extended: false
       }));
+
       app.use(bodyParser.json());
 
       let port = (process.env.PORT || config.get("express:port") || 3000);
@@ -102,17 +103,16 @@ const express_service = {
               let router = _.bind(hook.route, hook);
               app.post(route_path, function (req, res) {
                 if (authorized(req, res)) {
-                  router(req, res, api, function (error, content) {
-                    if (error) {
-                      return res.status(500).send(error.message || error);
-                    } else if (content) {
-                      res.json(content);
-                    }
+                  router(req, res, api).then(function (content) {
+                    res.json(content);
+                  }).catch(function (error) {
+                    res.status(500).send(error.message || error);
                   });
                 }
               });
             }
           }
+
           resolve(true);
         }
       });

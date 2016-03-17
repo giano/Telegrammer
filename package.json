@@ -1,6 +1,6 @@
 {
   "name": "Telegrammer",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
@@ -13,12 +13,15 @@
   "engines": {
     "node": ">=4.4"
   },
-  "author": "",
+  "author": "Stefano Valicchia",
   "license": "ISC",
+  "maintainers": [{
+    "name": "Stefano Valicchia",
+    "email": "stefano.valicchia@gmail.com"
+  }],
   "dependencies": {
     "ansi-escape-sequences": "^2.2.2",
     "body-parser": "^1.15.0",
-    "command-line-args": "^2.1.6",
     "command-line-commands": "^0.1.2",
     "command-line-usage": "^2.0.3",
     "escape-string-regexp": "^1.0.5",

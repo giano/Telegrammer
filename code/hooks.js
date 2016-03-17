@@ -41,7 +41,7 @@ const hooks = {
 
 const work_hook = function (hook_def, hook_path) {
   if (hook_def) {
-    if (((hook_def.match || hook_def.command) && hook_def.action) || (hook_def.hook)) {
+    if (((hook_def.match || hook_def.command) && hook_def.action) || (hook_def.route) || (hook_def.commandline) || (hook_def.exec)) {
       const path = require('path');
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
@@ -66,44 +66,46 @@ const work_hook = function (hook_def, hook_path) {
 
       if (_.isString(hook_def.action)) {
         let action_command = hook_def.action;
-        let action_fn = _.bind(function (message, service, matches, cb) {
-          const exec = require('child_process').exec;
+        let action_fn = _.bind(function (message, service, matches) {
+          let promise = new Promise(function (resolve, reject) {
+            const exec = require('child_process').exec;
+            matches = matches || [];
+            let result_command = action_command;
+            for (let i = 0; i < matches.length; i++) {
+              let placeholder = new RegExp(`@${i}@`, 'mgi');
+              result_command = result_command.replace(placeholder, matches[i]);
+            }
 
-          matches = matches || [];
-          let result_command = action_command;
-          for (let i = 0; i < matches.length; i++) {
-            let placeholder = new RegExp(`@${i}@`, 'mgi');
-            result_command = result_command.replace(placeholder, matches[i]);
-          }
+            let child = exec(result_command, function (error, stdout, stderr) {
+              let error_msg = hook_def.error || "Error: @error@";
+              let has_error = false;
 
-          let child = exec(result_command, function (error, stdout, stderr) {
-            let error_msg = hook_def.error || "Error: @error@";
-            let has_error = false;
+              if (error) return reject(error, null);
 
-            if (error) return cb(error, null);
+              let stderr_str = stderr.toString('utf8');
+              let stdout_str = stdout.toString('utf8');
 
-            let stderr_str = stderr.toString('utf8');
-            let stdout_str = stdout.toString('utf8');
+              if (stderr_str) return cb(stderr_str, null);
 
-            if (stderr_str) return cb(stderr_str, null);
-
-            if (hook_def.check) {
-              if (_.isString(hook_def.check)) {
-                has_error = hook_def.check.toLowerCase() != stdout_str.toLowerCase();
-              } else if (_.isFunction(hook_def.check)) {
-                has_error = !hook_def.check(message, stdout_str);
-              } else if (_.isRegExp(hook_def.check)) {
-                has_error = !hook_def.check.test(stdout_str);
+              if (hook_def.check) {
+                if (_.isString(hook_def.check)) {
+                  has_error = hook_def.check.toLowerCase() != stdout_str.toLowerCase();
+                } else if (_.isFunction(hook_def.check)) {
+                  has_error = !hook_def.check(message, stdout_str);
+                } else if (_.isRegExp(hook_def.check)) {
+                  has_error = !hook_def.check.test(stdout_str);
+                }
               }
-            }
 
-            if (has_error) {
-              cb(stdout_str, null);
-            } else if (hook_def.response !== false) {
-              cb(stderr_str, stdout_str);
-            }
+              if (has_error) {
+                reject(new Exception(stdout_str));
+              } else if (hook_def.response !== false) {
+                resolve(stdout_str);
+              }
 
+            });
           });
+          return promise;
         }, hook_def);
 
         hook_def.action = action_fn;
@@ -112,38 +114,43 @@ const work_hook = function (hook_def, hook_path) {
       if (_.isFunction(hook_def.action)) {
         let _action = _.bind(hook_def.action, hook_def);
 
-        hook_def.action = _.bind(function (message, service, matches, cb) {
-          let error_msg = hook_def.error || "Error: @error@";
-          let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
+        hook_def.action = _.bind(function (message, service, matches) {
+          let promise = new Promise(function (resolve, reject) {
+            let error_msg = hook_def.error || "Error: @error@";
+            let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
 
-          _action(message, service, matches, function (error, output) {
-            cb(error, output);
+            let manage_response = function (error, output) {
+              if (hook_def.response === false) {
+                return resolve();
+              }
 
-            if (hook_def.response === false) {
-              return;
-            }
-
-            if (_.isFunction(hook_def.response)) {
-              hook_def.response(message, error, output, function (error, output) {
-                if (!error && !output) {
-                  return;
-                }
+              if (_.isFunction(hook_def.response)) {
+                return hook_def.response(message, error, output).then(function () {
+                  output = output || "";
+                  if (!output) {
+                    return resolve();
+                  }
+                  service.respond(message, output).then(resolve).catch(reject);
+                }).catch(function (error) {
+                  service.respond(message, (error.message || error)).then(resolve).catch(reject);
+                });
+              } else {
                 if (error) {
-                  return service.respond(message, (error.message || error));
+                  service.respond(message, error_msg.replace(/@error@/mi, (error.message || error))).then(resolve).catch(reject);
                 } else {
                   output = output || "";
-                  return service.respond(message, output);
+                  service.respond(message, response_msg.replace(/@response@/mi, output)).then(resolve).catch(reject);
                 }
-              });
-            } else {
-              if (error) {
-                return service.respond(message, error_msg.replace(/@error@/mi, (error.message || error)));
-              } else {
-                output = output || "";
-                return service.respond(message, response_msg.replace(/@response@/mi, output));
               }
-            }
-          })
+            };
+
+            return _action(message, service, matches).then(function (output) {
+              manage_response(null, output);
+            }).catch(function (error) {
+              manage_response(error);
+            });
+          });
+          return promise;
         }, hook_def);
       }
 
