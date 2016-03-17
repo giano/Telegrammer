@@ -108,6 +108,7 @@ hooks.load().then(function (hooks) {
   case 'help':
     console.log(help);
     break
+  case '':
   case 'start':
     logger.log(`${package_desc.name} v${package_desc.version} starting...`);
     telegram.init(hooks, tcid).then(express.init).then(function () {
