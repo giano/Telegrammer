@@ -47,6 +47,7 @@ const express_service = {
 
   init: function (params) {
     api = params.api;
+    let hooks = params.hooks;
 
     express_hooks = _.indexBy(hooks.filter(function (el) {
       return el.has_web_hook;
