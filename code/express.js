@@ -46,14 +46,18 @@ const express_service = {
   },
 
   init: function (params) {
-    api = params.api;
-    let hooks = params.hooks;
-
-    express_hooks = _.indexBy(hooks.filter(function (el) {
-      return el.has_web_hook;
-    }), "route_path");
-
     let promise = new Promise(function (resolve, reject) {
+      if(config.get("express:active") == false){
+        return resolve(false);
+      }
+
+      api = params.api;
+      let hooks = params.hooks;
+
+      express_hooks = _.indexBy(hooks.filter(function (el) {
+        return el.has_web_hook;
+      }), "route_path");
+
       app = express();
 
       app.set('view engine', 'jade');

@@ -36,14 +36,17 @@ const commandline_service = {
   },
 
   init: function (params) {
-    api = params.api;
-    let hooks = params.hooks;
-
-    cm_hooks = _.indexBy(hooks.filter(function (el) {
-      return el.has_command_line_hook
-    }), "cmd_name");
-
     let promise = new Promise(function (resolve, reject) {
+      if(config.get("commandline:active") == false){
+        return resolve(false);
+      }
+      api = params.api;
+      let hooks = params.hooks;
+
+      cm_hooks = _.indexBy(hooks.filter(function (el) {
+        return el.has_command_line_hook
+      }), "cmd_name");
+
       process.nextTick(function () {
         resolve(true);
       })

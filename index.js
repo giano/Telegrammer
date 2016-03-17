@@ -65,30 +65,32 @@ hooks.load().then(function (hooks) {
     footer: footer
   });
 
-  for (let i = 0; i < cm_hooks.length; i++) {
-    let cml = cm_hooks[i];
-    if (cml.commandline === true) {
-      cla.push({
-        name: cml.full_name,
-        definitions: cli_common_conf
-      });
-      help += getUsage([], {
-        description: cml.description,
-        synopsis: cml.help,
-        title: `Command: ${cml.cmd_name}`,
-        footer: footer
-      });
-    } else {
-      cla.push({
-        name: cml.full_name,
-        definitions: _.extend(cli_common_conf, cml.commandline)
-      });
-      help += getUsage(cml.commandline, {
-        description: cml.description,
-        synopsis: cml.help,
-        title: `Command: ${cml.cmd_name}`,
-        footer: footer
-      });
+  if (config.get("commandline:active") !== false) {
+    for (let i = 0; i < cm_hooks.length; i++) {
+      let cml = cm_hooks[i];
+      if (cml.commandline === true) {
+        cla.push({
+          name: cml.full_name,
+          definitions: cli_common_conf
+        });
+        help += getUsage([], {
+          description: cml.description,
+          synopsis: cml.help,
+          title: `Command: ${cml.cmd_name}`,
+          footer: footer
+        });
+      } else {
+        cla.push({
+          name: cml.full_name,
+          definitions: _.extend(cli_common_conf, cml.commandline)
+        });
+        help += getUsage(cml.commandline, {
+          description: cml.description,
+          synopsis: cml.help,
+          title: `Command: ${cml.cmd_name}`,
+          footer: footer
+        });
+      }
     }
   }
 
@@ -115,17 +117,19 @@ hooks.load().then(function (hooks) {
     });
     break
   default:
-    telegram.init(hooks, tcid).then(commandline.init).then(function () {
-      commandline.execute(command.name, command.options, function (error, result) {
-        if (error) {
-          logger.error(error);
-        } else {
-          logger.notify();
-        };
+    if (config.get("commandline:active") !== false) {
+      telegram.init(hooks, tcid).then(commandline.init).then(function () {
+        commandline.execute(command.name, command.options, function (error, result) {
+          if (error) {
+            logger.error(error);
+          } else {
+            logger.notify();
+          };
+        });
+      }).catch(function (error) {
+        logger.error(error);
       });
-    }).catch(function (error) {
-      logger.error(error);
-    });
+    }
     break
   }
 }).catch(function (error) {
