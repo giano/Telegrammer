@@ -12,7 +12,7 @@ module.exports = {
     });
     return promise;
   },
-  description: "This hook will simply beep on the server/device",
+  description: "Example of regex matching hook. This hook will simply beep on the server/device",
   error: "Something wrong happened: @error@",
   response: "What was that? Did you hear it?"
 };

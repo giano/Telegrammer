@@ -18,6 +18,7 @@ results
 nginx
 redis
 
+hooks/hooks.cryo
 node_modules
 config/*
 

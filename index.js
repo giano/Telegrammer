@@ -45,6 +45,12 @@ hooks.load().then(function (hooks) {
   }, {
     name: 'start',
     definitions: cli_common_conf
+  }, {
+    name: 'cryo',
+    definitions: cli_common_conf
+  }, {
+    name: 'defrost',
+    definitions: cli_common_conf
   }];
 
   help += getUsage(cli_common_conf, {
@@ -65,6 +71,13 @@ hooks.load().then(function (hooks) {
     description: "Start the server",
     title: "Command: start or ''",
     synopsis: "Will start the main receiving server",
+    footer: footer
+  });
+
+  help += getUsage([], {
+    description: "Cryo the hooks, speeding next executions.",
+    title: "Command: cryo",
+    synopsis: "Will cryo (serialize) the hooks, caching them and speeding next executions",
     footer: footer
   });
 
@@ -99,7 +112,6 @@ hooks.load().then(function (hooks) {
 
   const cli = commandLineCommands(cla);
   const command = cli.parse();
-
   tcid = command.telegramid;
 
   command.name = command.name || "";
@@ -109,6 +121,10 @@ hooks.load().then(function (hooks) {
     console.log(help);
     break
   case '':
+    if (process.argv.length > 2) {
+      logger.log("Command not recognized");
+      return process.exit(1);
+    }
   case 'start':
     logger.log(`${package_desc.name} v${package_desc.version} starting...`);
     telegram.init(hooks, tcid).then(express.init).then(function () {
@@ -117,10 +133,20 @@ hooks.load().then(function (hooks) {
       logger.error(error);
     });
     break
+  case 'cryo':
+    logger.log(`Freezing hooks...`);
+    const Cryo = require('cryo');
+    const frozen = Cryo.stringify(hooks);
+    const savefile = Promise.denodeify(require('fs').writeFile);
+    const path = require('path');
+    const dir = path.resolve(__dirname, '.');
+    const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
+    savefile(path.resolve(hooks_dir, "hooks.cryo"), frozen);
+    break
   default:
     if (config.get("commandline:active") !== false) {
       telegram.init(hooks, tcid).then(commandline.init).then(function () {
-        commandline.execute(command.name, command.options).catch(function () {
+        commandline.execute(command.name, command.options).then().catch(function () {
           logger.error(error);
         }).finally(function () {
           process.exit();

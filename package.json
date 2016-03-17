@@ -15,15 +15,18 @@
   },
   "author": "Stefano Valicchia",
   "license": "ISC",
-  "maintainers": [{
-    "name": "Stefano Valicchia",
-    "email": "stefano.valicchia@gmail.com"
-  }],
+  "maintainers": [
+    {
+      "name": "Stefano Valicchia",
+      "email": "stefano.valicchia@gmail.com"
+    }
+  ],
   "dependencies": {
     "ansi-escape-sequences": "^2.2.2",
     "body-parser": "^1.15.0",
     "command-line-commands": "^0.1.2",
     "command-line-usage": "^2.0.3",
+    "cryo": "0.0.6",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
     "glob": "^7.0.3",

@@ -15,5 +15,5 @@ module.exports = {
     alias: 'w',
     type: String
   }],
-  description: "Just send received string"
+  description: "Example of command line hook. Just send passed string to chat."
 };
