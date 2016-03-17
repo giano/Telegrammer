@@ -20,7 +20,7 @@ const commandline_service = {
     command = command.toLowerCase();
 
     if (!api.is_hooked()) {
-      let error = new Exception("Telegram service not hooked. Send first message.");
+      let error = new Error("Telegram service not hooked. Send first message.");
       return Promise.reject(error);
     }
 
@@ -29,11 +29,11 @@ const commandline_service = {
       if (command_hook.exec) {
         return command_hook.exec(params, api);
       } else {
-        let error = new Exception("Command not implemented.");
+        let error = new Error("Command not implemented.");
         return Promise.reject(error);
       }
     } else {
-      let error = new Exception("Command not found.");
+      let error = new Error("Command not found.");
       return Promise.reject(error);
     }
   },

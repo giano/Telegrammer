@@ -7,7 +7,7 @@ module.exports = {
     if (params.what) {
       return service.send(params.what);
     } else {
-      return Promise.reject(new Exception("Hey, why so silent?"));
+      return Promise.reject(new Error("Hey, why so silent?"));
     }
   },
   commandline: [{

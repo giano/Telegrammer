@@ -104,7 +104,7 @@ const telegram_service = {
         chat_id: chat_id
       });
     } else {
-      let error = new Exception("Telegram service not hooked. Send first message.");
+      let error = new Error("Telegram service not hooked. Send first message.");
       return Promise.reject(error);
     }
   },
@@ -121,7 +121,7 @@ const telegram_service = {
       });
 
     } else {
-      let error = new Exception("Telegram service not hooked. Send first message.");
+      let error = new Error("Telegram service not hooked. Send first message.");
       return Promise.reject(error);
     }
   },

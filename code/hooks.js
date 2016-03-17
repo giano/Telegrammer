@@ -98,7 +98,7 @@ const work_hook = function (hook_def, hook_path) {
               }
 
               if (has_error) {
-                reject(new Exception(stdout_str));
+                reject(new Error(stdout_str));
               } else if (hook_def.response !== false) {
                 resolve(stdout_str);
               }
