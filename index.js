@@ -46,10 +46,7 @@ hooks.load().then(function (hooks) {
     name: 'start',
     definitions: cli_common_conf
   }, {
-    name: 'cryo',
-    definitions: cli_common_conf
-  }, {
-    name: 'defrost',
+    name: 'stop',
     definitions: cli_common_conf
   }];
 
@@ -69,15 +66,15 @@ hooks.load().then(function (hooks) {
 
   help += getUsage([], {
     description: "Start the server",
-    title: "Command: start or ''",
+    title: "Command: start",
     synopsis: "Will start the main receiving server",
     footer: footer
   });
 
   help += getUsage([], {
-    description: "Cryo the hooks, speeding next executions.",
-    title: "Command: cryo",
-    synopsis: "Will cryo (serialize) the hooks, caching them and speeding next executions",
+    description: "Stop the server",
+    title: "Command: stop",
+    synopsis: "Will stop the main receiving server",
     footer: footer
   });
 
@@ -121,32 +118,65 @@ hooks.load().then(function (hooks) {
     console.log(help);
     break
   case '':
-    if (process.argv.length > 2) {
-      logger.log("Command not recognized");
-      return process.exit(1);
-    }
+    logger.log("No command specified");
+    return process.exit(1);
+  case 'stop':
+    let fs = require('fs');
+    let terminate = Promise.denodeify(require('terminate'));
+    const read = Promise.denodeify(fs.readFile);
+    let mainpid = "";
+    read('./.pid', 'utf8').then(function (running_pid) {
+      mainpid = running_pid;
+      return Promise.resolve(mainpid);
+    }).then(terminate).then(function (done) {
+      let promise = new Promise(function (resolve, reject) {
+        if (done) {
+          const exec = require('child_process').exec;
+          exec(`kill -2 ${mainpid}`, function (error, stdout, stderr) {
+            if(error){
+              return reject(error);
+            }
+            if(stderr.length > 0){
+              return reject(stderr.toString('utf8'));
+            }
+            resolve(true);
+          });
+        } else {
+          resolve(false);
+        }
+      });
+      return promise;
+    }).catch(function (error) {
+      logger.error(error);
+    }).finally(function(){
+      process.exit();
+    });
+    break;
   case 'start':
+    const npid = require('npid');
+    const pid = npid.create('./.pid', true);
+    pid.removeOnExit();
+    process.on('uncaughtException', function (err) {
+      pid.remove();
+      return process.exit(1);
+    });
+    process.on('SIGINT', function () {
+      logger.log(`${package_desc.name} v${package_desc.version} stopped.`);
+      pid.remove();
+      process.exit();
+    });
     logger.log(`${package_desc.name} v${package_desc.version} starting...`);
     telegram.init(hooks, tcid).then(express.init).then(function () {
       logger.log(`${package_desc.name} v${package_desc.version} started.`);
     }).catch(function (error) {
       logger.error(error);
+      process.exit(1);
     });
-    break
-  case 'cryo':
-    logger.log(`Freezing hooks...`);
-    const Cryo = require('cryo');
-    const frozen = Cryo.stringify(hooks);
-    const savefile = Promise.denodeify(require('fs').writeFile);
-    const path = require('path');
-    const dir = path.resolve(__dirname, '.');
-    const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
-    savefile(path.resolve(hooks_dir, "hooks.cryo"), frozen);
     break
   default:
     if (config.get("commandline:active") !== false) {
       telegram.init(hooks, tcid).then(commandline.init).then(function () {
-        commandline.execute(command.name, command.options).then().catch(function () {
+        commandline.execute(command.name, command.options).then().catch(function (error) {
           logger.error(error);
         }).finally(function () {
           process.exit();

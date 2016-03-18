@@ -12,6 +12,7 @@
 *.gz
 *.map
 
+.pid
 pids
 logs
 results
