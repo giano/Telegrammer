@@ -2,5 +2,50 @@
   zoom: 0.4;
   background: none;
   border: none;
-  padding:0;
+  padding: 0;
+}
+
+.body {
+  position: relative;
+}
+
+.nav-sidebar .nav>.active:focus>a, .nav-sidebar .nav>.active:hover>a, .nav-sidebar .nav>.active>a {
+    padding-left: 18px;
+    font-weight: 700;
+    color: #563d7c;
+    background-color: transparent;
+    border-left: 2px solid #563d7c;
+}
+.nav-sidebar{
+  position: fixed;
+  top: 80px;
+  padding-left: 20px;
+}
+.nav-sidebar .nav>li>a {
+    display: block;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #767676;
+}
+.nav-sidebar .nav .nav {
+    display: none;
+    padding-bottom: 10px;
+}
+.nav-sidebar .nav>.active>ul {
+    display: block;
+}
+.nav-sidebar .nav .nav>li>a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+    font-weight: 400;
+}
+.nav-sidebar .nav>li>a {
+    display: block;
+    padding: 4px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #767676;
 }

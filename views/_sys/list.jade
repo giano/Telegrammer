@@ -6,7 +6,8 @@ html(lang="en")
     link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css', rel='stylesheet')
     link(href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css', rel='stylesheet')
     link(href='/styles/style.css', rel='stylesheet')
-  body
+      
+  body(data-spy="scroll", data-target="#sidebar")
     nav.navbar.navbar-default
       div.container-fluid
         div.navbar-header
@@ -14,209 +15,237 @@ html(lang="en")
             pre.ansi-logo= header
             
     div.container-fluid
-      each namespace_hooks, namespace in hooks
-        div.row
-          div.col-md-12
-            h2.text-capitalize=namespace
-            - var accordion_id = _.underscored(namespace).toLowerCase()+"_accordion";
-            div(role="tablist", id=accordion_id).panel-group
-              each hook, index in namespace_hooks
-                - var hook_panel_id = _.underscored(_.slugify(hook.full_name)) + "_panel";
-                - var hook_label_id = _.underscored(_.slugify(hook.full_name)) + "_label";
-                div.panel.panel-default
-                  div(role="tab", id=hook_label_id).panel-heading
-                    div.row
-                      div.col-md-4
-                        a(role="button", data-toggle="collapse", data-parent="#" +accordion_id,  href="#"+hook_panel_id,  aria-expanded="true", aria-controls=hook_panel_id)
-                          span.text-capitalize= hook.name + " "
-                          small.text-muted= "(" + hook.full_name + ")"
-                      div.col-md-7.text-right
-                        if hook.description
-                          span.text-muted= hook.description
-                      div.col-md-1.text-right
-                        if hook.all
-                          i(title="Send to all").text-muted.fa.fa-reply-all.fa-fw
-                        else
-                          i(title="Send to device/group").text-muted.fa.fa-reply.fa-fw
-                        if hook.has_telegram_hook
-                          i(title="Telegram Hook").fa.fa-comment.text-primary.fa-fw
-                        if hook.has_web_hook
-                          i(title="Web Hook").fa.fa-globe.text-success.fa-fw
-                        if hook.has_command_line_hook
-                          i(title="Terminal Hook").fa.fa-terminal.text-warning.fa-fw
-                            
-                  div(id=hook_panel_id, role="tabpanel", aria-labelledby=hook_label_id).panel-body.panel-collapse.collapse
-                    if hook.help
-                      p.text-muted= hook.help
+      div.row
+        div(role="main").col-md-9
+          each namespace_hooks, namespace in hooks
+            div.row
+              div.col-md-12
+                h2.text-capitalize=namespace
+                - var accordion_id = _.underscored(namespace).toLowerCase()+"_accordion";
+                div(role="tablist", id=accordion_id).panel-group
+                  each hook, index in namespace_hooks
+                    - var hook_panel_id = _.underscored(_.slugify(hook.full_name)) + "_panel";
+                    - var hook_label_id = _.underscored(_.slugify(hook.full_name)) + "_label";
+                    div.panel.panel-default
+                      div(role="tab", id=hook_label_id).panel-heading
+                        div.row
+                          div.col-md-12
+                            h5
+                              a(role="button", data-toggle="collapse", data-parent="#" +accordion_id, href="#"+hook_panel_id,  aria-expanded="true", aria-controls=hook_panel_id)
+                                span.text-capitalize= hook.name + " "
+                                small.text-muted= "(" + hook.full_name + ")"
+                              div.pull-right
+                                if hook.all
+                                  i(title="React to all messages").text-muted.fa.fa-reply-all.fa-fw
+                                else if hook.strict
+                                  i(title="React only to direct messages").text-muted.fa.fa-lock.fa-fw
+                                else
+                                  i(title="React to device/group/all messages").text-muted.fa.fa-reply.fa-fw
+                                if hook.has_telegram_hook
+                                  i(title="Telegram Hook Active").fa.fa-comment.text-primary.fa-fw
+                                if hook.has_web_hook
+                                  i(title="Web Hook Active").fa.fa-globe.text-success.fa-fw
+                                if hook.has_command_line_hook
+                                  i(title="Terminal Hook Active").fa.fa-terminal.text-warning.fa-fw
+                              
+                            if hook.description
+                              p.text-muted
+                                small= hook.description
+                                    
+                      div(id=hook_panel_id, role="tabpanel", aria-labelledby=hook_label_id).panel-body
+                        if hook.help
+                          p.text-muted= hook.help
+                          
+                        ul.list-unstyled
+                          li
+                            strong Path
+                            span :&nbsp;
+                            span #{hook.path}
                         
-                    if hook.has_telegram_hook
-                      div
-                        h5
-                          span.text-primary Telegram Hook 
-                          span.label.label-primary
-                            i.fa.fa-comment
-                        ul.list-unstyled
-                          if hook.command
-                            li
-                              strong Command
-                              span :&nbsp;
-                              span #{hook.command}
-                          else if hook.match
-                            li
-                              strong Match
-                              span :&nbsp;
-                              span.text-warning #{hook.match}
-                              
-                          if hook.action_type == "string"
-                            li
-                              strong Action
-                              span :&nbsp;
-                              code #{hook._action}
-                          else
-                            li
-                              strong Action
-                              span :&nbsp;
-                              code [Node Function]
+                        hr
                           
-                          if (hook.response !== false)
-                            if(typeof(hook.response) == "string")
-                              li
-                                strong Response
-                                span :&nbsp;
-                                span #{hook.response}
-                            else if(typeof(hook.response) == "function")
-                              li
-                                strong Response
-                                span :&nbsp;
-                                code [Node Function]
-                            else 
-                              li
-                                strong Response
-                                span :&nbsp;
-                                span
-                                  i.fa.fa-check.text-success
-                          else
-                            li
-                              strong Response
-                              span :&nbsp;
-                              span
-                                i.fa.fa-times.text-danger
-                          
-                          if (hook.error !== false)
-                            if(typeof(hook.error) == "string")
-                              li
-                                strong Error
-                                span :&nbsp;
-                                span #{hook.error}
-                            else
-                              li
-                                strong Error
-                                span :&nbsp;
-                                span
-                                  i.fa.fa-check.text-success
-                          else
-                            li
-                              strong Error
-                              span :&nbsp;
-                              span
-                                i.fa.fa-times.text-danger
+                        if hook.has_telegram_hook
+                          div
+                            h5
+                              span.text-primary Telegram Hook 
+                              span.label.label-primary
+                                i.fa.fa-comment
+                            ul.list-unstyled
+                              if hook.command
+                                li
+                                  strong Command
+                                  span :&nbsp;
+                                  span #{hook.command}
+                              else if hook.match
+                                li
+                                  strong Match
+                                  span :&nbsp;
+                                  span.text-warning #{hook.match}
                                   
-                            
-                        if hook.has_web_hook || hook.has_command_line_hook
-                          hr
-                            
-                    if hook.has_command_line_hook
-                      div
-                        h5
-                          span.text-warning Command Line Hook 
-                          span.label.label-warning
-                            i.fa.fa-terminal
+                              if hook.action_type == "string"
+                                li
+                                  strong Action
+                                  span :&nbsp;
+                                  code #{hook._action}
+                              else
+                                li
+                                  strong Action
+                                  span :&nbsp;
+                                  code [Node Function]
                               
-                        ul.list-unstyled
-                          li
-                            strong Terminal Command
-                            span :&nbsp;
-                            span #{hook.cmd_name}&nbsp;
-                              small
-                                kbd 
-                                  span.text-primary ./tel.sh&nbsp;
-                                  strong #{hook.cmd_name}
-                                  
-                          if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
-                            li
-                              strong Command Line Params
-                              span :&nbsp;
-                              span
-                                ul
-                                  each command_def, command_def_index in hook.params
-                                    li
-                                      strong.text-danger= "--" + command_def.name
-                                      if command_def.alias
-                                        small.text-muted &nbsp;(-#{command_def.alias})
-                                      span &nbsp;
-                                        code #{typeof(command_def.type())}
-                                        
-                                      if command_def.default
-                                        small.text-muted &nbsp;, default option
-                                      if command_def.multiple
-                                        small.text-muted &nbsp;, multiple
-                                      if command_def.defaultOption
-                                        small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
-                                        
-                          if hook.exec
-                            if(typeof(hook.exec) == "function")
-                              li
-                                strong Exec
-                                span :&nbsp;
-                                code [Node Function]
+                              if (hook.response !== false)
+                                if(typeof(hook.response) == "string")
+                                  li
+                                    strong Response
+                                    span :&nbsp;
+                                    span #{hook.response}
+                                else if(typeof(hook.response) == "function")
+                                  li
+                                    strong Response
+                                    span :&nbsp;
+                                    code [Node Function]
+                                else 
+                                  li
+                                    strong Response
+                                    span :&nbsp;
+                                    span
+                                      i.fa.fa-check.text-success
+                              else
+                                li
+                                  strong Response
+                                  span :&nbsp;
+                                  span
+                                    i.fa.fa-times.text-danger
+                              
+                              if (hook.error !== false)
+                                if(typeof(hook.error) == "string")
+                                  li
+                                    strong Error
+                                    span :&nbsp;
+                                    span #{hook.error}
+                                else
+                                  li
+                                    strong Error
+                                    span :&nbsp;
+                                    span
+                                      i.fa.fa-check.text-success
+                              else
+                                li
+                                  strong Error
+                                  span :&nbsp;
+                                  span
+                                    i.fa.fa-times.text-danger
+                                      
                                 
-                            else if(typeof(hook.exec) == "string")
+                            if hook.has_web_hook || hook.has_command_line_hook
+                              hr
+                                
+                        if hook.has_command_line_hook
+                          div
+                            h5
+                              span.text-warning Command Line Hook 
+                              span.label.label-warning
+                                i.fa.fa-terminal
+                                  
+                            ul.list-unstyled
                               li
-                                strong Exec
+                                strong Terminal Command
                                 span :&nbsp;
-                                code #{hook.exec}
+                                span #{hook.cmd_name}&nbsp;
+                                  small
+                                    kbd 
+                                      span.text-primary ./tel.sh&nbsp;
+                                      strong #{hook.cmd_name}
+                                      
+                              if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                                li
+                                  strong Command Line Params
+                                  span :&nbsp;
+                                  span
+                                    ul
+                                      each command_def, command_def_index in hook.params
+                                        li
+                                          strong.text-danger= "--" + command_def.name
+                                          if command_def.alias
+                                            small.text-muted &nbsp;(-#{command_def.alias})
+                                          span &nbsp;
+                                            code #{typeof(command_def.type())}
+                                            
+                                          if command_def.default
+                                            small.text-muted &nbsp;, default option
+                                          if command_def.multiple
+                                            small.text-muted &nbsp;, multiple
+                                          if command_def.defaultOption
+                                            small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
+                                            
+                              if hook.exec
+                                if(typeof(hook.exec) == "function")
+                                  li
+                                    strong Exec
+                                    span :&nbsp;
+                                    code [Node Function]
+                                    
+                                else if(typeof(hook.exec) == "string")
+                                  li
+                                    strong Exec
+                                    span :&nbsp;
+                                    code #{hook.exec}
 
-                            
+                                
+                            if hook.has_web_hook
+                              hr
+                                
                         if hook.has_web_hook
-                          hr
-                            
-                    if hook.has_web_hook
-                      div
-                        h5
-                          span.text-warning Web Hook 
-                          span.label.label-warning
-                            i.fa.fa-terminal
-                              
-                        ul.list-unstyled
-                          li
-                            strong Page Route
-                            span :&nbsp;
-                            span #{hook.route_path}
-                            
-                          li
-                            strong Method
-                            span :&nbsp;
-                            span #{(hook.method || "all").toUpperCase()}
-                            
-                          if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
-                            li
-                              strong Page Params
-                              span :&nbsp;
-                              span
-                                ul
-                                  each command_def, command_def_index in hook.params
-                                    li
-                                      strong.text-danger= command_def.name
-                                      if command_def.alias
-                                        small.text-muted &nbsp;(#{command_def.alias})
-                                      span &nbsp;
-                                        code #{typeof(command_def.type())}
+                          div
+                            h5
+                              span.text-warning Web Hook 
+                              span.label.label-warning
+                                i.fa.fa-terminal
+                                  
+                            ul.list-unstyled
+                              li
+                                strong Page Route
+                                span :&nbsp;
+                                span #{hook.route_path}
+                                
+                              li
+                                strong Method
+                                span :&nbsp;
+                                span #{(hook.method || "all").toUpperCase()}
+                                
+                              if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                                li
+                                  strong Page Params
+                                  span :&nbsp;
+                                  span
+                                    ul
+                                      each command_def, command_def_index in hook.params
+                                        li
+                                          strong.text-danger= command_def.name
+                                          if command_def.alias
+                                            small.text-muted &nbsp;(#{command_def.alias})
+                                          span &nbsp;
+                                            code #{typeof(command_def.type())}
 
-                                      if command_def.multiple
-                                        small.text-muted &nbsp;, multiple
-                                      if command_def.defaultOption
-                                        small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
-            
+                                          if command_def.multiple
+                                            small.text-muted &nbsp;, multiple
+                                          if command_def.defaultOption
+                                            small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
+                                            
+        div(role="complementary").col-md-3
+          nav.hidden-print.hidden-xs.hidden-sm.affix.nav-sidebar#sidebar
+            ul(role="tablist").nav.nav-stacked
+              each namespace_hooks, namespace in hooks
+                - var accordion_id = _.underscored(namespace).toLowerCase()+"_accordion";
+                li(role="presentation")
+                  a(href="#"+accordion_id).text-capitalize=namespace
+                  ul.nav.nav-stacked
+                    each hook, index in namespace_hooks
+                      - var hook_panel_id = _.underscored(_.slugify(hook.full_name)) + "_panel";
+                      - var hook_label_id = _.underscored(_.slugify(hook.full_name)) + "_label";
+                      li(role="presentation")
+                        a(href="#"+hook_label_id, role="button").text-capitalize=hook.name
+                        
     script(type='text/javascript', src="https://code.jquery.com/jquery-2.2.2.min.js", integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=", crossorigin="anonymous")  
     script(type='text/javascript', src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js')
     

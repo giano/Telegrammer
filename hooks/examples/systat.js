@@ -19,8 +19,9 @@ module.exports = {
         used += cpu.times["user"] + cpu.times["nice"] + cpu.times["sys"]
       }
       out += "CPUs (" + cpus.length + "): " + Math.round(100 * used / total) + "%\n";
-      resolve();
+      resolve(out);
     });
     return promise;
-  }
+  },
+  description: "Example of command line hook linked to non regex command \"\/systat\"."
 };

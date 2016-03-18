@@ -81,21 +81,21 @@ const express_service = {
         } else {
           logger.log(`WebServer is listening on port ${port}`);
 
-          app.get('/_sys/list', express_service.list_methods);
+          app.get('/help', express_service.list_methods);
 
-          app.get('/_sys/tid', function (req, res) {
+          app.get('/tid', function (req, res) {
             if (authorized(req, res)) {
               res.json(api.get_hook_id() || false);
             }
           });
 
-          app.post('/_sys/tid', function (req, res) {
+          app.post('/tid', function (req, res) {
             if (authorized(req, res)) {
               api.set_hook_id(req.body("id"));
             }
           });
 
-          app.get('/_sys/hooked', function (req, res) {
+          app.get('/hooked', function (req, res) {
             if (authorized(req, res)) {
               res.json(api.is_hooked());
             }

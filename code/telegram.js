@@ -41,7 +41,7 @@ const manage_message = function (message) {
 
       for (let hook_id in telegram_hooks) {
         let hook = telegram_hooks[hook_id];
-        if (hook.all || (config.get('device_group') == to_device) || (config.get('device_name') == to_device) || _.contains(config.get('execute_devices'), to_device)) {
+        if ((hook.strict && config.get('device_name') == to_device) || (hook.all || (config.get('device_group') == to_device) || (config.get('device_name') == to_device) || _.contains(config.get('execute_devices'), to_device))) {
           if (hook.command) {
             if (message_text == hook.command) {
               logger.log(`Executing ${hook.full_name}`);

@@ -54,15 +54,17 @@ const work_hook = function (hook_def, hook_path) {
     }
     if (((hook_def.match || hook_def.command) && hook_def.action) || (hook_def.route) || (hook_def.exec)) {
       const path = require('path');
+      hook_def.path = hook_path;
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
       hook_def.full_name = `${_.underscored(_.slugify(hook_def.namespace))}/${_.underscored(_.slugify(hook_def.name))}`;
       hook_def.route_path = hook_def.route ? (hook_def.route_path || _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/")) : null;
       hook_def.cmd_name = hook_def.exec ? (hook_def.cmd_name || _.replaceAll(_.replaceAll(hook_def.full_name.toLowerCase(), "_", ":"), "/", ":")) : null;
 
-      hook_def.has_telegram_hook = hook_def.action != null;
-      hook_def.has_web_hook = hook_def.route != null;
-      hook_def.has_command_line_hook = hook_def.exec != null;
+      hook_def.has_monitor_hook = _.isFunction(hook_def.monitor);
+      hook_def.has_telegram_hook = _.isFunction(hook_def.action) || _.isString(hook_def.action);
+      hook_def.has_web_hook = _.isFunction(hook_def.route);
+      hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
 
       if (hook_def.match && _.isString(hook_def.match)) {
         hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "im");
