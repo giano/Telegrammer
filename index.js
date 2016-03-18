@@ -133,11 +133,13 @@ hooks.load().then(function (hooks) {
         if (done) {
           const exec = require('child_process').exec;
           exec(`kill -2 ${mainpid}`, function (error, stdout, stderr) {
-            if(error){
+            if (error) {
               return reject(error);
             }
-            if(stderr.length > 0){
+            if (stderr.length > 0) {
               return reject(stderr.toString('utf8'));
+            } else {
+              logger.log(`${package_desc.name} v${package_desc.version} has been stopped.`);
             }
             resolve(true);
           });
@@ -147,8 +149,12 @@ hooks.load().then(function (hooks) {
       });
       return promise;
     }).catch(function (error) {
-      logger.error(error);
-    }).finally(function(){
+      if (error.code != "ENOENT") {
+        logger.error(error);
+      } else {
+        logger.log(`${package_desc.name} v${package_desc.version} is not running.`);
+      }
+    }).finally(function () {
       process.exit();
     });
     break;
