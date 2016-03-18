@@ -31,16 +31,14 @@ const authorized = function (req, res) {
 const express_service = {
   list_methods: function (req, res) {
     if (authorized(req, res)) {
-      let commandline_hooks = require("./commandline").get_hooks();
-      let telegram_hooks = require("./telegram").get_hooks();
-      let express_hooks = express_service.get_hooks();
-      res.view({
-        commandline_hooks: commandline_hooks,
-        telegram_hooks: telegram_hooks,
-        express_hooks: express_hooks
+      res.render('_sys/list', {
+        header: require("../assets/ansi-header-html.js"),
+        hooks: require("./hooks").get_hooks(),
+        package_def: require("../package.json")
       });
     }
   },
+
   get_hooks: function () {
     return express_hooks;
   },
@@ -54,6 +52,9 @@ const express_service = {
       api = params.api;
       let hooks = params.hooks;
 
+      const path = require('path');
+      const dir = path.resolve(__dirname, '..');
+
       express_hooks = _.indexBy(hooks.filter(function (el) {
         return el.has_web_hook;
       }), "route_path");
@@ -61,7 +62,7 @@ const express_service = {
       app = express();
 
       app.set('view engine', 'jade');
-      app.set('views', '../views');
+      app.set('views', path.resolve(dir, 'views'));
 
       app.use(bodyParser.urlencoded({
         extended: false

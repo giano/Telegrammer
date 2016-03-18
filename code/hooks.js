@@ -9,7 +9,12 @@ const _ = require('underscore');
 const s = require("underscore.string");
 _.mixin(s.exports());
 
+let hooks_cache = [];
+
 const hooks = {
+  get_hooks: function () {
+    return hooks_cache;
+  },
   load: function () {
     let promise = new Promise(function (resolve, reject) {
       const path = require('path');
@@ -29,7 +34,7 @@ const hooks = {
           let hook_def = require(hook_complete_path);
           return work_hook(hook_def, hook_path);
         });
-        matches_out = matches_out.filter(function (e) {
+        hooks_cache = matches_out = matches_out.filter(function (e) {
           return e
         });
         resolve(matches_out);
@@ -41,13 +46,19 @@ const hooks = {
 
 const work_hook = function (hook_def, hook_path) {
   if (hook_def) {
+    if(_.isArray(hook_def)){
+      let out_array = _.map(hook_def,function(inner_hook_def){
+        work_hook(inner_hook_def, hook_path);
+      });
+      return out_array;
+    }
     if (((hook_def.match || hook_def.command) && hook_def.action) || (hook_def.route) || (hook_def.commandline) || (hook_def.exec)) {
       const path = require('path');
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
       hook_def.full_name = `${_.underscored(_.slugify(hook_def.namespace))}/${_.underscored(_.slugify(hook_def.name))}`;
-      hook_def.route_path = _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/");
-      hook_def.cmd_name = _.replaceAll(hook_def.route_path, "/", ":").toLowerCase();
+      hook_def.route_path = hook_def.route ? (hook_def.route_path || _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/")) : null;
+      hook_def.cmd_name = hook_def.commandline ? (hook_def.cmd_name || _.replaceAll(hook_def.route_path, "/", ":").toLowerCase()) : null;
 
       hook_def.has_telegram_hook = hook_def.action != null;
       hook_def.has_web_hook = hook_def.route != null;
