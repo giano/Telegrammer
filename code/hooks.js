@@ -46,8 +46,8 @@ const hooks = {
 
 const work_hook = function (hook_def, hook_path) {
   if (hook_def) {
-    if(_.isArray(hook_def)){
-      let out_array = _.map(hook_def,function(inner_hook_def){
+    if (_.isArray(hook_def)) {
+      let out_array = _.map(hook_def, function (inner_hook_def) {
         work_hook(inner_hook_def, hook_path);
       });
       return out_array;
@@ -58,7 +58,7 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
       hook_def.full_name = `${_.underscored(_.slugify(hook_def.namespace))}/${_.underscored(_.slugify(hook_def.name))}`;
       hook_def.route_path = hook_def.route ? (hook_def.route_path || _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/")) : null;
-      hook_def.cmd_name = hook_def.commandline ? (hook_def.cmd_name || _.replaceAll(hook_def.route_path, "/", ":").toLowerCase()) : null;
+      hook_def.cmd_name = hook_def.commandline ? (hook_def.cmd_name || _.replaceAll(_.replaceAll(hook_def.full_name.toLowerCase(), "_", ":"), "/", ":")) : null;
 
       hook_def.has_telegram_hook = hook_def.action != null;
       hook_def.has_web_hook = hook_def.route != null;
@@ -75,8 +75,11 @@ const work_hook = function (hook_def, hook_path) {
         hook_def.command = hook_def.command.toLowerCase();
       }
 
+      hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
+
       if (_.isString(hook_def.action)) {
-        let action_command = hook_def.action;
+        let action_command = hook_def._action = hook_def.action;
+
         let action_fn = _.bind(function (message, service, matches) {
           let promise = new Promise(function (resolve, reject) {
             const exec = require('child_process').exec;
@@ -147,7 +150,11 @@ const work_hook = function (hook_def, hook_path) {
                 });
               } else {
                 if (error) {
-                  service.respond(message, error_msg.replace(/@error@/mi, (error.message || error))).then(resolve).catch(reject);
+                  if (hook_def.error !== false) {
+                    service.respond(message, error_msg.replace(/@error@/mi, (error.message || error))).then(resolve).catch(reject);
+                  } else {
+                    reject(error.message || error);
+                  }
                 } else {
                   output = output || "";
                   service.respond(message, response_msg.replace(/@response@/mi, output)).then(resolve).catch(reject);

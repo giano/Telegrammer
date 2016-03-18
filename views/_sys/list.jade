@@ -4,13 +4,137 @@ html(lang="en")
     title= package_def.name + " v" + package_def.version
     meta(name="viewport", content="width=device-width, initial-scale=1")
     link(href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css', rel='stylesheet')
+    link(href='https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css', rel='stylesheet')
     link(href='/styles/style.css', rel='stylesheet')
   body
     nav.navbar.navbar-default
       div.container-fluid
         div.navbar-header
-          a(href="#").navbar-brand
+          a(href="#", title=(package_def.name + " v" + package_def.version)).navbar-brand
             pre.ansi-logo= header
+            
+    div.container-fluid
+      each namespace_hooks, namespace in hooks
+        div.row
+          div.col-md-12
+            h2.text-capitalize=namespace
+            each hook, index in namespace_hooks
+              div.panel.panel-default
+                div.panel-heading
+                  div.row
+                    div.col-md-4
+                      span.text-capitalize= hook.name + " "
+                      small.text-muted= "(" + hook.full_name + ")"
+                    div.col-md-7.text-right
+                      if hook.description
+                        span.text-muted= hook.description
+                    div.col-md-1.text-right
+                      if hook.all
+                        i(title="Send to all").text-muted.fa.fa-reply-all.fa-fw
+                      else
+                        i(title="Send to device/group").text-muted.fa.fa-reply.fa-fw
+                      if hook.has_telegram_hook
+                        i(title="Telegram Hook").fa.fa-comment.text-primary.fa-fw
+                      if hook.has_web_hook
+                        i(title="Web Hook").fa.fa-globe.text-success.fa-fw
+                      if hook.has_command_line_hook
+                        i(title="Terminal Hook").fa.fa-terminal.text-warning.fa-fw
+                          
+                div.panel-body
+                  if hook.has_telegram_hook
+                    div
+                      h5
+                        span.text-primary Telegram Hook 
+                        span.label.label-primary
+                          i.fa.fa-comment
+                      ul.list-unstyled
+                        if hook.command
+                          li
+                            strong Command
+                            span :&nbsp;
+                            span #{hook.command}
+                        else if hook.match
+                          li
+                            strong Match
+                            span :&nbsp;
+                            span.text-warning #{hook.match}
+                            
+                        if hook.action_type == "string"
+                          li
+                            strong Action
+                            span :&nbsp;
+                            code #{hook._action}
+                        else
+                          li
+                            strong Action
+                            span :&nbsp;
+                            code [Node Function]
+                        
+                        if (hook.response !== false)
+                          if(typeof(hook.response) == "string")
+                            li
+                              strong Response
+                              span :&nbsp;
+                              span #{hook.response}
+                          else if(typeof(hook.response) == "function")
+                            li
+                              strong Response
+                              span :&nbsp;
+                              code [Node Function]
+                          else 
+                            li
+                              strong Response
+                              span :&nbsp;
+                              span
+                                i.fa.fa-check.text-success
+                        else
+                          li
+                            strong Response
+                            span :&nbsp;
+                            span
+                              i.fa.fa-times.text-danger
+                        
+                        if (hook.error !== false)
+                          if(typeof(hook.error) == "string")
+                            li
+                              strong Error
+                              span :&nbsp;
+                              span #{hook.error}
+                          else
+                            li
+                              strong Error
+                              span :&nbsp;
+                              span
+                                i.fa.fa-check.text-success
+                        else
+                          li
+                            strong Error
+                            span :&nbsp;
+                            span
+                              i.fa.fa-times.text-danger
+                                
+                          
+                      if hook.has_web_hook || hook.has_command_line_hook
+                        hr
+                  if hook.has_command_line_hook
+                    div
+                      h5
+                        span.text-warning Command Line Hook 
+                        span.label.label-warning
+                          i.fa.fa-terminal
+                            
+                      ul.list-unstyled
+                        li
+                          strong Terminal Command
+                          span :&nbsp;
+                          span #{hook.cmd_name}
+                            small &nbsp;
+                              kbd 
+                                span.text-primary ./tel.sh&nbsp;
+                                strong #{hook.cmd_name}
+                          
+                      if hook.has_web_hook
+                        hr
     
     div.
     script(type='text/javascript', src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js')

@@ -33,7 +33,7 @@ const express_service = {
     if (authorized(req, res)) {
       res.render('_sys/list', {
         header: require("../assets/ansi-header-html.js"),
-        hooks: require("./hooks").get_hooks(),
+        hooks: _.groupBy(_.sortBy(_.sortBy(require("./hooks").get_hooks(), "name"), "namespace"), "namespace"),
         package_def: require("../package.json")
       });
     }
