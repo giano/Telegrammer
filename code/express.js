@@ -32,6 +32,7 @@ const express_service = {
   list_methods: function (req, res) {
     if (authorized(req, res)) {
       res.render('_sys/list', {
+        _:_,
         header: require("../assets/ansi-header-html.js"),
         hooks: _.groupBy(_.sortBy(_.sortBy(require("./hooks").get_hooks(), "name"), "namespace"), "namespace"),
         package_def: require("../package.json")
