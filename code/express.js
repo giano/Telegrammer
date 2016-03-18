@@ -70,6 +70,8 @@ const express_service = {
 
       app.use(bodyParser.json());
 
+      app.use(express.static('public'));
+
       let port = (process.env.PORT || config.get("express:port") || 3000);
 
       app.listen(port, function (error) {
