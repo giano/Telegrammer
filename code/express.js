@@ -103,13 +103,37 @@ const express_service = {
           for (let route_path in express_hooks) {
             if (express_hooks.hasOwnProperty(route_path)) {
               let hook = express_hooks[route_path];
+
               let router = _.bind(hook.route, hook);
-              app.post(route_path, function (req, res) {
+              let method = (hook.method || "all").toLowerCase();
+              let filter_params = [];
+
+              if (_.isArray(hook.params)) {
+                for (let i = 0; i < hook.params.length; i++) {
+                  filter_params = _.union([], filter_params, [hook.params[i].name, hook.params[i].alias])
+                }
+              }
+
+              filter_params = _.compact(filter_params);
+
+              app[method]("/" + route_path, function (req, res) {
                 if (authorized(req, res)) {
-                  router(req, res, api).then(function (content) {
-                    res.json(content);
+                  let params = _.pick(_.extend({}, req.params, req.query, req.body), filter_params);
+
+                  router(params, api, req, res).then(function (content) {
+                    if (_.isString(hook.response)) {
+                      res.send(hook.response);
+                    } else {
+                      res.json(content);
+                    }
                   }).catch(function (error) {
-                    res.status(500).send(error.message || error);
+                    if (_.isString(hook.error)) {
+                      res.status(500).send(hook.error);
+                    } else {
+                      res.status(500).send(error.message || error);
+                    }
+                  }).finally(function () {
+                    res.end();
                   });
                 }
               });

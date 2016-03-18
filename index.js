@@ -81,12 +81,12 @@ hooks.load().then(function (hooks) {
   if (config.get("commandline:active") !== false) {
     for (let i = 0; i < cm_hooks.length; i++) {
       let cml = cm_hooks[i];
-      if (cml.commandline === true) {
+      if (_.isArray(cml.params)) {
         cla.push({
           name: cml.cmd_name,
-          definitions: cli_common_conf
+          definitions: _.union([], cli_common_conf, cml.params)
         });
-        help += getUsage([], {
+        help += getUsage(cml.params, {
           description: cml.description,
           synopsis: cml.help,
           title: `Command: ${cml.cmd_name}`,
@@ -95,9 +95,9 @@ hooks.load().then(function (hooks) {
       } else {
         cla.push({
           name: cml.cmd_name,
-          definitions: _.extend(cli_common_conf, cml.commandline)
+          definitions: cli_common_conf
         });
-        help += getUsage(cml.commandline, {
+        help += getUsage([], {
           description: cml.description,
           synopsis: cml.help,
           title: `Command: ${cml.cmd_name}`,

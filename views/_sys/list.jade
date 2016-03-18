@@ -41,6 +41,9 @@ html(lang="en")
                         i(title="Terminal Hook").fa.fa-terminal.text-warning.fa-fw
                           
                 div.panel-body
+                  if hook.help
+                    p.text-muted= hook.help
+                      
                   if hook.has_telegram_hook
                     div
                       h5
@@ -116,6 +119,7 @@ html(lang="en")
                           
                       if hook.has_web_hook || hook.has_command_line_hook
                         hr
+                          
                   if hook.has_command_line_hook
                     div
                       h5
@@ -127,15 +131,90 @@ html(lang="en")
                         li
                           strong Terminal Command
                           span :&nbsp;
-                          span #{hook.cmd_name}
-                            small &nbsp;
+                          span #{hook.cmd_name}&nbsp;
+                            small
                               kbd 
                                 span.text-primary ./tel.sh&nbsp;
                                 strong #{hook.cmd_name}
+                                
+                        if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                          li
+                            strong Command Line Params
+                            span :&nbsp;
+                            span
+                              ul
+                                each command_def, command_def_index in hook.params
+                                  li
+                                    strong.text-danger= "--" + command_def.name
+                                    if command_def.alias
+                                      small.text-muted &nbsp;(-#{command_def.alias})
+                                    span &nbsp;
+                                      code #{typeof(command_def.type())}
+                                      
+                                    if command_def.default
+                                      small.text-muted &nbsp;, default option
+                                    if command_def.multiple
+                                      small.text-muted &nbsp;, multiple
+                                    if command_def.defaultOption
+                                      small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
+                                      
+                        if hook.exec
+                          if(typeof(hook.exec) == "function")
+                            li
+                              strong Exec
+                              span :&nbsp;
+                              code [Node Function]
+                              
+                          else if(typeof(hook.exec) == "string")
+                            li
+                              strong Exec
+                              span :&nbsp;
+                              code #{hook.exec}
+                                    
+                                      
+                          
                           
                       if hook.has_web_hook
                         hr
-    
+                          
+                  if hook.has_web_hook
+                    div
+                      h5
+                        span.text-warning Web Hook 
+                        span.label.label-warning
+                          i.fa.fa-terminal
+                            
+                      ul.list-unstyled
+                        li
+                          strong Page Route
+                          span :&nbsp;
+                          span #{hook.route_path}
+                          
+                        li
+                          strong Method
+                          span :&nbsp;
+                          span #{(hook.method || "all").toUpperCase()}
+                          
+                        if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                          li
+                            strong Page Params
+                            span :&nbsp;
+                            span
+                              ul
+                                each command_def, command_def_index in hook.params
+                                  li
+                                    strong.text-danger= command_def.name
+                                    if command_def.alias
+                                      small.text-muted &nbsp;(#{command_def.alias})
+                                    span &nbsp;
+                                      code #{typeof(command_def.type())}
+
+                                    if command_def.multiple
+                                      small.text-muted &nbsp;, multiple
+                                    if command_def.defaultOption
+                                      small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
+            
+                    
     div.
     script(type='text/javascript', src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js')
     

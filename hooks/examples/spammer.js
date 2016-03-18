@@ -10,7 +10,7 @@ module.exports = {
       return Promise.reject(new Error("Hey, why so silent?"));
     }
   },
-  commandline: [{
+  params: [{
     name: 'what',
     alias: 'w',
     type: String
