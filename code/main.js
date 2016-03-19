@@ -8,6 +8,7 @@ const hooks = require('./hooks');
 const express = require('./express');
 const monitor = require('./monitor');
 const logger = require('./logger');
+const rpc = require('./rpc');
 const ansi = require('ansi-escape-sequences');
 const package_desc = require('../package.json');
 
@@ -75,6 +76,14 @@ const main = {
             description: "Start the server",
             title: "Command: start",
             synopsis: "Will start the main receiving server"
+          });
+          break;
+        case "reload":
+          help = getUsage(cli_common_conf, {
+            header: header,
+            description: "Reload hooks",
+            title: "Command: reload",
+            synopsis: "Will reload hook in the main server"
           });
           break;
         case "stop":
@@ -160,7 +169,7 @@ const main = {
     return promise;
   },
 
-  parse_commands: function (config, cm_hooks) {
+  parse_commands: function (config, cmd_arguments, cm_hooks) {
     let promise = new Promise(function (resolve, reject) {
       const commandline = require('./commandline');
 
@@ -172,6 +181,9 @@ const main = {
         definitions: cli_common_conf
       }, {
         name: 'stop',
+        definitions: cli_common_conf
+      }, , {
+        name: 'reload',
         definitions: cli_common_conf
       }, {
         name: 'monitor:start',
@@ -202,7 +214,21 @@ const main = {
       }
 
       const cli = commandLineCommands(cla);
-      const command = cli.parse();
+
+      let command_line_res = null;
+
+      try {
+        if (cmd_arguments) {
+          command_line_res = cli.parse(cmd_arguments);
+        } else {
+          command_line_res = cli.parse();
+        }
+      } catch (e) {
+        console.log(e)
+      }
+
+      const command = _.extend({}, command_line_res);
+
       tcid = command.telegramid;
 
       command.name = command.name || "";
@@ -213,30 +239,60 @@ const main = {
     return promise;
   },
 
-  main: function (config) {
+  start_server: function () {
     let promise = new Promise(function (resolve, reject) {
       hooks.load().then(function (hooks) {
+        cm_hooks = hooks.filter(function (el) {
+          return el.has_command_line_hook
+        });
+        const npid = require('npid');
+        const pid = npid.create('./.pid', true);
+        pid.removeOnExit();
+        process.on('uncaughtException', function (err) {
+          pid.remove();
+          return reject(err);
+        });
+        process.on('SIGINT', function () {
+          pid.remove();
+          resolve(`${package_desc.name} v${package_desc.version} stopped.`);
+        });
+        logger.log(`${package_desc.name} v${package_desc.version} starting...`);
+        telegram.init(hooks, tcid).then(monitor.init).then(express.init).then(rpc.init).then(function () {
+          logger.log(`${package_desc.name} v${package_desc.version} started.`);
+        }).catch(function (error) {
+          reject(error);
+        });
+      }).catch(reject);
+    });
+    return promise;
+  },
 
+  main: function (config, cmd_arguments) {
+    let promise = new Promise(function (resolve, reject) {
+      hooks.load().then(function (hooks) {
         cm_hooks = hooks.filter(function (el) {
           return el.has_command_line_hook
         });
 
-        return main.parse_commands(config, cm_hooks).then(function (command) {
-
+        return main.parse_commands(config, cmd_arguments, cm_hooks).then(function (command) {
           switch (command.name) {
+
           case 'help':
             main.help(config, command.options.hook, cm_hooks).then(resolve).catch(reject);
             break
           case '':
             return reject(new Error("No command specified"));
           case 'monitor:start':
-            monitor.start(command.options.hook).then(resolve).catch(reject);
+            rpc.send("start_monitor", command.options.hook).then(resolve).catch(reject);
             break
           case 'monitor:stop':
-            monitor.stop(command.options.hook).then(resolve).catch(reject);
+            rpc.send("stop_monitor", command.options.hook).then(resolve).catch(reject)
+            break
+          case 'reload':
+            rpc.send("reload").then(resolve).catch(reject)
             break
           case 'monitor:restart':
-            monitor.restart(command.options.hook).then(resolve).catch(reject);
+            rpc.send("restart_monitor", command.options.hook).then(resolve).catch(reject)
             break
           case 'stop':
             let fs = require('fs');
@@ -277,23 +333,7 @@ const main = {
             });
             break;
           case 'start':
-            const npid = require('npid');
-            const pid = npid.create('./.pid', true);
-            pid.removeOnExit();
-            process.on('uncaughtException', function (err) {
-              pid.remove();
-              return reject(err);
-            });
-            process.on('SIGINT', function () {
-              pid.remove();
-              resolve(`${package_desc.name} v${package_desc.version} stopped.`);
-            });
-            logger.log(`${package_desc.name} v${package_desc.version} starting...`);
-            telegram.init(hooks, tcid).then(monitor.init).then(express.init).then(function () {
-              logger.log(`${package_desc.name} v${package_desc.version} started.`);
-            }).catch(function (error) {
-              reject(error);
-            });
+            return main.start_server();
             break
           default:
             if (config.get("commandline:active") !== false) {

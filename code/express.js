@@ -48,9 +48,10 @@ const express_service = {
   },
 
   init: function (params) {
+    api = params.api;
+    let hooks = params.hooks;
+
     let promise = new Promise(function (resolve, reject) {
-      api = params.api;
-      let hooks = params.hooks;
 
       if (config.get("express:active") == false) {
         initialized = true;

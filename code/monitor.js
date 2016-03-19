@@ -4,6 +4,7 @@ const config = require('./config');
 const _ = require('underscore');
 const s = require("underscore.string");
 const escape_string_regexp = require('escape-string-regexp');
+const logger = require('./logger');
 
 _.mixin(s.exports());
 
@@ -21,8 +22,15 @@ const monitor_service = {
 
   start: function (hook_or_name) {
     if (_.isString(hook_or_name)) {
-      return monitor_service.start(mo_hooks[hook_or_name]);
+      hook_or_name = _.trim(hook_or_name).toLowerCase();
+      let hook = mo_hooks[hook_or_name];
+      if(hook){
+        return monitor_service.start(mo_hooks[hook_or_name]);
+      }else{
+        return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+      }
     } else {
+      let hook = hook_or_name;
       logger.notify(`Starting monitor hook ${hook.full_name}...`);
       if (_.isFunction(hook.start_monitor)) {
         return hook.start_monitor(hook, api).then(function(arg){
@@ -51,8 +59,15 @@ const monitor_service = {
 
   stop: function (hook_or_name) {
     if (_.isString(hook_or_name)) {
-      return monitor_service.stop(mo_hooks[hook_or_name]);
+      hook_or_name = _.trim(hook_or_name).toLowerCase();
+      let hook = mo_hooks[hook_or_name];
+      if(hook){
+        return monitor_service.stop(mo_hooks[hook_or_name]);
+      }else{
+        return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+      }
     } else {
+      let hook = hook_or_name;
       logger.notify(`Stopping monitor hook ${hook.full_name}`);
       if (_.isFunction(hook.stop_monitor)) {
         return hook.stop_monitor(hook, api).then(function(arg){
@@ -72,9 +87,10 @@ const monitor_service = {
   },
 
   init: function (params) {
+    api = params.api;
+    let hooks = params.hooks;
+
     let promise = new Promise(function (resolve, reject) {
-      api = params.api;
-      let hooks = params.hooks;
 
       if (config.get("monitor:active") == false) {
         return resolve({

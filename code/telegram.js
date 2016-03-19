@@ -8,14 +8,39 @@ const s = require("underscore.string");
 _.mixin(s.exports());
 
 const Promise = require('promise');
-const Telegram = require('telegram-bot-api');
+const Telegram = require('node-telegram-bot-api');
 const device_regex = new RegExp(`${escape_string_regexp(config.get("telegram:device_name_char"))}([\\d\\w_\\-\\.]+)`, "i");
 
 let api = null;
 let telegram_hooks = [];
 let initialized = false;
 
-const manage_message = function (message) {
+const register_message_hook = function (hook) {
+  let promise = new Promise(function (resolve, reject) {
+
+    let match = null;
+
+    if (hook.command) {
+      match = new RegExp(`${escape_string_regexp(hook.command)}\s*(.*)`, 'i');
+    }else if(hook.match){
+      match = hook.match;
+    }else{
+      return reject(new Error("No matching string"));
+    }
+
+    let manager = _.bind(function (msg, match) {
+      manage_message(msg, match, this);
+    }, hook);
+
+    api.onText(match, manager)
+
+    resolve();
+  });
+
+  return promise;
+}
+
+const manage_message = function (message, matches, hook) {
   if (message.from && (config.get('allowed_usernames') && _.contains(config.get('allowed_usernames'), message.from.username.toLowerCase()))) {
     let message_text = message.text || message.caption;
     if (message_text) {
@@ -40,33 +65,13 @@ const manage_message = function (message) {
         logger.log(`Hooked to chat id #${telegram_service.get_hook_id()}`);
       }
 
-      for (let hook_id in telegram_hooks) {
-        let hook = telegram_hooks[hook_id];
-        if ((hook.strict && config.get('device_name') == to_device) || (hook.all || (config.get('device_group') == to_device) || (config.get('device_name') == to_device) || _.contains(config.get('execute_devices'), to_device))) {
-          if (hook.command) {
-            if (message_text == hook.command) {
-              logger.log(`Executing ${hook.full_name}`);
-              hook.action(message, telegram_service, []).then(function (response) {
-                logger.notify(`Executed ${hook.full_name}`);
-              }).catch(function (error) {
-                logger.error(`Error executing ${hook.full_name}: ${error}`);
-              });
-              return;
-            }
-          } else if (hook.match) {
-            let regex_to_match = hook.match;
-            if (regex_to_match.test(message_text)) {
-              logger.log(`Executing ${hook.full_name}`);
-              let matches = regex_to_match.exec(message_text);
-              hook.action(message, telegram_service, matches).then(function (response) {
-                logger.notify(`Executed ${hook.full_name}`);
-              }).catch(function (error) {
-                logger.error(`Error executing ${hook.full_name}: ${error}`);
-              });
-              return;
-            }
-          }
-        }
+      if ((hook.strict && config.get('device_name') == to_device) || (hook.all || (config.get('device_group') == to_device) || (config.get('device_name') == to_device) || _.contains(config.get('execute_devices'), to_device))) {
+        logger.log(`Executing ${hook.full_name}`);
+        hook.action(message, telegram_service, matches).then(function (response) {
+          logger.notify(`Executed ${hook.full_name}`);
+        }).catch(function (error) {
+          logger.error(`Error executing ${hook.full_name}: ${error}`);
+        });
       }
     }
   }
@@ -98,11 +103,9 @@ const telegram_service = {
       if (config.get("telegram:attach_device_name")) {
         content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
       }
-      return api.sendMessage({
+      return api.sendMessage(chat_id, content, {
         parse_mode: config.get("telegram:parse_mode"),
-        reply_to_message_id: message.id,
-        text: content,
-        chat_id: chat_id
+        reply_to_message_id: message.id
       });
     } else {
       let error = new Error("Telegram service not hooked. Send first message.");
@@ -115,10 +118,8 @@ const telegram_service = {
       if (config.get("telegram:attach_device_name")) {
         content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
       }
-      return api.sendMessage({
-        parse_mode: config.get("telegram:parse_mode"),
-        text: content,
-        chat_id: telegram_service.get_hook_id()
+      return api.sendMessage(telegram_service.get_hook_id(), content, {
+        parse_mode: config.get("telegram:parse_mode")
       });
 
     } else {
@@ -140,34 +141,44 @@ const telegram_service = {
     let promise = new Promise(function (resolve, reject) {
       var token = config.get("telegram:token");
 
-      api = new Telegram({
-        token: token,
-        updates: {
-          enabled: true,
-          get_interval: (config.get("telegram:interval") || 1000) * 1,
-          pooling_timeout: (config.get("telegram:interval") || 1000) * 6
+      api = new Telegram(token, {
+        polling: {
+          interval: (config.get("telegram:interval") || 1000) * 1,
+          timeout: (config.get("telegram:interval") || 1000) * 6
         }
       });
 
       api.getMe().then(function (data) {
         data = data || {};
+
+        logger.log(`Using bot @${data.username}, ${data.first_name}, ID: ${data.id}`);
+
         if (telegram_service.is_hooked()) {
           logger.log(`Hooked to chat id #${telegram_service.get_hook_id()}`);
         } else {
           logger.log(`Telegram not hooked. Waiting first message to hook to chat.`);
         }
-        initialized = true;
 
-        resolve({
-          api: telegram_service,
-          hooks: hooks
-        });
+        let promises = [];
+
+        for (let telegram_hook in telegram_hooks) {
+          let hook = telegram_hooks[telegram_hook];
+          promises.push(register_message_hook(hook));
+        }
+
+        Promise.all(promises).then(function () {
+          initialized = true;
+
+          resolve({
+            api: telegram_service,
+            hooks: hooks
+          });
+
+        }).catch(reject);
 
       }).catch(function (err) {
         reject(err);
       });
-
-      api.on('message', manage_message);
 
     });
     return promise;

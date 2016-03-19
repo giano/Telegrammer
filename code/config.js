@@ -39,6 +39,4 @@ for (var key in nconf.stores) {
   }
 }
 
-
-
 module.exports = nconf

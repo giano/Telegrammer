@@ -1,4 +1,5 @@
 "use strict";
+
 const config = require('./code/config');
 const Main = require('./code/main');
 const logger = require('./code/logger');
@@ -10,7 +11,7 @@ Main.main(config).then(function (result) {
   process.exit(0);
 }).catch(function (error) {
   if (error) {
-    logger.log(error.message || error);
+    logger.error(error);
   }
   process.exit(1);
 });
