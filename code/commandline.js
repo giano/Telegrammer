@@ -11,76 +11,74 @@ var api = null;
 
 const Promise = require('promise');
 
-let cm_hooks = {};
-let initialized = false;
+var initialized = false;
 
 const commandline_service = {
-  get_hooks: function () {
-    return cm_hooks;
-  },
-
   execute: function (command, params) {
-    params = params || {};
-    command = command.toLowerCase();
+    var promise = new Promise(function (resolve, reject) {
 
-    if (!api.is_hooked()) {
-      let error = new Error("Telegram service not hooked. Send first message.");
-      return Promise.reject(error);
-    }
+      const hooks = require('./hooks');
 
-    if (cm_hooks[command]) {
-      let command_hook = cm_hooks[command];
-      if (command_hook.exec) {
-        if (_.isFunction(command_hook.exec)) {
-          return command_hook.exec(params, api);
-        } else if (_.isString(command_hook.exec)) {
-          let out_str = command_hook.exec;
-          for (var key in params) {
-            if (params.hasOwnProperty(key)) {
-              let regsrc = new RegExp(`@${escape_string_regexp(hook_def.match)}@`, "img");
-              out_str = out_str.replace(key, params[key]);
-            }
-          }
-          return api.send(out_str);
-        } else {
-          let error = new Error("Command not implemented.");
-          return Promise.reject(error);
+      hooks.load().then(function () {
+        var cm_hooks = hooks.get_hooks("has_command_line_hook", "cmd_name");
+
+        params = params || {};
+        command = command.toLowerCase();
+
+        if (!api.is_hooked()) {
+          var error = new Error("Telegram service not hooked. Send first message.");
+          return reject(error);
         }
-      } else {
-        let error = new Error("Command not implemented.");
-        return Promise.reject(error);
-      }
-    } else {
-      let error = new Error("Command not found.");
-      return Promise.reject(error);
-    }
+
+        if (cm_hooks[command]) {
+          var command_hook = cm_hooks[command];
+          if (command_hook.exec) {
+            if (_.isFunction(command_hook.exec)) {
+              return command_hook.exec(params, api);
+            } else if (_.isString(command_hook.exec)) {
+              var out_str = command_hook.exec;
+
+              for (let key in params) {
+                if (params.hasOwnProperty(key)) {
+                  let regsrc = new RegExp(`@${escape_string_regexp(hook_def.match)}@`, "img");
+                  out_str = out_str.replace(key, params[key]);
+                }
+              }
+
+              return api.send(out_str);
+            } else {
+              let error = new Error("Command not implemented.");
+              return reject(error);
+            }
+          } else {
+            let error = new Error("Command not implemented.");
+            return reject(error);
+          }
+        } else {
+          let error = new Error("Command not found.");
+          return reject(error);
+        }
+      }).catch(reject);
+
+    });
+
+    return promise;
   },
 
-  init: function (params) {
-    api = params.api;
-    let hooks = params.hooks;
+  init: function (tapi) {
+    api = tapi;
 
     let promise = new Promise(function (resolve, reject) {
       if (config.get("commandline:active") == false) {
         initialized = true;
-        return resolve({
-          api: api,
-          hooks: hooks
-        });
+        return resolve(api);
       }
-
-      cm_hooks = _.indexBy(hooks.filter(function (el) {
-        return el.has_command_line_hook
-      }), "cmd_name");
 
       process.nextTick(function () {
         initialized = true;
+        resolve(api);
+      });
 
-        resolve({
-          api: api,
-          hooks: hooks
-        });
-      })
     });
 
     return promise;

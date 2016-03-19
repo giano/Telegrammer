@@ -11,6 +11,7 @@ Main.main(config).then(function (result) {
   process.exit(0);
 }).catch(function (error) {
   if (error) {
+    console.trace();
     logger.error(error);
   }
   process.exit(1);

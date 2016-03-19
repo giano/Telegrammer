@@ -11,39 +11,6 @@ _.mixin(s.exports());
 
 let hooks_cache = [];
 
-const hooks = {
-  get_hooks: function () {
-    return hooks_cache;
-  },
-  load: function () {
-    let promise = new Promise(function (resolve, reject) {
-      const path = require('path');
-      const dir = path.resolve(__dirname, '..');
-      const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
-      const glob = require("glob");
-      const options = {
-        cwd: hooks_dir,
-        root: hooks_dir
-      };
-      const hooks_pattern = `**/*.{js,json,coffee}`;
-      glob(hooks_pattern, options, function (error, matches) {
-        if (error) return reject(error);
-        matches = matches || [];
-        let matches_out = matches.map(function (hook_path) {
-          let hook_complete_path = path.resolve(hooks_dir, hook_path);
-          let hook_def = require(hook_complete_path);
-          return work_hook(hook_def, hook_path);
-        });
-        hooks_cache = matches_out = matches_out.filter(function (e) {
-          return e
-        });
-        resolve(matches_out);
-      });
-    });
-    return promise;
-  }
-};
-
 const work_hook = function (hook_def, hook_path) {
   if (hook_def) {
     if (_.isArray(hook_def)) {
@@ -80,13 +47,14 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
 
       if (_.isString(hook_def.action)) {
-        let action_command = hook_def._action = hook_def.action;
+        hook_def._action = hook_def.action;
 
         let action_fn = _.bind(function (message, service, matches) {
           let promise = new Promise(function (resolve, reject) {
             const exec = require('child_process').exec;
             matches = matches || [];
-            let result_command = action_command;
+            let result_command = hook_def._action;
+
             for (let i = 0; i < matches.length; i++) {
               let placeholder = new RegExp(`@${i}@`, 'mgi');
               result_command = result_command.replace(placeholder, matches[i]);
@@ -179,5 +147,66 @@ const work_hook = function (hook_def, hook_path) {
   }
   return false;
 };
+
+
+const hooks = {
+
+  get_hooks: function (filter_by, group_by) {
+    let out_val = hooks_cache;
+
+    if (filter_by) {
+      out_val = _.filter(out_val, function (hook) {
+        return !!(hook[filter_by]);
+      });
+    }
+
+    if (group_by) {
+      out_val = _.indexBy(_.sortBy(out_val, group_by), group_by);
+    }
+
+    return out_val;
+  },
+
+  reload:function(){
+    logger.log(`Reloading hooks`);
+    hooks_cache = [];
+    return hooks.load();
+  },
+
+  load: function () {
+    if (hooks_cache.length > 0) {
+      return Promise.resolve();
+    }
+
+    let promise = new Promise(function (resolve, reject) {
+      const path = require('path');
+      const dir = path.resolve(__dirname, '..');
+      const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
+      const glob = require("glob");
+      const options = {
+        cwd: hooks_dir,
+        root: hooks_dir
+      };
+      const hooks_pattern = `**/*.{js,json,coffee}`;
+      glob(hooks_pattern, options, function (error, matches) {
+        if (error) {
+          return reject(error);
+        }
+        matches = matches || [];
+        hooks_cache = matches.map(function (hook_path) {
+          let hook_complete_path = path.resolve(hooks_dir, hook_path);
+          let hook_def = require(hook_complete_path);
+          return work_hook(hook_def, hook_path);
+        });
+        hooks_cache = hooks_cache.filter(function (e) {
+          return e;
+        });
+        resolve();
+      });
+    });
+    return promise;
+  }
+};
+
 
 module.exports = hooks;

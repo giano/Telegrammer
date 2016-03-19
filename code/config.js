@@ -32,11 +32,11 @@ nconf.add("env_js", {
     file: path.resolve(dir, 'config/shared.json')
   });
 
-for (var key in nconf.stores) {
-  var store = nconf.stores[key];
+for (let key in nconf.stores) {
+  let store = nconf.stores[key];
   if (store.type == 'file') {
     store.loadSync();
   }
 }
 
-module.exports = nconf
+module.exports = nconf;

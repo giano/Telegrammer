@@ -8,4 +8,4 @@ module.exports = {
     return Promise.resolve(`*${config.get("telegram:device_name_char")}${config.get("device_name")}* of group *${config.get("telegram:device_name_char")}${config.get("device_group")}*`);
   },
   response: true
-}
+};

@@ -4,7 +4,7 @@ const dnode = require('dnode');
 const net = require('net');
 const config = require('./config');
 const monitor = require('./monitor');
-const main = require('./monitor');
+
 const _ = require('underscore');
 const s = require("underscore.string");
 
@@ -38,31 +38,37 @@ const actions = {
       cb(err, null);
     });
   },
-  reload_hooks: function (cb) {
-    main.start_server().then(function (res) {
+  reload_hooks: function (params, cb) {
+    const hooks = require('./hooks');
+    hooks.reload().then(function (res) {
       cb(null, res);
     }).catch(function (err) {
       cb(err, null);
     });
-  },
+  }
 };
 
 const rpc_service = {
   send: function (what, params) {
     let promise = new Promise(function (resolve, reject) {
       dnode.connect(port, function (remote, conn) {
-        remote[what](params, function (n) {
-          resolve(n);
+        let fn = remote[what];
+        if (_.isFunction(fn)) {
+          fn(params, function (n) {
+            resolve(n);
+            conn.end();
+          });
+        } else {
           conn.end();
-        });
+          reject(new Error(`${what} was not found`));
+        }
       });
     });
     return promise;
   },
 
-  init: function (params) {
-    let api = params.api;
-    let hooks = params.hooks;
+  init: function (tapi) {
+    let api = tapi;
 
     let promise = new Promise(function (resolve, reject) {
       initialized = true;
@@ -75,10 +81,7 @@ const rpc_service = {
         }
 
         process.nextTick(function () {
-          resolve({
-            api: api,
-            hooks: hooks
-          });
+          resolve(tapi);
         });
       });
 

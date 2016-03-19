@@ -12,43 +12,47 @@ var api = null;
 
 const Promise = require('promise');
 
-let initialized = false;
-let mo_hooks = {};
+var initialized = false;
 
 const monitor_service = {
-  get_hooks: function () {
-    return mo_hooks;
-  },
-
   start: function (hook_or_name) {
-    if (_.isString(hook_or_name)) {
-      hook_or_name = _.trim(hook_or_name).toLowerCase();
-      let hook = mo_hooks[hook_or_name];
-      if(hook){
-        return monitor_service.start(mo_hooks[hook_or_name]);
-      }else{
-        return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
-      }
-    } else {
-      let hook = hook_or_name;
-      logger.notify(`Starting monitor hook ${hook.full_name}...`);
-      if (_.isFunction(hook.start_monitor)) {
-        return hook.start_monitor(hook, api).then(function(arg){
-          logger.log(`Monitor hook ${hook.full_name} started.`);
-          return Promise.accept(arg);
-        });
-      } else if (_.isFunction(hook.check)) {
-        let check = _.bind(hook.check, hook);
-        if (mo_hooks[hook.full_name]) {
-          clearInterval(mo_hooks[hook.full_name]);
+    var promise = new Promise(function (resolve, reject) {
+      const hooks = require('./hooks');
+      hooks.load().then(function () {
+        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
+
+        if (_.isString(hook_or_name)) {
+          hook_or_name = _.trim(hook_or_name).toLowerCase();
+          var hook_ref = mo_hooks[hook_or_name];
+          if (hook) {
+            return monitor_service.start(hook_ref);
+          } else {
+            return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+          }
+        } else {
+          var hook = hook_or_name;
+          logger.notify(`Starting monitor hook ${hook.full_name}...`);
+          if (_.isFunction(hook.start_monitor)) {
+            return hook.start_monitor(hook, api).then(function (arg) {
+              logger.log(`Monitor hook ${hook.full_name} started.`);
+              return Promise.accept(arg);
+            });
+          } else if (_.isFunction(hook.check)) {
+            var check = _.bind(hook.check, hook);
+            if (mo_hooks[hook.full_name]) {
+              clearInterval(mo_hooks[hook.full_name]);
+            }
+            mo_hooks[hook.full_name] = setInterval(check, hook.interval || 5000);
+            logger.notify(`Monitor hook ${hook.full_name} started.`);
+            return Promise.accept(true);
+          } else {
+            return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
+          }
         }
-        mo_hooks[hook.full_name] = setInterval(check, hook.interval || 5000);
-        logger.notify(`Monitor hook ${hook.full_name} started.`);
-        return Promise.accept(true);
-      } else {
-        return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
-      }
-    }
+      }).catch(reject);
+    });
+
+    return promise;
   },
 
   restart: function (hook_or_name) {
@@ -58,77 +62,76 @@ const monitor_service = {
   },
 
   stop: function (hook_or_name) {
-    if (_.isString(hook_or_name)) {
-      hook_or_name = _.trim(hook_or_name).toLowerCase();
-      let hook = mo_hooks[hook_or_name];
-      if(hook){
-        return monitor_service.stop(mo_hooks[hook_or_name]);
-      }else{
-        return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
-      }
-    } else {
-      let hook = hook_or_name;
-      logger.notify(`Stopping monitor hook ${hook.full_name}`);
-      if (_.isFunction(hook.stop_monitor)) {
-        return hook.stop_monitor(hook, api).then(function(arg){
-          logger.log(`Monitor hook ${hook.full_name} stopped.`);
-          return Promise.accept(arg);
-        });
-      } else if (_.isFunction(hook.check)) {
-        if (mo_hooks[hook.full_name]) {
-          clearInterval(mo_hooks[hook.full_name]);
+    var promise = new Promise(function (resolve, reject) {
+      const hooks = require('./hooks');
+      hooks.load().then(function () {
+        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
+        if (_.isString(hook_or_name)) {
+          hook_or_name = _.trim(hook_or_name).toLowerCase();
+          var hook_ref = mo_hooks[hook_or_name];
+          if (hook) {
+            return monitor_service.stop(hook_ref);
+          } else {
+            return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+          }
+        } else {
+          var hook = hook_or_name;
+          logger.notify(`Stopping monitor hook ${hook.full_name}`);
+          if (_.isFunction(hook.stop_monitor)) {
+            return hook.stop_monitor(hook, api).then(function (arg) {
+              logger.log(`Monitor hook ${hook.full_name} stopped.`);
+              return Promise.accept(arg);
+            });
+          } else if (_.isFunction(hook.check)) {
+            if (mo_hooks[hook.full_name]) {
+              clearInterval(mo_hooks[hook.full_name]);
+            }
+            logger.log(`Monitor hook ${hook.full_name} stopped.`);
+            return Promise.accept(true);
+          } else {
+            return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
+          }
         }
-        logger.log(`Monitor hook ${hook.full_name} stopped.`);
-        return Promise.accept(true);
-      } else {
-        return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
-      }
-    }
+      }).catch(reject);
+    });
+
+    return promise;
   },
 
-  init: function (params) {
-    api = params.api;
-    let hooks = params.hooks;
+  init: function (tapi) {
+    api = tapi;
 
-    let promise = new Promise(function (resolve, reject) {
+    var promise = new Promise(function (resolve, reject) {
+      const hooks = require('./hooks');
+      hooks.load().then(function () {
 
-      if (config.get("monitor:active") == false) {
-        return resolve({
-          api: api,
-          hooks: hooks
-        });
-      }
-
-      mo_hooks = _.indexBy(hooks.filter(function (el) {
-        return el.has_monitor_hook
-      }), "full_name");
-
-      let promises = [];
-
-      for (let monitor_name in mo_hooks) {
-        let hook = mo_hooks[monitor_name];
-        if(hook.autostart){
-          promises.push(monitor_service.start(hook));
+        if (config.get("monitor:active") == false) {
+          return resolve(api);
         }
-      }
 
-      if(promises.length){
-        Promise.all(promises).then(function(){
-          initialized = true;
-          resolve({
-            api: api,
-            hooks: hooks
+        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
+
+        var promises = [];
+
+        for (let monitor_name in mo_hooks) {
+          let hook = mo_hooks[monitor_name];
+          if (hook.autostart) {
+            promises.push(monitor_service.start(hook));
+          }
+        }
+
+        if (promises.length) {
+          Promise.all(promises).then(function () {
+            initialized = true;
+            resolve(api);
+          }).catch(reject);
+        } else {
+          process.nextTick(function () {
+            initialized = true;
+            resolve(api);
           });
-        }).catch(reject);
-      }else{
-        process.nextTick(function () {
-          initialized = true;
-          resolve({
-            api: api,
-            hooks: hooks
-          });
-        });
-      }
+        }
+      }).catch(reject);
     });
 
     return promise;

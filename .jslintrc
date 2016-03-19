@@ -1,0 +1,7 @@
+{
+  "es6": true,
+  "node": true,
+  "this": true,
+  "for": true,
+  "white": true
+}
