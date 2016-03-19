@@ -245,6 +245,7 @@ const main = {
         cm_hooks = hooks.filter(function (el) {
           return el.has_command_line_hook
         });
+
         const npid = require('npid');
         const pid = npid.create('./.pid', true);
         pid.removeOnExit();
@@ -257,13 +258,16 @@ const main = {
           resolve(`${package_desc.name} v${package_desc.version} stopped.`);
         });
         logger.log(`${package_desc.name} v${package_desc.version} starting...`);
-        telegram.init(hooks, tcid).then(monitor.init).then(express.init).then(rpc.init).then(function () {
+
+        return telegram.init(hooks, tcid).then(monitor.init).then(express.init).then(rpc.init).then(function () {
           logger.log(`${package_desc.name} v${package_desc.version} started.`);
         }).catch(function (error) {
           reject(error);
         });
+
       }).catch(reject);
     });
+
     return promise;
   },
 
@@ -286,13 +290,13 @@ const main = {
             rpc.send("start_monitor", command.options.hook).then(resolve).catch(reject);
             break
           case 'monitor:stop':
-            rpc.send("stop_monitor", command.options.hook).then(resolve).catch(reject)
+            rpc.send("stop_monitor", command.options.hook).then(resolve).catch(reject);
             break
           case 'reload':
-            rpc.send("reload").then(resolve).catch(reject)
+            rpc.send("reload").then(resolve).catch(reject);
             break
           case 'monitor:restart':
-            rpc.send("restart_monitor", command.options.hook).then(resolve).catch(reject)
+            rpc.send("restart_monitor", command.options.hook).then(resolve).catch(reject);
             break
           case 'stop':
             let fs = require('fs');
@@ -333,7 +337,7 @@ const main = {
             });
             break;
           case 'start':
-            return main.start_server();
+            return main.start_server().then(resolve).catch(reject);
             break
           default:
             if (config.get("commandline:active") !== false) {
