@@ -49,3 +49,16 @@
     font-weight: 500;
     color: #767676;
 }
+.hook-panel{
+  position: relative;
+}
+.hook-panel .hook-conf{
+  position: absolute;
+  top:0;
+  right:0;
+  padding:5px;
+  background:#eee;
+  border-radius: 3px;
+  border-left: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+}

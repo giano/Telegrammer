@@ -20,38 +20,39 @@ html(lang="en")
           each namespace_hooks, namespace in hooks
             div.row
               div.col-md-12
-                h2.text-capitalize=namespace
+                h2.text-capitalize=_.humanize(namespace)
                 - var accordion_id = _.underscored(namespace).toLowerCase()+"_accordion";
                 div(role="tablist", id=accordion_id).panel-group
                   each hook, index in namespace_hooks
                     - var hook_panel_id = _.underscored(_.slugify(hook.full_name)) + "_panel";
                     - var hook_label_id = _.underscored(_.slugify(hook.full_name)) + "_label";
-                    div.panel.panel-default
-                      div(role="tab", id=hook_label_id).panel-heading
+                    div(data-telegram-hook=hook.has_telegram_hook, data-monitor-hook=hook.has_monitor_hook, data-web-hook=hook.has_web_hook, data-commandline-hook=hook.has_command_line_hook).panel.panel-default.hook-panel
+                      div(id=hook_label_id).panel-heading.hook-panel
                         div.row
                           div.col-md-12
                             h4
-                              span.text-capitalize= hook.name + " "
+                              span.text-capitalize= _.humanize(hook.name) + " "
                               small.text-muted= "(" + hook.full_name + ")"
-                              div.pull-right.text-right
-                                span.label.label-default
-                                  if hook.all
-                                    i(title="React to all messages").fa.fa-reply-all.fa-fw
-                                  else if hook.strict
-                                    i(title="React only to direct messages").fa.fa-lock.fa-fw
-                                  else
-                                    i(title="React to device/group/all messages").fa.fa-reply.fa-fw
-                                    
-                                  if hook.has_telegram_hook
-                                    i(title="Telegram Hook Active").fa.fa-comment.fa-fw
-                                  if hook.has_web_hook
-                                    i(title="Web Hook Active").fa.fa-globe.fa-fw
-                                  if hook.has_command_line_hook
-                                    i(title="Terminal Hook Active").fa.fa-terminal.fa-fw
-                              
                             if hook.description
                               p.text-muted
                                 small= hook.description
+                                
+                        div.hook-conf
+                          span
+                            if hook.all
+                              i(title="React to all messages").fa.fa-reply-all.fa-fw
+                            else if hook.strict
+                              i(title="React only to direct messages").fa.fa-lock.fa-fw
+                            else
+                              i(title="React to device/group/all messages").fa.fa-reply.fa-fw
+                              
+                            if hook.has_telegram_hook
+                              i(title="Telegram Hook Active").fa.fa-comment.fa-fw
+                            if hook.has_web_hook
+                              i(title="Web Hook Active").fa.fa-globe.fa-fw
+                            if hook.has_command_line_hook
+                              i(title="Terminal Hook Active").fa.fa-terminal.fa-fw
+                      
                                     
                       div.panel-body
                         if hook.help
