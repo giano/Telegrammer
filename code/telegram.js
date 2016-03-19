@@ -13,6 +13,7 @@ const device_regex = new RegExp(`${escape_string_regexp(config.get("telegram:dev
 
 let api = null;
 let telegram_hooks = [];
+let initialized = false;
 
 const manage_message = function (message) {
   if (message.from && (config.get('allowed_usernames') && _.contains(config.get('allowed_usernames'), message.from.username.toLowerCase()))) {
@@ -155,6 +156,8 @@ const telegram_service = {
         } else {
           logger.log(`Telegram not hooked. Waiting first message to hook to chat.`);
         }
+        initialized = true;
+
         resolve({
           api: telegram_service,
           hooks: hooks

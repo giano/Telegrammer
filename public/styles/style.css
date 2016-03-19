@@ -12,9 +12,9 @@
 .nav-sidebar .nav>.active:focus>a, .nav-sidebar .nav>.active:hover>a, .nav-sidebar .nav>.active>a {
     padding-left: 18px;
     font-weight: 700;
-    color: #563d7c;
+    color: #000;
     background-color: transparent;
-    border-left: 2px solid #563d7c;
+    border-left: 2px solid cyan;
 }
 .nav-sidebar{
   position: fixed;

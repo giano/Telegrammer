@@ -9,11 +9,14 @@ _.mixin(s.exports());
 
 const Promise = require('promise');
 const express = require("express");
+const monitor = require("./monitor");
 const bodyParser = require('body-parser');
 
 let api = null;
 let app = null;
 let express_hooks = {};
+let initialized = false;
+
 
 const authorized = function (req, res) {
   if (config.get("express:auth") && config.get("express:auth_token_name")) {
@@ -46,12 +49,17 @@ const express_service = {
 
   init: function (params) {
     let promise = new Promise(function (resolve, reject) {
-      if (config.get("express:active") == false) {
-        return resolve(false);
-      }
-
       api = params.api;
       let hooks = params.hooks;
+
+      if (config.get("express:active") == false) {
+        initialized = true;
+
+        return resolve({
+          api: api,
+          hooks: hooks
+        });
+      }
 
       const path = require('path');
       const dir = path.resolve(__dirname, '..');
@@ -92,12 +100,31 @@ const express_service = {
           app.post('/tid', function (req, res) {
             if (authorized(req, res)) {
               api.set_hook_id(req.body("id"));
+              res.json((api.get_hook_id() || false) == req.body("id"));
             }
           });
 
           app.get('/hooked', function (req, res) {
             if (authorized(req, res)) {
               res.json(api.is_hooked());
+            }
+          });
+
+          app.all('/start/:hook', function (req, res) {
+            if (authorized(req, res)) {
+              monitor.start(req.param("hook")).then(res.send).catch(res.send);
+            }
+          });
+
+          app.all('/stop/:hook', function (req, res) {
+            if (authorized(req, res)) {
+              monitor.stop(req.param("hook")).then(res.send).catch(res.send);
+            }
+          });
+
+          app.all('/restart/:hook', function (req, res) {
+            if (authorized(req, res)) {
+              monitor.restart(req.param("hook")).then(res.send).catch(res.send);
             }
           });
 
@@ -141,7 +168,12 @@ const express_service = {
             }
           }
 
-          resolve(true);
+          initialized = true;
+
+          resolve({
+            api: api,
+            hooks: hooks
+          });
         }
       });
     });

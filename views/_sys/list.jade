@@ -30,29 +30,30 @@ html(lang="en")
                       div(role="tab", id=hook_label_id).panel-heading
                         div.row
                           div.col-md-12
-                            h5
-                              a(role="button", data-toggle="collapse", data-parent="#" +accordion_id, href="#"+hook_panel_id,  aria-expanded="true", aria-controls=hook_panel_id)
-                                span.text-capitalize= hook.name + " "
-                                small.text-muted= "(" + hook.full_name + ")"
-                              div.pull-right
-                                if hook.all
-                                  i(title="React to all messages").text-muted.fa.fa-reply-all.fa-fw
-                                else if hook.strict
-                                  i(title="React only to direct messages").text-muted.fa.fa-lock.fa-fw
-                                else
-                                  i(title="React to device/group/all messages").text-muted.fa.fa-reply.fa-fw
-                                if hook.has_telegram_hook
-                                  i(title="Telegram Hook Active").fa.fa-comment.text-primary.fa-fw
-                                if hook.has_web_hook
-                                  i(title="Web Hook Active").fa.fa-globe.text-success.fa-fw
-                                if hook.has_command_line_hook
-                                  i(title="Terminal Hook Active").fa.fa-terminal.text-warning.fa-fw
+                            h4
+                              span.text-capitalize= hook.name + " "
+                              small.text-muted= "(" + hook.full_name + ")"
+                              div.pull-right.text-right
+                                span.label.label-default
+                                  if hook.all
+                                    i(title="React to all messages").fa.fa-reply-all.fa-fw
+                                  else if hook.strict
+                                    i(title="React only to direct messages").fa.fa-lock.fa-fw
+                                  else
+                                    i(title="React to device/group/all messages").fa.fa-reply.fa-fw
+                                    
+                                  if hook.has_telegram_hook
+                                    i(title="Telegram Hook Active").fa.fa-comment.fa-fw
+                                  if hook.has_web_hook
+                                    i(title="Web Hook Active").fa.fa-globe.fa-fw
+                                  if hook.has_command_line_hook
+                                    i(title="Terminal Hook Active").fa.fa-terminal.fa-fw
                               
                             if hook.description
                               p.text-muted
                                 small= hook.description
                                     
-                      div(id=hook_panel_id, role="tabpanel", aria-labelledby=hook_label_id).panel-body
+                      div.panel-body
                         if hook.help
                           p.text-muted= hook.help
                           
@@ -61,11 +62,10 @@ html(lang="en")
                             strong Path
                             span :&nbsp;
                             span #{hook.path}
-                        
-                        hr
-                          
+                      
+                      ul.list-group
                         if hook.has_telegram_hook
-                          div
+                          li.list-group-item
                             h5
                               span.text-primary Telegram Hook 
                               span.label.label-primary
@@ -141,7 +141,7 @@ html(lang="en")
                               hr
                                 
                         if hook.has_command_line_hook
-                          div
+                          li.list-group-item
                             h5
                               span.text-warning Command Line Hook 
                               span.label.label-warning
@@ -196,7 +196,7 @@ html(lang="en")
                               hr
                                 
                         if hook.has_web_hook
-                          div
+                          li.list-group-item
                             h5
                               span.text-warning Web Hook 
                               span.label.label-warning

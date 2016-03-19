@@ -12,6 +12,7 @@ var api = null;
 const Promise = require('promise');
 
 let cm_hooks = {};
+let initialized = false;
 
 const commandline_service = {
   get_hooks: function () {
@@ -58,7 +59,12 @@ const commandline_service = {
   init: function (params) {
     let promise = new Promise(function (resolve, reject) {
       if (config.get("commandline:active") == false) {
-        return resolve(false);
+        initialized = true;
+
+        return resolve({
+          api: api,
+          hooks: hooks
+        });
       }
       api = params.api;
       let hooks = params.hooks;
@@ -68,7 +74,12 @@ const commandline_service = {
       }), "cmd_name");
 
       process.nextTick(function () {
-        resolve(true);
+        initialized = true;
+
+        resolve({
+          api: api,
+          hooks: hooks
+        });
       })
     });
 
