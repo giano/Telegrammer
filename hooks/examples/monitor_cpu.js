@@ -4,8 +4,8 @@ const Promise = require('promise');
 const os = require("os");
 
 module.exports = {
-  command: "systat",
-  action: function (message, service, matches) {
+  interval: 30000,
+  check: function (hook, api) {
     let promise = new Promise(function (resolve, reject) {
       let cpus = os.cpus();
       let out = "";
@@ -23,5 +23,5 @@ module.exports = {
     });
     return promise;
   },
-  description: "Example of command line hook linked to non regex command \"\/systat\"."
+  description: "Example of monitoring hook."
 };

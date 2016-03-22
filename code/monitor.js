@@ -26,28 +26,37 @@ const monitor_service = {
 
         if (_.isString(hook_or_name)) {
           hook_or_name = _.trim(hook_or_name).toLowerCase();
-          var hook_ref = mo_hooks[hook_or_name];
+          let hook_ref = mo_hooks[hook_or_name];
           if (hook) {
             return monitor_service.start(hook_ref);
           } else {
             return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
           }
         } else {
-          var hook = hook_or_name;
+          let hook = hook_or_name;
           logger.notify(`Starting monitor hook ${hook.full_name}...`);
           if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook ${hook.full_name} started.`);
-              return Promise.accept(arg);
+              return Promise.resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
-            var check = _.bind(hook.check, hook);
-            if (mo_hooks[hook.full_name]) {
-              clearInterval(mo_hooks[hook.full_name]);
+            let _check = _.bind(hook.check, hook);
+            let check = function () {
+              _check(hook, api).then(function (content) {
+                if (content) {
+                  api.send(content);
+                }
+              }).catch(function (error) {
+                api.send(error.message || error);
+              });
+            };
+            if (mo_hooks[hook.full_name]._interval) {
+              clearInterval(mo_hooks[hook.full_name]._interval);
             }
-            mo_hooks[hook.full_name] = setInterval(check, hook.interval || 5000);
+            mo_hooks[hook.full_name]._interval = setInterval(check, hook.interval || 5000);
             logger.notify(`Monitor hook ${hook.full_name} started.`);
-            return Promise.accept(true);
+            return Promise.resolve(true);
           } else {
             return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
           }
@@ -83,14 +92,14 @@ const monitor_service = {
           if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook ${hook.full_name} stopped.`);
-              return Promise.accept(arg);
+              return Promise.resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
-            if (mo_hooks[hook.full_name]) {
-              clearInterval(mo_hooks[hook.full_name]);
+            if (mo_hooks[hook.full_name]._interval) {
+              clearInterval(mo_hooks[hook.full_name]._interval);
             }
             logger.log(`Monitor hook ${hook.full_name} stopped.`);
-            return Promise.accept(true);
+            return Promise.resolve(true);
           } else {
             return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
           }
@@ -118,7 +127,7 @@ const monitor_service = {
 
         for (let monitor_name in mo_hooks) {
           let hook = mo_hooks[monitor_name];
-          if (hook.autostart) {
+          if (hook.autostart !== false) {
             promises.push(monitor_service.start(hook));
           }
         }
