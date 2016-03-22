@@ -87,7 +87,10 @@ html(lang="en")
                                 li
                                   strong Action
                                   span :&nbsp;
-                                  code #{hook._action}
+                                  if hook._action.split("\n").length > 0
+                                    pre #{hook._action}
+                                  else
+                                    code #{hook._action}
                               else
                                 li
                                   strong Action

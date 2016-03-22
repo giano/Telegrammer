@@ -1,9 +1,13 @@
 "use strict";
 
-const dnode = require('dnode');
-const net = require('net');
+
+const hooks = require('./hooks');
 const config = require('./config');
 const monitor = require('./monitor');
+
+const dnode = require('dnode');
+const net = require('net');
+
 
 const _ = require('underscore');
 const s = require("underscore.string");
@@ -39,7 +43,7 @@ const actions = {
     });
   },
   reload_hooks: function (params, cb) {
-    const hooks = require('./hooks');
+
     hooks.reload().then(function (res) {
       cb(null, res);
     }).catch(function (err) {

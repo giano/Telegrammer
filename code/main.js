@@ -1,13 +1,15 @@
 "use strict";
 
-const Promise = require('promise');
-const commandLineCommands = require('command-line-commands');
-const getUsage = require("command-line-usage");
+const hooks = require('./hooks');
 const telegram = require('./telegram');
 const express = require('./express');
 const monitor = require('./monitor');
 const logger = require('./logger');
 const rpc = require('./rpc');
+const path = require('path');
+const Promise = require('promise');
+const commandLineCommands = require('command-line-commands');
+const getUsage = require("command-line-usage");
 const ansi = require('ansi-escape-sequences');
 const package_desc = require('../package.json');
 
@@ -16,6 +18,7 @@ const s = require("underscore.string");
 _.mixin(s.exports());
 
 let tcid = null;
+let pid_path = path.resolve(__dirname, '..', '.pid');
 
 const cli_common_conf = [{
   name: 'verbose',
@@ -45,7 +48,7 @@ const main_service = {
 
   help: function (config, hook_name) {
     let promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
 
@@ -178,8 +181,6 @@ const main_service = {
 
     let promise = new Promise(function (resolve, reject) {
 
-      const hooks = require('./hooks');
-
       hooks.load().then(function () {
         const commandline = require('./commandline');
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
@@ -256,12 +257,12 @@ const main_service = {
 
   start_server: function () {
     let promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
 
         const npid = require('npid');
-        const pid = npid.create('./.pid', true);
+        const pid = npid.create(pid_path, true);
         pid.removeOnExit();
         process.on('uncaughtException', function (err) {
           pid.remove();
@@ -290,7 +291,7 @@ const main_service = {
       let terminate = Promise.denodeify(require('terminate'));
       const read = Promise.denodeify(fs.readFile);
       let mainpid = "";
-      return read('./.pid', 'utf8').then(function (running_pid) {
+      return read(pid_path, 'utf8').then(function (running_pid) {
         mainpid = running_pid;
         return Promise.resolve(mainpid);
       }).then(terminate).then(function (done) {
@@ -330,6 +331,9 @@ const main_service = {
   main: function (config, cmd_arguments) {
     let promise = new Promise(function (resolve, reject) {
       return main_service.parse_commands(config, cmd_arguments).then(function (command) {
+        if (command.options.verbose) {
+          config.set("verbose", true);
+        }
         switch (command.name) {
         case 'help':
           main_service.help(config, command.options.hook).then(resolve).catch(reject);

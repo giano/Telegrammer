@@ -1,6 +1,9 @@
 "use strict";
 
+
+const hooks = require('./hooks');
 const config = require('./config');
+
 const _ = require('underscore');
 const s = require("underscore.string");
 const escape_string_regexp = require('escape-string-regexp');
@@ -17,7 +20,7 @@ var initialized = false;
 const monitor_service = {
   start: function (hook_or_name) {
     var promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
         var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
 
@@ -63,7 +66,7 @@ const monitor_service = {
 
   stop: function (hook_or_name) {
     var promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
         var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
         if (_.isString(hook_or_name)) {
@@ -102,7 +105,7 @@ const monitor_service = {
     api = tapi;
 
     var promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
 
         if (config.get("monitor:active") == false) {

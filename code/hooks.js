@@ -1,5 +1,6 @@
 "use strict";
 
+
 const config = require('./config');
 const logger = require('./logger');
 
@@ -33,16 +34,19 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.has_web_hook = _.isFunction(hook_def.route);
       hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
 
-      if (hook_def.match && _.isString(hook_def.match)) {
-        hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "im");
-      }
-
       if (hook_def.command) {
         if (hook_def.command.indexOf('/') == -1) {
           hook_def.command = `/${hook_def.command}`;
         }
         hook_def.command = hook_def.command.toLowerCase();
+        hook_def.match = new RegExp(`${escape_string_regexp(hook_def.command)}\s*(.*)`, 'i');
       }
+
+      if (hook_def.match && _.isString(hook_def.match)) {
+        hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "im");
+      }
+
+
 
       hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
 
@@ -167,7 +171,7 @@ const hooks = {
     return out_val;
   },
 
-  reload:function(){
+  reload: function () {
     logger.log(`Reloading hooks`);
     hooks_cache = [];
     return hooks.load();

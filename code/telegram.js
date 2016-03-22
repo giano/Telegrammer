@@ -1,7 +1,9 @@
 "use strict";
 
+const hooks = require('./hooks');
 const config = require('./config');
 const logger = require('./logger');
+
 const escape_string_regexp = require('escape-string-regexp');
 const _ = require('underscore');
 const s = require("underscore.string");
@@ -19,9 +21,7 @@ const register_message_hook = function (hook) {
 
     let match = null;
 
-    if (hook.command) {
-      match = new RegExp(`${escape_string_regexp(hook.command)}\s*(.*)`, 'i');
-    } else if (hook.match) {
+    if (hook.match) {
       match = hook.match;
     } else {
       return reject(new Error("No matching string"));
@@ -125,7 +125,7 @@ const telegram_service = {
 
   init: function (tcid) {
     let promise = new Promise(function (resolve, reject) {
-      const hooks = require('./hooks');
+
       hooks.load().then(function () {
         let token = config.get("telegram:token");
 

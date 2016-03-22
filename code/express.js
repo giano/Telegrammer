@@ -1,5 +1,7 @@
 "use strict";
 
+const hooks = require('./hooks');
+const monitor = require("./monitor");
 const config = require('./config');
 const logger = require('./logger');
 
@@ -9,7 +11,7 @@ _.mixin(s.exports());
 
 const Promise = require('promise');
 const express = require("express");
-const monitor = require("./monitor");
+
 const bodyParser = require('body-parser');
 
 let api = null;
@@ -45,7 +47,6 @@ const express_service = {
   init: function (tapi) {
     let promise = new Promise(function (resolve, reject) {
       api = tapi;
-      const hooks = require('./hooks');
 
       hooks.load().then(function () {
         if (config.get("express:active") == false) {

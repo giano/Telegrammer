@@ -1,5 +1,7 @@
 "use strict";
 
+
+const hooks = require('./hooks');
 const config = require('./config');
 const _ = require('underscore');
 const s = require("underscore.string");
@@ -16,8 +18,6 @@ var initialized = false;
 const commandline_service = {
   execute: function (command, params) {
     var promise = new Promise(function (resolve, reject) {
-
-      const hooks = require('./hooks');
 
       hooks.load().then(function () {
         var cm_hooks = hooks.get_hooks("has_command_line_hook", "cmd_name");
