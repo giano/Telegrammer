@@ -3,8 +3,6 @@
 const config = require('../../code/config');
 const Promise = require('promise');
 const path = require('path');
-let shutdown_path = path.resolve(__dirname, 'shutdown.sh');
-let reboot_path = path.resolve(__dirname, 'reboot.sh');
 
 module.exports = [{
   all: true,
@@ -17,11 +15,11 @@ module.exports = [{
 }, {
   name: "reboot",
   command: "reboot",
-  action: reboot_path,
-  response: true
+  shell: "reboot.sh",
+  response: "Ok, rebooting..."
 }, {
   name: "shutdown",
   command: "shutdown",
-  action: shutdown_path,
-  response: true
+  shell: "shutdown.sh",
+  response: "Ok, shutting down..."
 }];

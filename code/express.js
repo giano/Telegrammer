@@ -35,10 +35,11 @@ const authorized = function (req, res) {
 const express_service = {
   list_methods: function (req, res) {
     if (authorized(req, res)) {
+      let out_hooks = _.groupBy(_.sortBy(_.sortBy(hooks.get_hooks(), "name"), "namespace"), "namespace");
       res.render('_sys/list', {
         _: _,
         header: require("../assets/ansi-header-html.js"),
-        hooks: _.groupBy(_.sortBy(_.sortBy(require("./hooks").get_hooks(), "name"), "namespace"), "namespace"),
+        hooks: out_hooks,
         package_def: require("../package.json")
       });
     }

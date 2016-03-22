@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if[ $USER == "root" ];then
+if [ "$USER" == "root" ]; then
   reboot;
 else
   sudo reboot;

@@ -10,18 +10,22 @@ const _ = require('underscore');
 const s = require("underscore.string");
 _.mixin(s.exports());
 
+const path = require('path');
+const dir = path.resolve(__dirname, '..');
+const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
+
 let hooks_cache = [];
 
 const work_hook = function (hook_def, hook_path) {
   if (hook_def) {
     if (_.isArray(hook_def)) {
       let out_array = _.map(hook_def, function (inner_hook_def) {
-        work_hook(inner_hook_def, hook_path);
+        return work_hook(inner_hook_def, hook_path);
       });
       return out_array;
     }
-    if (((hook_def.match || hook_def.command) && hook_def.action) || (hook_def.route) || (hook_def.exec)) {
-      const path = require('path');
+
+    if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell)) || (hook_def.route) || (hook_def.exec)) {
       hook_def.path = hook_path;
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
@@ -30,7 +34,7 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.cmd_name = hook_def.exec ? (hook_def.cmd_name || _.replaceAll(_.replaceAll(hook_def.full_name.toLowerCase(), "_", ":"), "/", ":")) : null;
 
       hook_def.has_monitor_hook = _.isFunction(hook_def.monitor);
-      hook_def.has_telegram_hook = _.isFunction(hook_def.action) || _.isString(hook_def.action);
+      hook_def.has_telegram_hook = _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action);
       hook_def.has_web_hook = _.isFunction(hook_def.route);
       hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
 
@@ -46,9 +50,12 @@ const work_hook = function (hook_def, hook_path) {
         hook_def.match = new RegExp(escape_string_regexp(hook_def.match), "im");
       }
 
-
-
       hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
+
+      if (_.isString(hook_def.shell)){
+        let path_to_script = path.resolve(hooks_dir, path.dirname(hook_path), ".", hook_def.shell);
+        hook_def.action = `"${path_to_script}"`;
+      }
 
       if (_.isString(hook_def.action)) {
         hook_def._action = hook_def.action;
@@ -63,8 +70,12 @@ const work_hook = function (hook_def, hook_path) {
               let placeholder = new RegExp(`@${i}@`, 'mgi');
               result_command = result_command.replace(placeholder, matches[i]);
             }
+            let options = {};
+            if(config.get('shell')){
+              options.shell = config.get('shell');
+            }
 
-            let child = exec(result_command, function (error, stdout, stderr) {
+            let child = exec(result_command, options, function (error, stdout, stderr) {
               let error_msg = hook_def.error || "Error: @error@";
               let has_error = false;
 
@@ -183,9 +194,7 @@ const hooks = {
     }
 
     let promise = new Promise(function (resolve, reject) {
-      const path = require('path');
-      const dir = path.resolve(__dirname, '..');
-      const hooks_dir = path.resolve(dir, config.get('hooks:folder'));
+
       const glob = require("glob");
       const options = {
         cwd: hooks_dir,
@@ -197,14 +206,12 @@ const hooks = {
           return reject(error);
         }
         matches = matches || [];
-        hooks_cache = matches.map(function (hook_path) {
+        hooks_cache = _.compact(_.flatten(_.map(matches, function (hook_path) {
           let hook_complete_path = path.resolve(hooks_dir, hook_path);
           let hook_def = require(hook_complete_path);
+
           return work_hook(hook_def, hook_path);
-        });
-        hooks_cache = hooks_cache.filter(function (e) {
-          return e;
-        });
+        })));
         resolve();
       });
     });

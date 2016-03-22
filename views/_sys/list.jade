@@ -83,19 +83,25 @@ html(lang="en")
                                   span :&nbsp;
                                   span.text-warning #{hook.match}
                                   
-                              if hook.action_type == "string"
+                              if typeof(hook.shell) == "string"
                                 li
-                                  strong Action
+                                  strong Shell Script
                                   span :&nbsp;
-                                  if hook._action.split("\n").length > 0
-                                    pre #{hook._action}
-                                  else
-                                    code #{hook._action}
+                                  code #{hook.shell}
                               else
-                                li
-                                  strong Action
-                                  span :&nbsp;
-                                  code [Node Function]
+                                if hook.action_type == "string"
+                                  li
+                                    strong Action
+                                    span :&nbsp;
+                                    if hook._action.split("\n").length > 0
+                                      pre #{hook._action}
+                                    else
+                                      code #{hook._action}
+                                else
+                                  li
+                                    strong Action
+                                    span :&nbsp;
+                                    code [Node Function]
                               
                               if (hook.response !== false)
                                 if(typeof(hook.response) == "string")
