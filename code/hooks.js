@@ -78,6 +78,20 @@ const hooks = {
     return out_val;
   },
 
+  get_commands: function(){
+    let cmd_hooks = hooks.get_hooks("has_local_hook");
+    let out = [];
+    _.each(cmd_hooks, function(el){
+      if (el.command){
+        out.push({
+          command: el.command,
+          description: el.description
+        });
+      }
+    });
+    return out;
+  },
+
   reload: function () {
     logger.log(`Reloading hooks`);
     hooks_cache = [];
