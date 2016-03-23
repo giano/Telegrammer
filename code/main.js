@@ -237,7 +237,7 @@ const main_service = {
             command_line_res = cli.parse();
           }
         } catch (e) {
-          console.log(e);
+          logger.error(e);
         }
 
         const command = _.extend({}, command_line_res);

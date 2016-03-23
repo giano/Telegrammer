@@ -15,12 +15,14 @@ module.exports = [{
   response: true
 }, {
   name: "reboot",
+  confirmation: true,
   description: "Reboot the device/server",
   command: "reboot",
   shell: "reboot.sh",
   response: "Ok, rebooting..."
 }, {
   name: "shutdown",
+  confirmation: true,
   description: "Shutdown the device/server",
   command: "shutdown",
   shell: "shutdown.sh",

@@ -13,7 +13,7 @@ let hooks_dir = hooks.get_hooks_dir();
 let initialized = false;
 
 let manage_response = function (message, hook_def, error, output) {
-  let error_msg = hook_def.error || "Error: @error@";
+  let error_msg = hook_def.error || "@error@";
   let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
 
   var promise = new Promise(function (resolve, reject) {
@@ -113,17 +113,47 @@ const local_service = {
 
         hook_def.action = action_fn;
       }
+      if (!_.isFunction(hook_def.action) && _.isFunction(hook_def.parse_response)) {
+        hook_def.action = function(){
+          return Promise.resolve();
+        };
+      }
 
       if (_.isFunction(hook_def.action)) {
         let _action = _.bind(hook_def.action, hook_def);
 
         hook_def.action = _.bind(function (message, service, matches) {
           let promise = new Promise(function (resolve, reject) {
-            return _action(message, service, matches).then(function (output) {
-               manage_response(message, hook_def, null, output).then(resolve).catch(reject);
-            }).catch(function (error) {
-              manage_response(message, hook_def, error).then(resolve).catch(reject);
-            });
+            if (hook_def.confirmation || hook_def.buttons) {
+
+              let confirm_message = _.isString(hook_def.confirmation) ? hook_def.confirmation : "Are you sure?";
+
+              let buttons = hook_def.buttons || (_.isBoolean(hook_def.confirmation) ? [
+                ["Yes", "No"]
+              ] : true);
+
+              let parse_response = _.isFunction(hook_def.parse_response) ? function (response_message) {
+                hook_def.parse_response(message, response_message, api).then(resolve).catch(reject);
+              } : function (response_message) {
+                let response_text = response_message.text.toString().toLowerCase();
+                if (response_text == "yes") {
+                  return _action(message, service, matches).then(function (output) {
+                    manage_response(message, hook_def, null, output).then(resolve).catch(reject);
+                  }).catch(function (error) {
+                    manage_response(message, hook_def, error).then(resolve).catch(reject);
+                  });
+                } else {
+                  manage_response(message, hook_def, hook_def.abort || "Ok, nevermind...").then(resolve).catch(reject);
+                }
+              };
+              return api.send(confirm_message, buttons, (hook_def.accepted_responses || true), hook_def.one_time_keyboard).then(parse_response).catch(reject);
+            } else {
+              return _action(message, service, matches).then(function (output) {
+                manage_response(message, hook_def, null, output).then(resolve).catch(reject);
+              }).catch(function (error) {
+                manage_response(message, hook_def, error).then(resolve).catch(reject);
+              });
+            }
           });
           return promise;
         }, hook_def);

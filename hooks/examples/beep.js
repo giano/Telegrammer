@@ -1,8 +1,10 @@
 "use strict";
 
+const Promise = require('promise');
+
 module.exports = {
   match: /beep(?:\s+(\d+)\s+times)*/i,
-  action: function (message, service, matches, cb) {
+  action: function (message, service, matches) {
     let promise = new Promise(function (resolve, reject) {
       let times = (matches[1] || 1) * 1;
       for (let i = 0; i < times; i++) {

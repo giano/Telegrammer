@@ -16,6 +16,8 @@ const device_regex = new RegExp(`${escape_string_regexp(config.get("telegram:dev
 let api = null;
 let initialized = false;
 
+let next_manage_reply = {};
+
 const register_message_hook = function (hook) {
   let promise = new Promise(function (resolve, reject) {
 
@@ -110,14 +112,91 @@ const telegram_service = {
     }
   },
 
-  send: function (content) {
+  send: function (content, reply, accepted_responses, one_time_keyboard) {
     if (telegram_service.is_hooked()) {
       if (config.get("telegram:attach_device_name")) {
         content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
       }
-      return api.sendMessage(telegram_service.get_hook_id(), content, {
+
+      let options = {
         parse_mode: config.get("telegram:parse_mode")
-      });
+      };
+
+      let has_keyboard = false;
+
+      if (_.isBoolean(reply) && reply) {
+        options.reply_markup = {
+          force_reply: true
+        };
+      } else if (_.isArray(reply) && reply.length > 0) {
+        has_keyboard = true;
+
+        if (!accepted_responses) {
+          accepted_responses = [];
+          _.each(reply, function (el) {
+            if (_.isArray(el)) {
+              accepted_responses = _.union(accepted_responses, el);
+            } else {
+              accepted_responses.push(accepted_responses);
+            }
+          });
+          accepted_responses = _.map(accepted_responses, function (el) {
+            return _.trim(el).toString().toLowerCase()
+          });
+        }
+
+        options.reply_markup = {
+          force_reply: true,
+          keyboard: reply,
+          one_time_keyboard: one_time_keyboard !== false
+        };
+      }
+
+      if (options.reply_markup) {
+        let promise = new Promise(function (resolve, reject) {
+
+          return api.sendMessage(telegram_service.get_hook_id(), content, options).then(function (output) {
+            if (output && output.message_id) {
+
+              let chat_id = (output.chat.id || telegram_service.get_hook_id());
+
+              let manage_reply = function (reply_message) {
+                if (reply_message && reply_message.text) {
+                  let reply_message_compare = _.trim(reply_message.text).toLowerCase();
+                  if (accepted_responses && _.isArray(accepted_responses) && accepted_responses.length) {
+                    if (_.contains(accepted_responses, reply_message_compare)) {
+                      resolve(reply_message);
+                    } else {
+                      reject(new Error("Reply response invalid"));
+                    }
+                  } else {
+                    resolve(reply_message);
+                  }
+
+                } else {
+                  reject(new Error("Reply message not received"));
+                }
+              };
+
+              if (has_keyboard) {
+                next_manage_reply[chat_id] = {
+                  resolve: manage_reply,
+                  reject: reject
+                };
+              } else {
+                api.onReplyToMessage(chat_id, output.message_id, manage_reply);
+              }
+
+
+            } else {
+              reject(new Error("Reply message not sent"));
+            }
+          }).catch(reject);
+        });
+        return promise;
+      } else {
+        return api.sendMessage(telegram_service.get_hook_id(), content, options);
+      }
 
     } else {
       let error = new Error("Telegram service not hooked. Send first message.");
@@ -154,6 +233,16 @@ const telegram_service = {
           } else {
             logger.log(`Telegram not hooked. Waiting first message to hook to chat.`);
           }
+
+          api.on("message", function (message) {
+            let chat_id = (message.chat.id || telegram_service.get_hook_id());
+            if (message && chat_id && next_manage_reply[chat_id]) {
+              let handler = next_manage_reply[chat_id];
+              let text = _.trim(message.text || "").toLowerCase();
+              handler.resolve(message);
+              delete next_manage_reply[chat_id];
+            }
+          });
 
           initialized = true;
           resolve(telegram_service);

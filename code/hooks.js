@@ -33,7 +33,7 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.cmd_name = hook_def.exec ? (hook_def.cmd_name || _.replaceAll(_.replaceAll(hook_def.full_name.toLowerCase(), "_", ":"), "/", ":")) : null;
 
       hook_def.has_monitor_hook = _.isFunction(hook_def.check) || (_.isFunction(hook_def.start_monitor) && _.isFunction(hook_def.stop_monitor));
-      hook_def.has_local_hook = _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action);
+      hook_def.has_local_hook = _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action) || _.isFunction(hook_def.parse_response);
       hook_def.has_web_hook = _.isFunction(hook_def.route);
       hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
 

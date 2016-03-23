@@ -148,7 +148,61 @@ html(lang="en")
                                   span :&nbsp;
                                   span
                                     i.fa.fa-times.text-danger
-                                      
+                              
+                              if hook.confirmation
+                                if(typeof(hook.confirmation) == "string")
+                                  li
+                                    strong Confirmation Message
+                                    span :&nbsp;
+                                    span #{hook.confirmation}
+                                else
+                                  li
+                                    strong Requires Confirmation
+                                    span :&nbsp;
+                                    span
+                                      i.fa.fa-check.text-success
+                                        
+                                if hook.parse_response
+                                  li
+                                    strong Parse Response
+                                    span :&nbsp;
+                                    code [Node Function]
+                                    
+                                if hook.buttons
+                                  li
+                                    strong Buttons
+                                    span :&nbsp;
+                                    ul(style="display:inline-block").list-inline
+                                      each row in hook.buttons
+                                        each button in row
+                                          li
+                                            span.label.label-primary= button
+                                            
+                                if hook.accepted_responses || hook.buttons
+                                  if(typeof(hook.confirmation) == "boolean")
+                                    li
+                                      strong Accepted Response
+                                      span :&nbsp;
+                                      span.label.label-success Anything
+                                  else
+                                    li
+                                      strong Accepted Response
+                                      span :&nbsp;
+                                      if hook.buttons
+                                        span Any button
+                                      else 
+                                        ul(style="display:inline-block").list-inline
+                                          each button in hook.accepted_responses
+                                            li
+                                              span.label.label-primary= button
+                                
+                                if hook.one_time_keyboard
+                                  li
+                                    strong OT Keyboard
+                                    span :&nbsp;
+                                    span 
+                                      i.fa.fa-check.text-success
+                                          
                                 
                             if hook.has_web_hook || hook.has_command_line_hook
                               hr
@@ -301,13 +355,13 @@ html(lang="en")
               each namespace_hooks, namespace in hooks
                 - var accordion_id = _.underscored(namespace).toLowerCase()+"_accordion";
                 li(role="presentation")
-                  a(href="#"+accordion_id).text-capitalize=namespace
+                  a(href="#"+accordion_id).text-capitalize=_.humanize(namespace)
                   ul.nav.nav-stacked
                     each hook, index in namespace_hooks
                       - var hook_panel_id = _.underscored(_.slugify(hook.full_name)) + "_panel";
                       - var hook_label_id = _.underscored(_.slugify(hook.full_name)) + "_label";
                       li(role="presentation")
-                        a(href="#"+hook_label_id, role="button").text-capitalize=hook.name
+                        a(href="#"+hook_label_id, role="button").text-capitalize=_.humanize(hook.name)
                         
     script(type='text/javascript', src="https://code.jquery.com/jquery-2.2.2.min.js", integrity="sha256-36cp2Co+/62rEAAYHLmRCPIych47CvdM+uTBJwSzWjI=", crossorigin="anonymous")  
     script(type='text/javascript', src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js')
