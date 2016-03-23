@@ -30,15 +30,16 @@ const monitor_service = {
           if (hook) {
             return monitor_service.start(hook_ref);
           } else {
-            return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+            return reject(new Error(`Hook ${hook_or_name} was not found.`));
           }
         } else {
           let hook = hook_or_name;
           logger.notify(`Starting monitor hook ${hook.full_name}...`);
           if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
+              hook.started = true;
               logger.log(`Monitor hook ${hook.full_name} started.`);
-              return Promise.resolve(arg);
+              return resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
             let _check = _.bind(hook.check, hook);
@@ -51,14 +52,15 @@ const monitor_service = {
                 api.send(error.message || error);
               });
             };
-            if (mo_hooks[hook.full_name]._interval) {
-              clearInterval(mo_hooks[hook.full_name]._interval);
+            if (hook._interval) {
+              clearInterval(hook._interval);
             }
-            mo_hooks[hook.full_name]._interval = setInterval(check, hook.interval || 5000);
+            hook._interval = setInterval(check, hook.interval || config.get("monitor:default_interval") || 5000);
             logger.notify(`Monitor hook ${hook.full_name} started.`);
-            return Promise.resolve(true);
+            hook.started = true;
+            return resolve(true);
           } else {
-            return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
+            return reject(new Error("Need 'start_monitor' or 'check' functions."));
           }
         }
       }).catch(reject);
@@ -84,7 +86,7 @@ const monitor_service = {
           if (hook) {
             return monitor_service.stop(hook_ref);
           } else {
-            return Promise.reject(new Error(`Hook ${hook_or_name} was not found.`));
+            return reject(new Error(`Hook ${hook_or_name} was not found.`));
           }
         } else {
           var hook = hook_or_name;
@@ -92,16 +94,18 @@ const monitor_service = {
           if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook ${hook.full_name} stopped.`);
-              return Promise.resolve(arg);
+              hook.started = false;
+              return resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
-            if (mo_hooks[hook.full_name]._interval) {
-              clearInterval(mo_hooks[hook.full_name]._interval);
+            if (hook._interval) {
+              clearInterval(hook._interval);
             }
             logger.log(`Monitor hook ${hook.full_name} stopped.`);
-            return Promise.resolve(true);
+            hook.started = false;
+            return resolve(true);
           } else {
-            return Promise.reject(new Error("Need 'start_monitor' or 'check' functions."));
+            return reject(new Error("Need 'start_monitor' or 'check' functions."));
           }
         }
       }).catch(reject);

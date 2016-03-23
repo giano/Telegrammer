@@ -1,4 +1,5 @@
 "use strict";
+const config = require('../../code/config');
 
 const Promise = require('promise');
 const os = require("os");
@@ -18,10 +19,14 @@ module.exports = {
         }
         used += cpu.times["user"] + cpu.times["nice"] + cpu.times["sys"]
       }
-      out += "CPUs (" + cpus.length + "): " + Math.round(100 * used / total) + "%\n";
-      resolve(out);
+      let total_percent = Math.round(100 * used / total);
+      if (total_percent >= (config.get("hooks:config:monitor_cpu:percent_limit") || 60) * 1) {
+        resolve(`Watch out: cpu is at ${total_percent}%`);
+      } else {
+        resolve(null);
+      }
     });
     return promise;
   },
-  description: "Example of monitoring hook."
+  description: "Example of monitoring hook. Read config too."
 };

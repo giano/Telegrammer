@@ -16,7 +16,7 @@ module.exports = {
         for (let type in cpu.times) {
           total += cpu.times[type];
         }
-        used += cpu.times["user"] + cpu.times["nice"] + cpu.times["sys"]
+        used += cpu.times["user"] + cpu.times["nice"] + cpu.times["sys"];
       }
       out += "CPUs (" + cpus.length + "): " + Math.round(100 * used / total) + "%\n";
       resolve(out);

@@ -14,7 +14,7 @@
     font-weight: 700;
     color: #000;
     background-color: transparent;
-    border-left: 2px solid cyan;
+    border-left: 2px solid #5bc0de;
 }
 .nav-sidebar{
   position: fixed;

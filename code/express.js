@@ -38,6 +38,7 @@ const express_service = {
       let out_hooks = _.groupBy(_.sortBy(_.sortBy(hooks.get_hooks(), "name"), "namespace"), "namespace");
       res.render('_sys/list', {
         _: _,
+        config: config,
         header: require("../assets/ansi-header-html.js"),
         hooks: out_hooks,
         package_def: require("../package.json")
@@ -85,7 +86,7 @@ const express_service = {
           } else {
             logger.log(`WebServer is listening on port ${port}`);
 
-            app.get('/help', express_service.list_methods);
+            app.get('/', express_service.list_methods);
 
             app.get('/tid', function (req, res) {
               if (authorized(req, res)) {

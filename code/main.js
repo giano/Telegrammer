@@ -4,6 +4,7 @@ const hooks = require('./hooks');
 const telegram = require('./telegram');
 const express = require('./express');
 const monitor = require('./monitor');
+const local = require('./local');
 const logger = require('./logger');
 const rpc = require('./rpc');
 const path = require('path');
@@ -274,7 +275,7 @@ const main_service = {
         });
         logger.log(`${package_desc.name} v${package_desc.version} starting...`);
 
-        return telegram.init(tcid).then(monitor.init).then(express.init).then(rpc.init).then(function () {
+        return telegram.init(tcid).then(local.init).then(monitor.init).then(express.init).then(rpc.init).then(function () {
           logger.log(`${package_desc.name} v${package_desc.version} started.`);
         }).catch(function (error) {
           reject(error);

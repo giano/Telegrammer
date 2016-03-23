@@ -6,6 +6,7 @@ const path = require('path');
 
 module.exports = [{
   all: true,
+  description: "Every online device/server responds with its name and group",
   name: "list",
   command: "list",
   action: function (message, service, matches) {
@@ -14,11 +15,13 @@ module.exports = [{
   response: true
 }, {
   name: "reboot",
+  description: "Reboot the device/server",
   command: "reboot",
   shell: "reboot.sh",
   response: "Ok, rebooting..."
 }, {
   name: "shutdown",
+  description: "Shutdown the device/server",
   command: "shutdown",
   shell: "shutdown.sh",
   response: "Ok, shutting down..."

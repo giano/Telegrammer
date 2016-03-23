@@ -78,6 +78,8 @@ const manage_message = function (message, matches, hook) {
 
 const telegram_service = {
 
+  register_message_hook: register_message_hook,
+
   get_hook_id: function () {
     return process.env.TEL_CID || config.get("telegram:chat_id");
   },
@@ -133,7 +135,7 @@ const telegram_service = {
           telegram_service.set_hook_id(tcid);
         }
 
-        let telegram_hooks = hooks.get_hooks("has_telegram_hook");
+        let telegram_hooks = hooks.get_hooks("has_local_hook");
 
         api = new Telegram(token, {
           polling: {
@@ -153,18 +155,8 @@ const telegram_service = {
             logger.log(`Telegram not hooked. Waiting first message to hook to chat.`);
           }
 
-          let promises = [];
-
-          for (let telegram_hook in telegram_hooks) {
-            let hook = telegram_hooks[telegram_hook];
-            promises.push(register_message_hook(hook));
-          }
-
-          Promise.all(promises).then(function () {
-            initialized = true;
-            resolve(telegram_service);
-
-          }).catch(reject);
+          initialized = true;
+          resolve(telegram_service);
 
         }).catch(reject);
 
