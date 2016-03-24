@@ -10,7 +10,6 @@ const s = require("underscore.string");
 _.mixin(s.exports());
 
 module.exports = [{
-  all: true,
   description: "Every online device/server responds with its name and group",
   name: "list",
   command: "list",
@@ -24,9 +23,22 @@ module.exports = [{
   command: "help",
   action: function (message, service, matches) {
     let commands = hooks.get_commands();
-    let out_str = "## "+package_def.name + " v" + package_def.version + " ##\n" + package_def.description + "\n\n*Commands:*\n";
+    let out_str = `*${package_def.name} v${package_def.version}*\n${package_def.description}\n\n*Commands:*\n`;
     _.each(commands, function (el) {
-      out_str = out_str + "*" + el.command + "* " + el.description + "\n";
+      out_str = `${out_str}${_.trim(el.command)} - ${_.clean(el.description)}\n`;
+    })
+    return Promise.resolve(out_str);
+  },
+  response: true
+}, {
+  description: "For importing command into BotFather",
+  name: "import_commands",
+  command: "importcommands",
+  action: function (message, service, matches) {
+    let commands = hooks.get_commands();
+    let out_str = "";
+    _.each(commands, function (el) {
+      out_str = `${out_str}${_.trim(el.command)} - ${_.clean(el.description)}\n`;
     })
     return Promise.resolve(out_str);
   },

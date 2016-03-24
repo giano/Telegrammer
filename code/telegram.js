@@ -11,7 +11,6 @@ _.mixin(s.exports());
 
 const Promise = require('promise');
 const Telegram = require('node-telegram-bot-api');
-const device_regex = new RegExp(`${escape_string_regexp(config.get("telegram:device_name_char"))}([\\d\\w_\\-\\.]+)`, "i");
 
 let api = null;
 let initialized = false;
@@ -45,19 +44,6 @@ const manage_message = function (message, matches, hook) {
   if (message.from && (config.get('allowed_usernames') && _.contains(config.get('allowed_usernames'), message.from.username.toLowerCase()))) {
     let message_text = message.text || message.caption;
     if (message_text) {
-      let to_device = "all";
-
-      if (device_regex.test(message_text)) {
-        let dev_match = device_regex.exec(message_text);
-        if (dev_match) {
-          to_device = (dev_match[1] || "!!!").toString().toLowerCase();
-        } else {
-          to_device = "!!!";
-        }
-        message_text.replace(device_regex, "");
-      }
-
-      to_device = _.trim(to_device);
 
       message_text = _.clean(message_text);
 
@@ -66,14 +52,13 @@ const manage_message = function (message, matches, hook) {
         logger.log(`Hooked to chat id #${telegram_service.get_hook_id()}`);
       }
 
-      if ((hook.strict && config.get('device_name') == to_device) || (hook.all || (config.get('device_group') == to_device) || (config.get('device_name') == to_device) || _.contains(config.get('execute_devices'), to_device))) {
-        logger.log(`Executing ${hook.full_name}`);
-        hook.action(message, telegram_service, matches).then(function (response) {
-          logger.notify(`Executed ${hook.full_name}`);
-        }).catch(function (error) {
-          logger.error(`Error executing ${hook.full_name}: ${error}`);
-        });
-      }
+      logger.log(`Executing ${hook.full_name}`);
+      hook.action(message, telegram_service, matches).then(function (response) {
+        logger.notify(`Executed ${hook.full_name}`);
+      }).catch(function (error) {
+        logger.error(`Error executing ${hook.full_name}: ${error}`);
+      });
+
     }
   }
 };
@@ -99,9 +84,6 @@ const telegram_service = {
   respond: function (message, content) {
     let chat_id = (message.chat.id || telegram_service.get_hook_id());
     if (chat_id) {
-      if (config.get("telegram:attach_device_name")) {
-        content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
-      }
       return api.sendMessage(chat_id, content, {
         parse_mode: config.get("telegram:parse_mode"),
         reply_to_message_id: message.id
@@ -114,9 +96,6 @@ const telegram_service = {
 
   send: function (content, reply, accepted_responses, one_time_keyboard) {
     if (telegram_service.is_hooked()) {
-      if (config.get("telegram:attach_device_name")) {
-        content = "*" + config.get("telegram:device_name_char") + config.get("device_name") + "*\n" + content;
-      }
 
       let options = {
         parse_mode: config.get("telegram:parse_mode")
@@ -186,7 +165,6 @@ const telegram_service = {
               } else {
                 api.onReplyToMessage(chat_id, output.message_id, manage_reply);
               }
-
 
             } else {
               reject(new Error("Reply message not sent"));
