@@ -23,24 +23,24 @@ module.exports = [{
   command: "help",
   action: function (message, service, matches) {
     let commands = hooks.get_commands();
-    let out_str = `*${package_def.name} v${package_def.version}*\n${package_def.description}\n\n*Commands:*\n`;
+    let out_str = `${package_def.name} v${package_def.version}\n${package_def.description}\n\n*Commands:*\n`;
     _.each(commands, function (el) {
       out_str = `${out_str}${_.trim(el.command)} - ${_.clean(el.description)}\n`;
     })
-    return Promise.resolve(out_str);
+    return Promise.resolve(_.trim(out_str).toString());
   },
   response: true
 }, {
   description: "For importing command into BotFather",
   name: "import_commands",
-  command: "importcommands",
+  command: "import_commands",
   action: function (message, service, matches) {
     let commands = hooks.get_commands();
-    let out_str = "";
+    let out_str = "start - Start the Bot\n";
     _.each(commands, function (el) {
-      out_str = `${out_str}${_.trim(el.command)} - ${_.clean(el.description)}\n`;
+      out_str = `${out_str}${_.trim(el.command).substring(1)} - ${_.clean(el.description)}\n`;
     })
-    return Promise.resolve(out_str);
+    return Promise.resolve(_.trim(out_str).toString());
   },
   response: true
 }, {
