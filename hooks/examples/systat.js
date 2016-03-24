@@ -23,5 +23,5 @@ module.exports = {
     });
     return promise;
   },
-  description: "Example of command line hook linked to non regex command \"\/systat\"."
+  description: "Example of command line hook linked to non regex command \/systat."
 };

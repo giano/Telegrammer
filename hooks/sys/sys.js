@@ -13,12 +13,13 @@ module.exports = [{
   description: "This help",
   name: "help",
   command: "help",
+  plain: true,
   action: function (message, service, matches) {
     let commands = hooks.get_commands();
     let out_str = `${package_def.name} v${package_def.version}\n${package_def.description}\n\nCommands:\n`;
     _.each(commands, function (el) {
       out_str = `${out_str}${_.trim(el.command)} - ${_.clean(el.description)}\n`;
-    })
+    });
     return Promise.resolve(_.trim(out_str).toString());
   },
   response: true
@@ -26,12 +27,13 @@ module.exports = [{
   description: "For importing command into BotFather",
   name: "import_commands",
   command: "import_commands",
+  plain: true,
   action: function (message, service, matches) {
     let commands = hooks.get_commands();
     let out_str = "start - Start the Bot\n";
     _.each(commands, function (el) {
       out_str = `${out_str}${_.trim(el.command).substring(1)} - ${_.clean(el.description)}\n`;
-    })
+    });
     return Promise.resolve(_.trim(out_str).toString());
   },
   response: true

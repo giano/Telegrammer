@@ -12,7 +12,7 @@ let api = null;
 let hooks_dir = hooks.get_hooks_dir();
 let initialized = false;
 
-let manage_response = function (message, hook_def, error, output) {
+let manage_response = function (message, hook_def, error, output, plain) {
   let error_msg = hook_def.error || "@error@";
   let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
 
@@ -27,20 +27,20 @@ let manage_response = function (message, hook_def, error, output) {
         if (!output) {
           return resolve();
         }
-        api.respond(message, output).then(resolve).catch(reject);
+        api.respond(message, output, plain).then(resolve).catch(reject);
       }).catch(function (error) {
-        api.respond(message, (error.message || error)).then(resolve).catch(reject);
+        api.respond(message, (error.message || error), plain).then(resolve).catch(reject);
       });
     } else {
       if (error) {
         if (hook_def.error !== false) {
-          api.respond(message, error_msg.replace(/@error@/mi, (error.message || error))).then(resolve).catch(reject);
+          api.respond(message, error_msg.replace(/@error@/mi, (error.message || error)), plain).then(resolve).catch(reject);
         } else {
           reject(error.message || error);
         }
       } else {
         output = output || "";
-        api.respond(message, response_msg.replace(/@response@/mi, output)).then(resolve).catch(reject);
+        api.respond(message, response_msg.replace(/@response@/mi, output), plain).then(resolve).catch(reject);
       }
     }
   });
@@ -137,21 +137,21 @@ const local_service = {
               } : function (response_message) {
                 let response_text = response_message.text.toString().toLowerCase();
                 if (response_text == "yes") {
-                  return _action(message, service, matches).then(function (output) {
-                    manage_response(message, hook_def, null, output).then(resolve).catch(reject);
+                  return _action(message, service, matches).then(function (output, plain) {
+                    manage_response(message, hook_def, null, output, (hook_def.plain || plain)).then(resolve).catch(reject);
                   }).catch(function (error) {
-                    manage_response(message, hook_def, error).then(resolve).catch(reject);
+                    manage_response(message, hook_def, error, null, hook_def.plain).then(resolve).catch(reject);
                   });
                 } else {
-                  manage_response(message, hook_def, hook_def.abort || "Ok, nevermind...").then(resolve).catch(reject);
+                  manage_response(message, hook_def, (hook_def.abort || "Ok, nevermind..."), null, hook_def.plain).then(resolve).catch(reject);
                 }
               };
-              return api.send(confirm_message, buttons, (hook_def.accepted_responses || true), hook_def.one_time_keyboard).then(parse_response).catch(reject);
+              return api.send(confirm_message, buttons, (hook_def.accepted_responses || true), hook_def.one_time_keyboard, hook_def.plain).then(parse_response).catch(reject);
             } else {
-              return _action(message, service, matches).then(function (output) {
-                manage_response(message, hook_def, null, output).then(resolve).catch(reject);
+              return _action(message, service, matches).then(function (output, plain) {
+                manage_response(message, hook_def, null, output, (hook_def.plain || plain)).then(resolve).catch(reject);
               }).catch(function (error) {
-                manage_response(message, hook_def, error).then(resolve).catch(reject);
+                manage_response(message, hook_def, error, null, hook_def.plain).then(resolve).catch(reject);
               });
             }
           });

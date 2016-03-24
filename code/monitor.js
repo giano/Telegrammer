@@ -46,10 +46,10 @@ const monitor_service = {
             let check = function () {
               _check(hook, api).then(function (content) {
                 if (content) {
-                  api.send(content);
+                  api.send(content, null, null, null, hook.plain);
                 }
               }).catch(function (error) {
-                api.send(error.message || error);
+                api.send((error.message || error), null, null, null, hook.plain);
               });
             };
             if (hook._interval) {

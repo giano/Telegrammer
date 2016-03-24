@@ -81,11 +81,11 @@ const telegram_service = {
     return telegram_service.get_hook_id();
   },
 
-  respond: function (message, content) {
+  respond: function (message, content, plain) {
     let chat_id = (message.chat.id || telegram_service.get_hook_id());
     if (chat_id) {
       return api.sendMessage(chat_id, content, {
-        parse_mode: config.get("telegram:parse_mode"),
+        parse_mode: plain == true ? null : config.get("telegram:parse_mode"),
         reply_to_message_id: message.id
       });
     } else {
@@ -94,11 +94,11 @@ const telegram_service = {
     }
   },
 
-  send: function (content, reply, accepted_responses, one_time_keyboard) {
+  send: function (content, reply, accepted_responses, one_time_keyboard, plain) {
     if (telegram_service.is_hooked()) {
 
       let options = {
-        parse_mode: config.get("telegram:parse_mode")
+        parse_mode: plain == true ? null : config.get("telegram:parse_mode")
       };
 
       let has_keyboard = false;
