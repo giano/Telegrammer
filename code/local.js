@@ -7,7 +7,7 @@
  * @example See "hooks/examples/helloworld.js" for a basic local hook definition
  * @example See ["hooks/examples/beep.js"]{@link module:hooks/examples.beep} for a regex local hook definition
  * @example See "hooks/examples/systat.js" for a system local hook definition
- * @example See "hooks/examples/blink.js" for a GPIO local hook definition
+ * @example See ["hooks/examples/blink.js"]{@link module:hooks/examples.blink} for a GPIO local hook definition
  */
 
 const hooks = require('./hooks');

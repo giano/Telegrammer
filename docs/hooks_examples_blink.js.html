@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Namespace: Config</title>
+    <title>JSDoc: Source: hooks/examples/blink.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,97 +17,64 @@
 
 <div id="main">
 
-    <h1 class="page-title">Namespace: Config</h1>
+    <h1 class="page-title">Source: hooks/examples/blink.js</h1>
 
     
 
 
 
-
-<section>
-
-<header>
     
-        <h2>Config</h2>
-        
-    
-</header>
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
 
-<article>
-    <div class="container-overview">
-    
-        
-            <div class="description"><p>Load config files cascading from command line, environment variables to json/js files in config path</p></div>
-        
+/**
+ * @module hooks/examples
+ */
 
-        
+const Promise = require('promise');
 
+/**
+ * blink
+ * @name blink
+ * @description Local hook example with GPIO signaling
+ * @static
+ */
 
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="code_config.js.html">code/config.js</a>, <a href="code_config.js.html#line3">line 3</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-        
-    
-    </div>
-
-    
-
-    
-
-    
-
-     
-
-    
-
-    
-
-    
-
-    
-
-    
-</article>
-
-</section>
+module.exports = {
+  command: "blink",
+  signal: [{
+    gpio: 14,
+    value: 1,
+    time: 3000
+  }, {
+    gpio: 14,
+    value: 0,
+    time: 3000
+  }, {
+    gpio: 14,
+    value: 1,
+    time: 3000
+  }, {
+    gpio: 14,
+    value: 0,
+    time: 3000
+  }, {
+    gpio: 14,
+    value: 1,
+    time: 3000
+  }, {
+    gpio: 14,
+    value: 0,
+    time: 3000
+  }],
+  description: "Example of GPIO signaling. Would blink a LED connected to 14 GPIO pin three times",
+  error: "Something wrong happened: @error@",
+  response: "What was that? Did you saw it?"
+};
+</code></pre>
+        </article>
+    </section>
 
 
 

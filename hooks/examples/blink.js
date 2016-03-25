@@ -1,6 +1,17 @@
 "use strict";
 
+/**
+ * @module hooks/examples
+ */
+
 const Promise = require('promise');
+
+/**
+ * blink
+ * @name blink
+ * @description Local hook example with GPIO signaling
+ * @static
+ */
 
 module.exports = {
   command: "blink",
