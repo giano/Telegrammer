@@ -10,6 +10,17 @@ const s = require("underscore.string");
 _.mixin(s.exports());
 
 module.exports = [{
+  description: "Start Procedure",
+  name: "start",
+  command: "start",
+  plain: false,
+  action: function (message, service, matches) {
+    let commands = hooks.get_commands();
+    let out_str = `*${package_def.name} v${package_def.version}* started...`;
+    return Promise.resolve(_.trim(out_str).toString());
+  },
+  response: true
+}, {
   description: "This help",
   name: "help",
   command: "help",
