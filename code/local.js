@@ -77,12 +77,12 @@ const local_service = {
                     }
                   });
                 });
-              }).than(function () {
+              }).then(function () {
                 _.each(gpios, function (gpio) {
                   gpios_map[gpio] = new Gpio(gpio, 'out');
                 });
                 resolve("");
-              });
+              }).catch(reject);
             } catch (e) {
               return reject(e);
             }
