@@ -13,6 +13,7 @@ const monitor = require('./monitor');
 const local = require('./local');
 const logger = require('./logger');
 const rpc = require('./rpc');
+const commandline = require('./commandline');
 const path = require('path');
 const Promise = require('promise');
 const commandLineCommands = require('command-line-commands');
@@ -211,7 +212,6 @@ const MainService = {
   parse_commands: function (config, cmd_arguments) {
     return new Promise(function (resolve, reject) {
       hooks.load().then(function () {
-        const commandline = require('./commandline');
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
 
         let cla = [{
