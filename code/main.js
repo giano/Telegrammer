@@ -30,7 +30,7 @@ let pid_path = path.resolve(__dirname, '..', '.pid');
 
 const cli_common_conf = [{
   name: 'verbose',
-  alias: 'v',
+  alias: 'V',
   type: Boolean
 }, {
   name: 'telegramid',

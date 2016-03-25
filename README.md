@@ -175,6 +175,10 @@ As noted before you'll have to register a different Telegram Bot for every Teleg
 
 Consider disabling **express manager** and **web hooks** on _memory-frugal_ devices. Those are the most "memory consuming" managers.
 
+# Team
+
+* Stefano "Giano" valicchia - [Linkedin](https://it.linkedin.com/in/stefanovalicchia) - [Github](https://github.com/giano) - [Twitter](https://twitter.com/tulo69)
+
 # License
 
 MIT License
@@ -198,3 +202,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+# Contributing
+
+Feel free to fork, improve, modify and patch this code.
