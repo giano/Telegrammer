@@ -29,6 +29,10 @@ const cli_common_conf = [{
   name: 'telegramid',
   alias: 'T',
   type: String
+}, {
+  name: 'token',
+  alias: 'K',
+  type: String
 }];
 
 let monitor_control_def = _.union([], cli_common_conf, [{
@@ -240,6 +244,10 @@ const main_service = {
         const command = _.extend({}, command_line_res);
 
         tcid = command.telegramid;
+
+        if(command.token){
+          config.set("telegram:token", command.token);
+        }
 
         command.name = (command.name || "");
         command.options = (command.options || {});
