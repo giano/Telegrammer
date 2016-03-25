@@ -8,7 +8,6 @@ const _ = require('underscore');
 const s = require("underscore.string");
 const escape_string_regexp = require('escape-string-regexp');
 const logger = require('./logger');
-
 _.mixin(s.exports());
 
 var api = null;
@@ -19,7 +18,7 @@ var initialized = false;
 
 const monitor_service = {
   start: function (hook_or_name) {
-    var promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
@@ -35,7 +34,25 @@ const monitor_service = {
         } else {
           let hook = hook_or_name;
           logger.notify(`Starting monitor hook ${hook.full_name}...`);
-          if (_.isFunction(hook.start_monitor)) {
+          if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
+            try {
+              const Gpio = require('onoff').Gpio;
+            } catch (e) {
+              return reject(e);
+            }
+            if (hook.gpio.device) {
+              hook.gpio.device.unexport();
+              hook.gpio.device.unwatchAll();
+              delete hook.gpio.device;
+            }
+            hook.gpio.device = new Gpio(hook.gpio.pin, (hook.gpio.direction || 'in'), (hook.gpio.edge || 'both'));
+            hook.gpio.device.watch(function (err, value) {
+              hook.gpio.handler(err, value, hook, api);
+            });
+            logger.log(`Gpio Monitor hook ${hook.full_name} started.`);
+            hook.started = true;
+            return resolve(true);
+          } else if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
               hook.started = true;
               logger.log(`Monitor hook ${hook.full_name} started.`);
@@ -65,8 +82,6 @@ const monitor_service = {
         }
       }).catch(reject);
     });
-
-    return promise;
   },
 
   restart: function (hook_or_name) {
@@ -76,7 +91,7 @@ const monitor_service = {
   },
 
   stop: function (hook_or_name) {
-    var promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
@@ -91,7 +106,21 @@ const monitor_service = {
         } else {
           var hook = hook_or_name;
           logger.notify(`Stopping monitor hook ${hook.full_name}`);
-          if (_.isFunction(hook.stop_monitor)) {
+          if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
+            try {
+              const Gpio = require('onoff').Gpio;
+            } catch (e) {
+              return reject(e);
+            }
+            if (hook.gpio.device) {
+              hook.gpio.device.unexport();
+              hook.gpio.device.unwatchAll();
+              delete hook.gpio.device;
+            }
+            logger.log(`Gpio Monitor hook ${hook.full_name} stopped.`);
+            hook.started = false;
+            return resolve(true);
+          } else if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook ${hook.full_name} stopped.`);
               hook.started = false;
@@ -110,15 +139,11 @@ const monitor_service = {
         }
       }).catch(reject);
     });
-
-    return promise;
   },
 
   init: function (tapi) {
     api = tapi;
-
-    var promise = new Promise(function (resolve, reject) {
-
+    return new Promise(function (resolve, reject) {
       hooks.load().then(function () {
 
         if (config.get("monitor:active") == false) {
@@ -149,8 +174,6 @@ const monitor_service = {
         }
       }).catch(reject);
     });
-
-    return promise;
   }
 }
 

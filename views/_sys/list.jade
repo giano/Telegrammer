@@ -73,6 +73,7 @@ html(lang="en")
                               span.text-primary Telegram Hook 
                               span.label.label-primary
                                 i.fa.fa-comment
+                                  
                             ul.list-unstyled
                               if hook.command
                                 li
@@ -85,7 +86,17 @@ html(lang="en")
                                   span :&nbsp;
                                   span.text-warning #{hook.match}
                                   
-                              if typeof(hook.shell) == "string"
+                              if _.isArray(hook.signal)
+                                li
+                                  strong GPIO Signaling
+                                  span :&nbsp;
+                                  code #{JSON.stringify(hook.signal)}
+                              else if _.isFunction(hook.signal)
+                                li
+                                  strong GPIO Signaling
+                                  span :&nbsp;
+                                  code [Node Function]
+                              else if _.isString(hook.shell)
                                 li
                                   strong Shell Script
                                   span :&nbsp;
@@ -105,14 +116,14 @@ html(lang="en")
                                     span :&nbsp;
                                     code [Node Function]
                               
-                              if (hook.response !== false)
+                              if hook.response !== false
                                 if(typeof(hook.response) == "string")
                                   li
                                     strong Response
                                     span :&nbsp;
                                     span #{hook.response}
                                     
-                                else if(typeof(hook.response) == "function")
+                                else if _.isFunction(hook.response)
                                   li
                                     strong Response
                                     span :&nbsp;
@@ -150,7 +161,7 @@ html(lang="en")
                                     i.fa.fa-times.text-danger
                               
                               if hook.confirmation
-                                if(typeof(hook.confirmation) == "string")
+                                if _.isString(hook.confirmation)
                                   li
                                     strong Confirmation Message
                                     span :&nbsp;
@@ -179,7 +190,7 @@ html(lang="en")
                                             span.label.label-primary= button
                                             
                                 if hook.accepted_responses || hook.buttons
-                                  if(typeof(hook.confirmation) == "boolean")
+                                  if _.isBoolean(hook.confirmation)
                                     li
                                       strong Accepted Response
                                       span :&nbsp;
@@ -224,7 +235,7 @@ html(lang="en")
                                       span.text-primary ./tel.sh&nbsp;
                                       strong #{hook.cmd_name}
                                       
-                              if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                              if _.isArray(hook.params) && hook.params.length > 0
                                 li
                                   strong Command Line Params
                                   span :&nbsp;
@@ -246,13 +257,13 @@ html(lang="en")
                                             small.text-muted &nbsp;, if not present will be #{command_def.defaultOption}
                                             
                               if hook.exec
-                                if(typeof(hook.exec) == "function")
+                                if _.isFunction(hook.exec)
                                   li
                                     strong Exec
                                     span :&nbsp;
                                     code [Node Function]
                                     
-                                else if(typeof(hook.exec) == "string")
+                                else if _.isString(hook.exec)
                                   li
                                     strong Exec
                                     span :&nbsp;
@@ -280,7 +291,7 @@ html(lang="en")
                                 span :&nbsp;
                                 span #{(hook.method || "all").toUpperCase()}
                                 
-                              if hook.params && (typeof(hook.params) == "object") && (hook.params.length > 0)
+                              if _.isArray(hook.params) && hook.params.length > 0
                                 li
                                   strong Page Params
                                   span :&nbsp;
@@ -330,20 +341,25 @@ html(lang="en")
                                     i.fa.fa-check.text-success
                                   else
                                     i.fa.fa-times.text-danger
-                                
-                              if(typeof(hook.start_monitor) == "function")
+                                  
+                              if _.isFunction(hook.start_monitor)
                                 li
                                   strong Start Monitor
                                   span :&nbsp;
                                   code [Node Function]
                                   
-                              if(typeof(hook.stop_monitor) == "function")
+                              if _.isFunction(hook.stop_monitor)
                                 li
                                   strong Stop Monitor
                                   span :&nbsp;
                                   code [Node Function]
                                   
-                              if(typeof(hook.check) == "function")
+                              if _.isObject(hook.gpio)
+                                li
+                                  strong GPIO Monitor Address
+                                  span :&nbsp;
+                                  span.label.label-info #{hook.gpio.device}
+                              else if _.isFunction(hook.check)
                                 li
                                   strong Check
                                   span :&nbsp;

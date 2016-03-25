@@ -18,7 +18,7 @@ let initialized = false;
 let next_manage_reply = {};
 
 const register_message_hook = function (hook) {
-  let promise = new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
 
     let match = null;
 
@@ -36,8 +36,6 @@ const register_message_hook = function (hook) {
 
     resolve();
   });
-
-  return promise;
 };
 
 const manage_message = function (message, matches, hook) {
@@ -132,7 +130,7 @@ const telegram_service = {
       }
 
       if (options.reply_markup) {
-        let promise = new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
 
           return api.sendMessage(telegram_service.get_hook_id(), content, options).then(function (output) {
             if (output && output.message_id) {
@@ -171,7 +169,6 @@ const telegram_service = {
             }
           }).catch(reject);
         });
-        return promise;
       } else {
         return api.sendMessage(telegram_service.get_hook_id(), content, options);
       }
@@ -183,7 +180,7 @@ const telegram_service = {
   },
 
   init: function (tcid) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         let token = config.get("telegram:token");
@@ -230,8 +227,6 @@ const telegram_service = {
       }).catch(reject);
 
     });
-
-    return promise;
   }
 }
 

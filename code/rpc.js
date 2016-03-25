@@ -7,8 +7,6 @@ const monitor = require('./monitor');
 
 const dnode = require('dnode');
 const net = require('net');
-
-
 const _ = require('underscore');
 const s = require("underscore.string");
 
@@ -54,7 +52,7 @@ const actions = {
 
 const rpc_service = {
   send: function (what, params) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       dnode.connect(port, function (remote, conn) {
         let fn = remote[what];
         if (_.isFunction(fn)) {
@@ -68,13 +66,12 @@ const rpc_service = {
         }
       });
     });
-    return promise;
   },
 
   init: function (tapi) {
     let api = tapi;
 
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       initialized = true;
 
       server = dnode(function (remote, conn) {
@@ -91,8 +88,6 @@ const rpc_service = {
 
       server.listen(port);
     });
-
-    return promise;
   }
 }
 

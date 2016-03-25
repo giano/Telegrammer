@@ -47,7 +47,7 @@ const express_service = {
   },
 
   init: function (tapi) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       api = tapi;
 
       hooks.load().then(function () {
@@ -175,8 +175,6 @@ const express_service = {
         });
       }).catch(reject);
     });
-
-    return promise;
   }
 };
 

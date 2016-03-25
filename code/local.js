@@ -6,6 +6,7 @@ const logger = require('./logger');
 const path = require('path');
 const _ = require('underscore');
 const s = require("underscore.string");
+const asyncP = require('async-promises');
 _.mixin(s.exports());
 
 let api = null;
@@ -16,7 +17,7 @@ let manage_response = function (message, hook_def, error, output, plain) {
   let error_msg = hook_def.error || "@error@";
   let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
 
-  var promise = new Promise(function (resolve, reject) {
+  return new Promise(function (resolve, reject) {
     if (hook_def.response === false) {
       return resolve();
     }
@@ -44,14 +45,52 @@ let manage_response = function (message, hook_def, error, output, plain) {
       }
     }
   });
-  return promise;
 };
 
 const local_service = {
   connect_hook: function (hook_def) {
-    var promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
+
+      if (_.isArray(hook_def.signal)) {
+        hook_def.action = function (message, service, matches) {
+          return new Promise(function (resolve, reject) {
+            try {
+              const Gpio = require('onoff').Gpio;
+            } catch (e) {
+              return reject(e);
+            }
+            let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
+            let gpios_map = {};
+            _.each(gpios, function (gpio) {
+              gpios_map[gpio] = new Gpio(gpio, 'out');
+            });
+
+            asyncP.each(hook_def.signal, function (gpio_el) {
+              return new Promise(function (resolve, reject) {
+                gpios_map[gpio_el.gpio].write(((_.isNull(gpio_el.value) || _.isUndefined(gpio_el.value)) ? 1 : (!!gpio_el.value) * 1), function (err) {
+                  if (err) {
+                    return reject(err);
+                  }
+                  if (gpio_el.time) {
+                    setTimeout(resolve, gpio_el.time);
+                  } else {
+                    resolve();
+                  }
+                });
+              });
+            }).than(function () {
+              _.each(gpios, function (gpio) {
+                gpios_map[gpio] = new Gpio(gpio, 'out');
+              });
+              resolve("");
+            });
+          });
+        };
+      } else if (_.isFunction(hook_def.signal)) {
+        hook_def.action = hook_def.signal;
+      }
 
       if (_.isString(hook_def.shell)) {
         let path_to_script = path.resolve(hooks_dir, path.dirname(hook_def.path), ".", hook_def.shell);
@@ -62,7 +101,7 @@ const local_service = {
         hook_def._action = hook_def.action;
 
         let action_fn = _.bind(function (message, service, matches) {
-          let promise = new Promise(function (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             const exec = require('child_process').exec;
             matches = matches || [];
             let result_command = hook_def._action;
@@ -108,13 +147,12 @@ const local_service = {
 
             });
           });
-          return promise;
         }, hook_def);
 
         hook_def.action = action_fn;
       }
       if (!_.isFunction(hook_def.action) && _.isFunction(hook_def.parse_response)) {
-        hook_def.action = function(){
+        hook_def.action = function () {
           return Promise.resolve();
         };
       }
@@ -123,7 +161,7 @@ const local_service = {
         let _action = _.bind(hook_def.action, hook_def);
 
         hook_def.action = _.bind(function (message, service, matches) {
-          let promise = new Promise(function (resolve, reject) {
+          return new Promise(function (resolve, reject) {
             if (hook_def.confirmation || hook_def.buttons) {
 
               let confirm_message = _.isString(hook_def.confirmation) ? hook_def.confirmation : "Are you sure?";
@@ -155,20 +193,17 @@ const local_service = {
               });
             }
           });
-          return promise;
         }, hook_def);
       }
 
       return api.register_message_hook(hook_def).then(resolve).catch(reject);
-
     });
-    return promise;
   },
 
   init: function (tapi) {
     api = tapi;
 
-    var promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
 
@@ -197,8 +232,6 @@ const local_service = {
         }
       }).catch(reject);
     });
-
-    return promise;
   }
 }
 

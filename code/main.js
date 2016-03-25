@@ -48,7 +48,7 @@ let help_def = _.union([], cli_common_conf, [{
 const main_service = {
 
   help: function (config, hook_name) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
@@ -171,16 +171,13 @@ const main_service = {
           });
         }
         return resolve(help);
-
       }).catch(reject);
-
     });
-    return promise;
   },
 
   parse_commands: function (config, cmd_arguments) {
 
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         const commandline = require('./commandline');
@@ -252,12 +249,10 @@ const main_service = {
       }).catch(reject);
 
     });
-
-    return promise;
   },
 
   start_server: function () {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
         let cm_hooks = hooks.get_hooks("has_command_line_hook");
@@ -282,12 +277,10 @@ const main_service = {
         });
       }).catch(reject);
     });
-
-    return promise;
   },
 
   stop_server: function () {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let fs = require('fs');
       let terminate = Promise.denodeify(require('terminate'));
       const read = Promise.denodeify(fs.readFile);
@@ -296,7 +289,7 @@ const main_service = {
         mainpid = running_pid;
         return Promise.resolve(mainpid);
       }).then(terminate).then(function (done) {
-        let promise = new Promise(function (resolve, reject) {
+        return new Promise(function (resolve, reject) {
           if (done) {
             const exec = require('child_process').exec;
             exec(`kill -2 ${mainpid}`, function (error, stdout, stderr) {
@@ -314,7 +307,6 @@ const main_service = {
             resolve(false);
           }
         });
-        return promise;
       }).catch(function (error) {
         if (error.code != "ENOENT") {
           logger.error(error);
@@ -325,12 +317,10 @@ const main_service = {
         resolve();
       });
     });
-
-    return promise;
   },
 
   main: function (config, cmd_arguments) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       return main_service.parse_commands(config, cmd_arguments).then(function (command) {
         if (command.options.verbose) {
           config.set("verbose", true);
@@ -371,8 +361,6 @@ const main_service = {
         }
       }).catch(reject);
     });
-
-    return promise;
   }
 }
 

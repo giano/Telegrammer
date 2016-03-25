@@ -24,7 +24,7 @@ const work_hook = function (hook_def, hook_path) {
       return out_array;
     }
 
-    if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell)) || (hook_def.route) || (hook_def.exec) || (hook_def.check) || (hook_def.start_monitor && hook_def.stop_monitor)) {
+    if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell || hook_def.signal)) || (hook_def.route) || (hook_def.exec) || (hook_def.gpio) || (hook_def.check) || (hook_def.start_monitor && hook_def.stop_monitor)) {
       hook_def.path = hook_path;
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
@@ -32,8 +32,8 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.route_path = hook_def.route ? (hook_def.route_path || _.replaceAll(hook_def.full_name.toLowerCase(), "_", "/")) : null;
       hook_def.cmd_name = hook_def.exec ? (hook_def.cmd_name || _.replaceAll(_.replaceAll(hook_def.full_name.toLowerCase(), "_", ":"), "/", ":")) : null;
 
-      hook_def.has_monitor_hook = _.isFunction(hook_def.check) || (_.isFunction(hook_def.start_monitor) && _.isFunction(hook_def.stop_monitor));
-      hook_def.has_local_hook = _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action) || _.isFunction(hook_def.parse_response);
+      hook_def.has_monitor_hook = _.isFunction(hook_def.check) || (_.isFunction(hook_def.start_monitor) && _.isFunction(hook_def.stop_monitor)) || (_.isObject(hook_def.gpio) && _.isFunction(hook_def.gpio.handler));
+      hook_def.has_local_hook = (_.isFunction(hook_def.signal) || _.isArray(hook_def.signal)) || _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action) || _.isFunction(hook_def.parse_response);
       hook_def.has_web_hook = _.isFunction(hook_def.route);
       hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
 
@@ -58,7 +58,7 @@ const work_hook = function (hook_def, hook_path) {
 
 const hooks = {
 
-  get_hooks_dir: function(){
+  get_hooks_dir: function () {
     return hooks_dir;
   },
 
@@ -78,11 +78,11 @@ const hooks = {
     return out_val;
   },
 
-  get_commands: function(){
+  get_commands: function () {
     let cmd_hooks = hooks.get_hooks("has_local_hook");
     let out = [];
-    _.each(cmd_hooks, function(el){
-      if (el.command){
+    _.each(cmd_hooks, function (el) {
+      if (el.command) {
         out.push({
           command: el.command,
           description: el.description
@@ -103,7 +103,7 @@ const hooks = {
       return Promise.resolve();
     }
 
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
       const glob = require("glob");
       const options = {
@@ -132,7 +132,6 @@ const hooks = {
         resolve();
       });
     });
-    return promise;
   }
 };
 
