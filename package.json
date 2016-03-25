@@ -1,6 +1,6 @@
 {
   "name": "Telegrammer",
-  "version": "0.0.5",
+  "version": "0.5.0",
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "pi@stargate.local:~/Projects/GitRepos/telegrammer.git"
+    "url": "https://github.com/giano/Telegrammer.git"
   },
   "engines": {
     "node": ">=4.4"
