@@ -29,7 +29,7 @@ module.exports = {
     value: 0,
     time: 3000
   }],
-  description: "Example of GPIO signalink. Would blink a LED connected to 14 GPIO pin three times",
+  description: "Example of GPIO signaling. Would blink a LED connected to 14 GPIO pin three times",
   error: "Something wrong happened: @error@",
   response: "What was that? Did you saw it?"
 };

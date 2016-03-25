@@ -44,7 +44,13 @@ const monitor_service = {
               }
               hook.gpio.device = new Gpio(hook.gpio.pin, (hook.gpio.direction || 'in'), (hook.gpio.edge || 'both'));
               hook.gpio.device.watch(function (err, value) {
-                hook.gpio.handler(err, value, hook, api);
+                hook.gpio.handler(err, value, hook, api).then(function (content) {
+                  if (content) {
+                    api.send(content, null, null, null, hook.plain);
+                  }
+                }).catch(function (error) {
+                  api.send((error.message || error), null, null, null, hook.plain);
+                });
               });
               logger.log(`Gpio Monitor hook ${hook.full_name} started.`);
               hook.started = true;

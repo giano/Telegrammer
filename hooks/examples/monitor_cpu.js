@@ -7,7 +7,7 @@ const os = require("os");
 module.exports = {
   interval: 30000,
   check: function (hook, api) {
-    let promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
       let cpus = os.cpus();
       let out = "";
       let total = 0;
@@ -26,7 +26,6 @@ module.exports = {
         resolve(null);
       }
     });
-    return promise;
   },
   description: "Example of monitoring hook. Read config too."
 };
