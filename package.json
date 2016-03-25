@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "compile-docs": "node_modules/.bin/jsdoc -c conf.json",
-    "start": "node index.js start"
+    "start": "node index.js start",
+    "stop": "node index.js stop",
+    "help": "node index.js help"
   },
   "repository": {
     "type": "git",

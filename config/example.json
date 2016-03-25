@@ -1,0 +1,33 @@
+{
+  "allowed_usernames": ["YOUR-TELEGRAM-USERNAME", "YOUR-FIANCEE-TELEGRAM-USERNAME", "YOUR-DOG-TELEGRAM-USERNAME"],
+  "telegram": {
+    "token": "YOUR-TELEGRAM-BOT-TOKEN",
+    "chat_id": "YOU-CAN-OBTAIN-THAT-RUNNING-LOCALLY-AND-CHATTING-WITH-YOUR-BOT"
+  },
+  "hooks": {
+    "folder": "hooks",
+    "config": {
+      "monitor_cpu": {
+        "percent_limit": 70
+      }
+    }
+  },
+  "commandline": {
+    "active": true
+  },
+  "telegram": {
+    "parse_mode": "Markdown"
+  },
+  "monitor": {
+    "active": true,
+    "default_interval": 5000
+  },
+  "local": {
+    "active": true
+  },
+  "express": {
+    "active": true,
+    "auth": "EXTRA-SECURITY-FOR-WEB-HOOKS",
+    "auth_token_name": "X-Auth"
+  }
+}

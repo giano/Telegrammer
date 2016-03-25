@@ -49,7 +49,89 @@
     <section class="readme">
         <article><pre class="prettyprint source"><code>╔╦╗┌─┐┬  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌┬┐┌─┐┬─┐
  ║ ├┤ │  ├┤ │ ┬├┬┘├─┤││││││├┤ ├┬┘
- ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─</code></pre><hr></article>
+ ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─</code></pre><hr>
+<h1>Synopsis</h1><p>Telegrammer is a little resident server born to allow easy device/server management via private Telegram chat.</p>
+<p>It allows two-way communication using a registered Telegram Bot.</p>
+<p>Actually Telegrammer allows device/server monitoring, device/server shell scripts and node functions execution, GPIO signaling (in/out), command line and web triggers to send message to the Bot chat.</p>
+<p><em><strong>Making IT simple?</strong> Chat with your <strong>server</strong> or <strong>device</strong>. It will chat to you too :)</em></p>
+<h1>Installation</h1><h3>Cloning/Forking this repository</h3><p>Step <strong>one</strong> is cloning or forking this repository in a directory on your computer, server or device.</p>
+<h3>Chatting with a BotFather</h3><p>Next step is creating a Bot on Telegram and obtain an authorization token. You'll have to chat with a special Bot called <strong>BotFather</strong> register your Bot.</p>
+<p>Just follow <a href="https://core.telegram.org/bots">this guide</a> to authorize your Bot.</p>
+<p><strong>Keep in mind that actually only one instance of Telegrammer can be linked to a Bot (Telegram limitation), so if you need to monitor <em>two</em> devices you'll have to register <em>two</em> Bots. Then you can create a &quot;group chat&quot; with all your Bots to manage all the devices at once.</strong></p>
+<h3>So you obtained your token, isn't it?</h3><p>You chatted with the BotFather and it made you an offer you can't refuse. Well...that went straight. Now open example config file you'll find in config folder, put your token here and save the file as shared.json.</p>
+<p>You can override some values using <strong>NODE_ENV</strong>.json files in the same directory (<em>development.json, production.json, etc...</em>)</p>
+<p>You can limit Telegrammer to respond only to certain usernames for extra security, or let it respond to anyone removing this property.</p>
+<p>Put your Chat ID too. You can obtain it chatting with your bot and reading console output. If you don't specify it Telegrammer will try autoset it on first received message.</p>
+<p><strong>Keep in mind that monitoring, command-line and web hook will not work until Chat ID is set.</strong></p>
+<p>You can disable some services to lower memory consumpion (on devices like Raspberry Pi, for example) or for extra security.</p>
+<blockquote>
+<p>You can use this file to config your Hooks too.</p>
+</blockquote>
+<h1>Hooks? Sounds painful.</h1><p>So what the heck are those Hooks?</p>
+<p>You can call them <strong>plugins</strong> if your heart's content. You can find some in the <strong>hooks/</strong> directory. Those are the files you'll use to define your commands (in/out) and monitoring services. Telegrammer will load all the <strong>.js</strong> and <strong>.json</strong> files in <strong>hooks/</strong> subfolder and, after checking it's actually an hook definition, will &quot;hook&quot; it.</p>
+<p><em>You can define different kinds of hooks, and the same hook can &quot;activate&quot; many of them at once (for example monitoring a disk, sending you a message if disk space is low, and reacting to your command clearing it).</em></p>
+<blockquote>
+<p>The syntax is simple but powerful, I promise you that.</p>
+</blockquote>
+<h4>Input Hook (local command)</h4><p><strong>Those hooks are waiting for you to text them!</strong> They will react to a command or regex and act accordingly, running a node function, a GPIO sequence (<em>if you are on a device like a Raspberry Pi</em>), a shell command or script. Then Telegrammer will send you back a result or error.</p>
+<p>You need to define some properties:</p>
+<ul>
+<li>either <strong>command</strong> or <strong>match</strong>. Your bot will react to the string defined in <strong>command</strong> preceded by <strong>/</strong> (so if you write 'blow_candles' it will react to '/blow_candles'), or to the regex pattern you'll define in match.</li>
+<li>either <strong>action</strong> (that can be a string containing a shell command or a node function returning a <em>Promise</em>), <strong>shell</strong> (with the name of an executable in the same directory), a <strong>signal</strong> (that can be an array defining a GPIO pattern or a function returning a <em>Promise</em>) or a function named <strong>parse_response</strong> for &quot;confirmation enabled&quot; hooks.</li>
+<li>a <strong>response</strong> and <strong>error</strong> strings. You can use some variables too (@error@ and @response@) to include action output/error.</li>
+</ul>
+<blockquote>
+<p>Most of the defined functions require you to return a Promise. Telegrammer will send you back to the chat anything you will output &quot;resolving&quot; or &quot;rejecting&quot; your Promise, unless you define <strong>response: false</strong> in your hook or resolve with <strong>null</strong>. Just remember to resolve your Promises, or the <strong>BotFather</strong> will be very unhappy</p>
+</blockquote>
+<p>All the hooks can define <strong>name</strong> and <strong>namespace</strong> properties, or those will be inferred using path and file name. You should define a <strong>description</strong> too, and an <strong>help</strong> that will be shown on home page or command line manual.</p>
+<h4>Web Hook (http triggered command)</h4><p><strong>Those hooks are waiting for you to &quot;trigger&quot; them POSTing or GETting webpages!</strong> They will react to a specific express route, activate and send you a chat message.</p>
+<p>You can use those hooks to create a &quot;central dispatcher&quot; server for a little network and trigger hooks from remote machines.</p>
+<blockquote>
+<p>You can have a little of extra security configuring <strong>auth_token_name</strong> and <strong>auth_token</strong> in your config file. Then you'll need to add this extra header to every request to trigger the Hooks.</p>
+</blockquote>
+<p>You need to define some properties:</p>
+<ul>
+<li>a <strong>route</strong> function that will execute your code and will respond to a route path and executes some code and returns a Promise. Will receive an object <strong>params</strong> with the params you defined in your hooks, the Telegrammer api (you can use it to send any message you want) and request &amp; response objects. Your page will answer with your &quot;resolve&quot; param, unless you return null.</li>
+<li>Optionally the <strong>route_path</strong> or it will be generated using namespace/name of the hook.</li>
+<li>Optionally a <strong>params</strong> key defining expected GET or POST params following <a href="https://github.com/75lb/command-line-args.git">Command Line Args</a> syntax.</li>
+</ul>
+<h3>Command Line Hook (bash callable commands)</h3><p><strong>Those hooks are waiting for you to &quot;trigger&quot; them calling them by name!</strong> They will react to a specific command line inputs, using '<em>git-like</em>' syntax and named parametes.</p>
+<p>You can use those hooks to react to system events, cron jobs or daemon/application calling.</p>
+<p>You can use <strong>./tel.sh</strong> script or the <strong>index.js</strong> file to execute them.</p>
+<blockquote>
+<p>You can ask for help on defined commands and params using the command line interface you can read in the next chapter.</p>
+</blockquote>
+<p>You need to define some properties:</p>
+<ul>
+<li>an <strong>exec</strong> function that will execute your code and will executes some code and returns a Promise. Will receive an object <strong>params</strong> with the params you defined in your hooks and the Telegrammer api (you can use it to send any message you want). Telegrammer will send in chat any value you will &quot;resolve&quot;.</li>
+<li>Optionally the <strong>cmd_name</strong> or it will be generated using namespace/name of the hook.</li>
+<li>Optionally a <strong>params</strong> key defining expected params following <a href="https://github.com/75lb/command-line-args.git">Command Line Args</a> syntax.</li>
+</ul>
+<h3>Monitor Hook (monitoring commands)</h3><p><strong>Those hooks are will &quot;trigger&quot; themself whenever they want!</strong> They will react check at specified intervals something or react to GPIO inputs.</p>
+<p>You can use those hooks to monitor cpu usage, disk space, file/directories changing or GPIO input if you are on a &quot;Raspberry Pi&quot; like device.</p>
+<blockquote>
+<p>Monitoring hooks can be CPU/memory consuming. Consider using large intervals.</p>
+</blockquote>
+<p>You need to define some properties:</p>
+<ul>
+<li>an <strong>interval</strong> expressed in milliseconds. Your check will be called every <em>interval</em> milliseconds.</li>
+<li>a <strong>check</strong> function that will return a Promise. As always any param you'll pass to your &quot;resolve&quot; will be texted by the Bot. Your function will receive <strong>hook</strong> and Telegrammer <strong>api</strong> arguments, or a <strong>start_monitor</strong> and <strong>stop_monitor</strong> functions if you are feeling risky.</li>
+<li>or a <strong>gpio</strong> object with pin id and an handler to monitor GPIO events. Your handler will receive <strong>err</strong>or code, pin read <strong>value</strong>, <strong>hook</strong> reference and Telegrammer <strong>api</strong>. Any param you'll pass to your &quot;resolve&quot; will be texted by the Bot.</li>
+</ul>
+<blockquote>
+<p>You can find some examples in the hooks/examples directory. Feel free to trash it when you feel more confident on Hook definition.</p>
+</blockquote>
+<h1>Run (for your life)</h1><p>You can run the server using three alternatives:</p>
+<pre class="prettyprint source"><code>npm start</code></pre><pre class="prettyprint source"><code>node index.js start</code></pre><p>or you can use the little shell script tel.sh</p>
+<pre class="prettyprint source"><code>./tel.sh start</code></pre><p>Feel free to <strong>daemonize</strong> Telegrammer. You can later stop the server just executing:</p>
+<pre class="prettyprint source"><code>./tel.sh stop</code></pre><p>or</p>
+<pre class="prettyprint source"><code>node index.js stop</code></pre><h1>Help!</h1><p>If express is on you can navigate to your Telegrammer home page (localhost:express_port) to explore all hooks definitions. You can have a little help using command line interface:</p>
+<pre class="prettyprint source"><code>./tel.sh help</code></pre><p>or</p>
+<pre class="prettyprint source"><code>node index.js help</code></pre><p>and following instructions.</p>
+<p><strong>Your help output will include installed command line hooks, so it may change.</strong></p>
+<blockquote>
+<p>You can read JsDocs generated documentation in the docs directory.</p>
+</blockquote></article>
     </section>
 
 
@@ -62,7 +144,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Fri Mar 25 2016 18:01:35 GMT+0100 (CET) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Fri Mar 25 2016 21:52:45 GMT+0100 (CET) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

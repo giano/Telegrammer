@@ -207,7 +207,7 @@ const ExpressService = {
                     router(params, api, req, res).then(function (content) {
                       if (_.isString(hook.response)) {
                         res.send(hook.response);
-                      } else {
+                      } else if (content !== null) {
                         res.json(content);
                       }
                     }).catch(function (error) {

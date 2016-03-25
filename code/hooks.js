@@ -41,7 +41,7 @@ const work_hook = function (hook_def, hook_path) {
       return out_array;
     }
 
-    if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell || hook_def.signal)) || (hook_def.route) || (hook_def.exec) || (hook_def.gpio) || (hook_def.check) || (hook_def.start_monitor && hook_def.stop_monitor)) {
+    if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell || hook_def.signal)) || (hook_def.route) || (hook_def.exec) || (hook_def.gpio) || (hook_def.parse_response)  || (hook_def.check) || (hook_def.start_monitor && hook_def.stop_monitor)) {
       hook_def.path = hook_path;
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';
       hook_def.name = hook_def.name || path.basename(hook_path, path.extname(hook_path));
@@ -53,6 +53,10 @@ const work_hook = function (hook_def, hook_path) {
       hook_def.has_local_hook = (_.isFunction(hook_def.signal) || _.isArray(hook_def.signal)) || _.isString(hook_def.shell) || _.isFunction(hook_def.action) || _.isString(hook_def.action) || _.isFunction(hook_def.parse_response);
       hook_def.has_web_hook = _.isFunction(hook_def.route);
       hook_def.has_command_line_hook = _.isFunction(hook_def.exec) || _.isString(hook_def.exec);
+
+      if(hook_def.parse_response && !hook_def.action){
+        hook_def.action = true;
+      }
 
       if (hook_def.command) {
         if (hook_def.command.indexOf('/') == -1) {

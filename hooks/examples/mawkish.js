@@ -11,7 +11,6 @@ const Promise = require('promise');
 
 module.exports = {
   command: "love",
-  action: true,
   parse_response: function (message, response_message, api) {
     let response_text = response_message.text.toString().toLowerCase();
     if (response_text.indexOf("yes") == 0) {

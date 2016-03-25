@@ -6,6 +6,7 @@
   "source": {
     "include": ["code", "hooks"],
     "excludePattern": "(node_modules/|docs)",
+    "includePattern": ".js$",
     "exclude": [
       "node_modules",
       "plugins"
