@@ -15,11 +15,6 @@ const Promise = require('promise');
 
 module.exports = {
   match: /beep(?:\s+(\d+)\s+times)*/i,
-  /**
-  * @function action
-  * @description  Will beep specified number of times
-  * @memberof beep
-  */
   action: function (message, service, matches) {
     return new Promise(function (resolve, reject) {
       let times = (matches[1] || 1) * 1;
