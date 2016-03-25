@@ -183,7 +183,7 @@ Consider disabling **express manager** and **web hooks** on _memory-frugal_ devi
 
 MIT License
 
-Copyright (c) [2016] [Stefano Valicchia]
+Copyright (c) 2016 Stefano Valicchia
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
