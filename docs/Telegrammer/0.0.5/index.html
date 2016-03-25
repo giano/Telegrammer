@@ -51,11 +51,11 @@
  ║ ├┤ │  ├┤ │ ┬├┬┘├─┤││││││├┤ ├┬┘
  ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─</code></pre><p>Manage your device or server using <a href="https://telegram.org/"><strong>Telegram Messenger</strong></a>. Two way communication!</p>
 <hr>
-<h1>Synopsis</h1><p>Telegrammer is a little resident server born to allow easy device/server management via private Telegram chat.</p>
+<h2>Synopsis</h2><p>Telegrammer is a little resident server born to allow easy device/server management via private Telegram chat.</p>
 <p>It allows two-way communication using a registered Telegram Bot.</p>
 <p>Actually Telegrammer allows device/server monitoring, device/server shell scripts and node functions execution, GPIO signaling (in/out), command line and web triggers to send message to the Bot chat.</p>
 <p><em><strong>Making IT simple?</strong> Chat with your <strong>server</strong> or <strong>device</strong>. It will chat to you too :)</em></p>
-<h1>Installation</h1><h3>Cloning/Forking this repository</h3><p>Step <strong>one</strong> is cloning or forking this repository in a directory on your computer, server or device.</p>
+<h2>Installation</h2><h3>Cloning/Forking this repository</h3><p>Step <strong>one</strong> is cloning or forking this repository in a directory on your computer, server or device.</p>
 <h3>Chatting with a BotFather</h3><p>Next step is creating a Bot on Telegram and obtain an authorization token. You'll have to chat with a special Bot called <strong>BotFather</strong> register your Bot.</p>
 <p>Just follow <a href="https://core.telegram.org/bots">this guide</a> to authorize your Bot.</p>
 <p><strong>Keep in mind that actually only one instance of Telegrammer can be linked to a Bot (Telegram limitation), so if you need to monitor <em>two</em> devices you'll have to register <em>two</em> Bots. Then you can create a &quot;group chat&quot; with all your Bots to manage all the devices at once.</strong></p>
@@ -68,7 +68,7 @@
 <blockquote>
 <p>You can use this file to config your Hooks too.</p>
 </blockquote>
-<h1>Hooks? Sounds painful.</h1><p>So what the heck are those Hooks?</p>
+<h2>Hooks? Sounds painful.</h2><p>So what the heck are those Hooks?</p>
 <p>You can call them <strong>plugins</strong> if your heart's content. You can find some in the <strong>hooks/</strong> directory. Those are the files you'll use to define your commands (in/out) and monitoring services. Telegrammer will load all the <strong>.js</strong> and <strong>.json</strong> files in <strong>hooks/</strong> subfolder and, after checking it's actually an hook definition, will &quot;hook&quot; it.</p>
 <p><em>You can define different kinds of hooks, and the same hook can &quot;activate&quot; many of them at once (for example monitoring a disk, sending you a message if disk space is low, and reacting to your command clearing it).</em></p>
 <blockquote>
@@ -122,11 +122,11 @@
 <blockquote>
 <p>You can find some examples in the hooks/examples directory. Feel free to trash it when you feel more confident on Hook definition.</p>
 </blockquote>
-<h1>Run (for your life)</h1><p>You can run the server using three alternatives:</p>
+<h2>Run (for your life)</h2><p>You can run the server using three alternatives:</p>
 <pre class="prettyprint source"><code>npm start</code></pre><pre class="prettyprint source"><code>node index.js start</code></pre><p>or you can use the little shell script tel.sh</p>
 <pre class="prettyprint source"><code>./tel.sh start</code></pre><p>Feel free to <strong>daemonize</strong> Telegrammer. You can later stop the server just executing:</p>
 <pre class="prettyprint source"><code>./tel.sh stop</code></pre><p>or</p>
-<pre class="prettyprint source"><code>node index.js stop</code></pre><h1>Help!</h1><p>If express is on you can navigate to your Telegrammer home page (<strong>localhost:express_port</strong>) to explore all hooks definitions. Standard port is 3000, but you cand write in config or use PORT environment value to control it.</p>
+<pre class="prettyprint source"><code>node index.js stop</code></pre><h2>Help!</h2><p>If express is on you can navigate to your Telegrammer home page (<strong>localhost:express_port</strong>) to explore all hooks definitions. Standard port is 3000, but you cand write in config or use PORT environment value to control it.</p>
 <p>You can have a little help using command line interface:</p>
 <pre class="prettyprint source"><code>./tel.sh help</code></pre><p>or</p>
 <pre class="prettyprint source"><code>node index.js help</code></pre><p>and following instructions.</p>
@@ -134,9 +134,9 @@
 <blockquote>
 <p>You can read JsDocs generated documentation in the docs directory.</p>
 </blockquote>
-<h1>Issues</h1><p>As noted before you'll have to register a different Telegram Bot for every Telegrammer instance running as a server. It can be <strong>boooring</strong> (expecially as Bot names will fill up), but <em>no way out from this hell at the moment</em>.</p>
+<h2>Issues</h2><p>As noted before you'll have to register a different Telegram Bot for every Telegrammer instance running as a server. It can be <strong>boooring</strong> (expecially as Bot names will fill up), but <em>no way out from this hell at the moment</em>.</p>
 <p>Consider disabling <strong>express manager</strong> and <strong>web hooks</strong> on <em>memory-frugal</em> devices. Those are the most &quot;memory consuming&quot; managers.</p>
-<h1>license</h1><p>MIT License</p>
+<h2>License</h2><p>MIT License</p>
 <p>Copyright (c) [2016] [Stefano Valicchia]</p>
 <p>Permission is hereby granted, free of charge, to any person obtaining a copy<br>of this software and associated documentation files (the &quot;Software&quot;), to deal<br>in the Software without restriction, including without limitation the rights<br>to use, copy, modify, merge, publish, distribute, sublicense, and/or sell<br>copies of the Software, and to permit persons to whom the Software is<br>furnished to do so, subject to the following conditions:</p>
 <p>The above copyright notice and this permission notice shall be included in all<br>copies or substantial portions of the Software.</p>
@@ -153,7 +153,7 @@
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Fri Mar 25 2016 22:03:52 GMT+0100 (CET) using the Minami theme.
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Fri Mar 25 2016 22:04:49 GMT+0100 (CET) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>

@@ -7,7 +7,7 @@ Manage your device or server using [**Telegram Messenger**](https://telegram.org
 
 ---
 
-# Synopsis
+## Synopsis
 
 Telegrammer is a little resident server born to allow easy device/server management via private Telegram chat.
 
@@ -17,7 +17,7 @@ Actually Telegrammer allows device/server monitoring, device/server shell script
 
 _**Making IT simple?** Chat with your **server** or **device**. It will chat to you too :)_
 
-# Installation
+## Installation
 
 ### Cloning/Forking this repository
 
@@ -47,7 +47,7 @@ You can disable some services to lower memory consumpion (on devices like Raspbe
 
 > You can use this file to config your Hooks too.
 
-# Hooks? Sounds painful.
+## Hooks? Sounds painful.
 
 So what the heck are those Hooks?
 
@@ -117,7 +117,7 @@ You need to define some properties:
 
 > You can find some examples in the hooks/examples directory. Feel free to trash it when you feel more confident on Hook definition.
 
-# Run (for your life)
+## Run (for your life)
 
 You can run the server using three alternatives:
 
@@ -147,7 +147,7 @@ or
 node index.js stop
 ```
 
-# Help!
+## Help!
 
 If express is on you can navigate to your Telegrammer home page (**localhost:express_port**) to explore all hooks definitions. Standard port is 3000, but you cand write in config or use PORT environment value to control it.
 
@@ -169,13 +169,13 @@ __Your help output will include installed command line hooks, so it may change._
 
 > You can read JsDocs generated documentation in the docs directory.
 
-# Issues
+## Issues
 
 As noted before you'll have to register a different Telegram Bot for every Telegrammer instance running as a server. It can be **boooring** (expecially as Bot names will fill up), but _no way out from this hell at the moment_.
 
 Consider disabling **express manager** and **web hooks** on _memory-frugal_ devices. Those are the most "memory consuming" managers.
 
-# license
+## License
 
 MIT License
 
