@@ -4,7 +4,7 @@ const os = require("os");
 
 module.exports = {
   gpio: {
-    device: 4,
+    pin: 4,
     handler: function (err, value, hook, api) {
       return new Promise(function (resolve, reject) {
         if (err) {
