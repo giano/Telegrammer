@@ -5,7 +5,7 @@
  * @namespace LocalService
  * @description Manages local connected hooks, allowing device/server code execution
  * @example See "hooks/examples/helloworld.js" for a basic local hook definition
- * @example See "hooks/examples/beep.js" for a regex local hook definition
+ * @example See ["hooks/examples/beep.js"]{@link module:hooks/examples.beep} for a regex local hook definition
  * @example See "hooks/examples/systat.js" for a system local hook definition
  * @example See "hooks/examples/blink.js" for a GPIO local hook definition
  */
