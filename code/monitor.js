@@ -36,6 +36,9 @@ const monitor_service = {
           logger.notify(`Starting monitor hook ${hook.full_name}...`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
+              if (config.get("gpio") == false) {
+                return resolve(true);
+              }
               const Gpio = require('onoff').Gpio;
               if (hook.gpio.device) {
                 hook.gpio.device.unexport();
@@ -114,6 +117,9 @@ const monitor_service = {
           logger.notify(`Stopping monitor hook ${hook.full_name}`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
+              if (config.get("gpio") == false) {
+                return resolve(true);
+              }
               const Gpio = require('onoff').Gpio;
               if (hook.gpio.device) {
                 hook.gpio.device.unexport();

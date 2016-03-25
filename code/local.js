@@ -52,44 +52,46 @@ const local_service = {
     return new Promise(function (resolve, reject) {
 
       hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
+      if (config.get("gpio") !== false) {
 
-      if (_.isArray(hook_def.signal)) {
-        hook_def.action = function (message, service, matches) {
-          return new Promise(function (resolve, reject) {
-            try {
-              const Gpio = require('onoff').Gpio;
-              let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
-              let gpios_map = {};
-              _.each(gpios, function (gpio) {
-                gpios_map[gpio] = new Gpio(gpio, 'out');
-              });
-
-              asyncP.each(hook_def.signal, function (gpio_el) {
-                return new Promise(function (resolve, reject) {
-                  gpios_map[gpio_el.gpio].write(((_.isNull(gpio_el.value) || _.isUndefined(gpio_el.value)) ? 1 : (!!gpio_el.value) * 1), function (err) {
-                    if (err) {
-                      return reject(err);
-                    }
-                    if (gpio_el.time) {
-                      setTimeout(resolve, gpio_el.time);
-                    } else {
-                      resolve();
-                    }
-                  });
-                });
-              }).then(function () {
+        if (_.isArray(hook_def.signal)) {
+          hook_def.action = function (message, service, matches) {
+            return new Promise(function (resolve, reject) {
+              try {
+                const Gpio = require('onoff').Gpio;
+                let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
+                let gpios_map = {};
                 _.each(gpios, function (gpio) {
                   gpios_map[gpio] = new Gpio(gpio, 'out');
                 });
-                resolve("");
-              }).catch(reject);
-            } catch (e) {
-              return reject(e);
-            }
-          });
-        };
-      } else if (_.isFunction(hook_def.signal)) {
-        hook_def.action = hook_def.signal;
+
+                asyncP.each(hook_def.signal, function (gpio_el) {
+                  return new Promise(function (resolve, reject) {
+                    gpios_map[gpio_el.gpio].write(((_.isNull(gpio_el.value) || _.isUndefined(gpio_el.value)) ? 1 : (!!gpio_el.value) * 1), function (err) {
+                      if (err) {
+                        return reject(err);
+                      }
+                      if (gpio_el.time) {
+                        setTimeout(resolve, gpio_el.time);
+                      } else {
+                        resolve();
+                      }
+                    });
+                  });
+                }).then(function () {
+                  _.each(gpios, function (gpio) {
+                    gpios_map[gpio] = new Gpio(gpio, 'out');
+                  });
+                  resolve("");
+                }).catch(reject);
+              } catch (e) {
+                return reject(e);
+              }
+            });
+          };
+        } else if (_.isFunction(hook_def.signal)) {
+          hook_def.action = hook_def.signal;
+        }
       }
 
       if (_.isString(hook_def.shell)) {
