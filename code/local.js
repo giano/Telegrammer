@@ -58,34 +58,34 @@ const local_service = {
           return new Promise(function (resolve, reject) {
             try {
               const Gpio = require('onoff').Gpio;
-            } catch (e) {
-              return reject(e);
-            }
-            let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
-            let gpios_map = {};
-            _.each(gpios, function (gpio) {
-              gpios_map[gpio] = new Gpio(gpio, 'out');
-            });
-
-            asyncP.each(hook_def.signal, function (gpio_el) {
-              return new Promise(function (resolve, reject) {
-                gpios_map[gpio_el.gpio].write(((_.isNull(gpio_el.value) || _.isUndefined(gpio_el.value)) ? 1 : (!!gpio_el.value) * 1), function (err) {
-                  if (err) {
-                    return reject(err);
-                  }
-                  if (gpio_el.time) {
-                    setTimeout(resolve, gpio_el.time);
-                  } else {
-                    resolve();
-                  }
-                });
-              });
-            }).than(function () {
+              let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
+              let gpios_map = {};
               _.each(gpios, function (gpio) {
                 gpios_map[gpio] = new Gpio(gpio, 'out');
               });
-              resolve("");
-            });
+
+              asyncP.each(hook_def.signal, function (gpio_el) {
+                return new Promise(function (resolve, reject) {
+                  gpios_map[gpio_el.gpio].write(((_.isNull(gpio_el.value) || _.isUndefined(gpio_el.value)) ? 1 : (!!gpio_el.value) * 1), function (err) {
+                    if (err) {
+                      return reject(err);
+                    }
+                    if (gpio_el.time) {
+                      setTimeout(resolve, gpio_el.time);
+                    } else {
+                      resolve();
+                    }
+                  });
+                });
+              }).than(function () {
+                _.each(gpios, function (gpio) {
+                  gpios_map[gpio] = new Gpio(gpio, 'out');
+                });
+                resolve("");
+              });
+            } catch (e) {
+              return reject(e);
+            }
           });
         };
       } else if (_.isFunction(hook_def.signal)) {

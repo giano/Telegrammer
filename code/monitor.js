@@ -37,21 +37,21 @@ const monitor_service = {
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
               const Gpio = require('onoff').Gpio;
+              if (hook.gpio.device) {
+                hook.gpio.device.unexport();
+                hook.gpio.device.unwatchAll();
+                delete hook.gpio.device;
+              }
+              hook.gpio.device = new Gpio(hook.gpio.pin, (hook.gpio.direction || 'in'), (hook.gpio.edge || 'both'));
+              hook.gpio.device.watch(function (err, value) {
+                hook.gpio.handler(err, value, hook, api);
+              });
+              logger.log(`Gpio Monitor hook ${hook.full_name} started.`);
+              hook.started = true;
+              return resolve(true);
             } catch (e) {
               return reject(e);
             }
-            if (hook.gpio.device) {
-              hook.gpio.device.unexport();
-              hook.gpio.device.unwatchAll();
-              delete hook.gpio.device;
-            }
-            hook.gpio.device = new Gpio(hook.gpio.pin, (hook.gpio.direction || 'in'), (hook.gpio.edge || 'both'));
-            hook.gpio.device.watch(function (err, value) {
-              hook.gpio.handler(err, value, hook, api);
-            });
-            logger.log(`Gpio Monitor hook ${hook.full_name} started.`);
-            hook.started = true;
-            return resolve(true);
           } else if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
               hook.started = true;
@@ -109,17 +109,18 @@ const monitor_service = {
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
               const Gpio = require('onoff').Gpio;
+              if (hook.gpio.device) {
+                hook.gpio.device.unexport();
+                hook.gpio.device.unwatchAll();
+                delete hook.gpio.device;
+              }
+              logger.log(`Gpio Monitor hook ${hook.full_name} stopped.`);
+              hook.started = false;
+              return resolve(true);
             } catch (e) {
               return reject(e);
             }
-            if (hook.gpio.device) {
-              hook.gpio.device.unexport();
-              hook.gpio.device.unwatchAll();
-              delete hook.gpio.device;
-            }
-            logger.log(`Gpio Monitor hook ${hook.full_name} stopped.`);
-            hook.started = false;
-            return resolve(true);
+
           } else if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook ${hook.full_name} stopped.`);
