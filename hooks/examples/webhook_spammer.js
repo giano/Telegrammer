@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * @alias webhook_spammer
+ * @member {Object} webhook_spammer
+ * @description Example of web hook. Just send passed string to chat
+ * @memberOf hooks/examples
+ */
+
 const Promise = require('promise');
 
 module.exports = {

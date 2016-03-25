@@ -4,7 +4,7 @@
  * CommandLineService
  * @namespace CommandLineService
  * @description Manages command line hooks. Callable using .tel.sh file or directly using index.js + command
- * @example See "hooks/examples/spammer.js" for a commandline hook definition
+ * @example See ["hooks/examples/spammer.js"]{@link hooks/examples.spammer} for a commandline hook definition
  */
 
 const hooks = require('./hooks');
@@ -15,9 +15,21 @@ const escape_string_regexp = require('escape-string-regexp');
 
 _.mixin(s.exports());
 
+/**
+ * @property {TelegramService} api Link to TelegramService
+ * @private
+ * @memberof CommandLineService
+  */
+
 var api = null;
 
 const Promise = require('promise');
+
+/**
+ * @property {Boolean} initialized If initialized
+ * @private
+ * @memberof CommandLineService
+  */
 
 var initialized = false;
 

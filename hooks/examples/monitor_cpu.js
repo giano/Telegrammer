@@ -1,4 +1,12 @@
 "use strict";
+
+/**
+ * @alias monitor_cpu
+ * @member {Object} monitor_cpu
+ * @description A monitoring hook definition example
+ * @memberOf hooks/examples
+ */
+
 const config = require('../../code/config');
 
 const Promise = require('promise');

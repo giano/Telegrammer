@@ -1,10 +1,11 @@
 "use strict";
 
- /**
-  * @name blink
-  * @description Local hook example with GPIO signaling
-  * @memberOf hooks/examples
-  */
+/**
+ * @alias blink
+ * @member {Object} blink
+ * @description Local hook example with GPIO signaling. Would blink a LED connected to 14 GPIO pin three times
+ * @memberOf hooks/examples
+ */
 
 const Promise = require('promise');
 

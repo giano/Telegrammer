@@ -32,7 +32,7 @@ const Logger = _.extend({}, console, {
     }
   },
   /**
-   * @function notify
+   * @function error
    * @description Error logging override
    * @static
    * @memberof Logger

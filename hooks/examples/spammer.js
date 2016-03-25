@@ -1,5 +1,13 @@
 "use strict";
 
+/**
+* @alias spammer
+* @member {Object} spammer
+* @description Example of command line hook. Just send passed string to chat
+* @memberOf hooks/examples
+*/
+
+
 const Promise = require('promise');
 
 module.exports = {

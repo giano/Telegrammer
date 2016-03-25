@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * @alias systat
+ * @member {Object} systat
+ * @description Example of command line hook linked to non regex command /systat
+ * @memberOf hooks/examples
+ */
+
 const Promise = require('promise');
 const os = require("os");
 

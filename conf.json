@@ -5,11 +5,21 @@
   },
   "source": {
     "include": ["code", "hooks"],
-    "excludePattern": "(^|\\/|\\\\)_",
+    "excludePattern": "(node_modules/|docs)",
     "exclude": [
       "node_modules",
       "plugins"
     ]
+  },
+  "opts": {
+    "template": "./node_modules/docdash",
+    "encoding": "utf8",
+    "destination": "./docs/",
+    "recurse": true,
+    "package": "./package.json",
+    "readme": "./README.md",
+    "private": true,
+    "verbose": true
   },
   "markdown": {
     "hardwrap": true

@@ -21,7 +21,15 @@ _.mixin(s.exports());
 const Promise = require('promise');
 
 let port = (config.get('rpc_port') || 5004) * 1;
+
+/**
+ * @property {Boolean} initialized If initialized
+ * @private
+ * @memberof RpcService
+  */
+
 let initialized = false;
+
 let server = null;
 
 /**

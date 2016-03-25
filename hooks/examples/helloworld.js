@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * @alias helloworld
+ * @member {Object} helloworld
+ * @description Can't miss in any dev project
+ * @memberOf hooks/examples
+ */
+
 const Promise = require('promise');
 
 module.exports = {

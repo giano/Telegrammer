@@ -1,4 +1,12 @@
 "use strict";
+
+/**
+ * @alias monitor_gpio
+ * @member {Object} monitor_gpio
+ * @description A GPIO monitoring hook definition example. Would react to a button connected to GPIO pin 4.
+ * @memberOf hooks/examples
+ */
+
 const Promise = require('promise');
 const os = require("os");
 

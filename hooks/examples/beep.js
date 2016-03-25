@@ -1,7 +1,8 @@
 "use strict";
 
 /**
- * @name beep
+ * @alias beep
+ * @member {Object} beep
  * @description Local hook example with regex capture
  * @memberOf hooks/examples
  */

@@ -4,7 +4,7 @@
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
-    "compile-docs": "node_modules/.bin/jsdoc -r -c conf.json -d docs -p",
+    "compile-docs": "node_modules/.bin/jsdoc -c conf.json",
     "start": "node index.js start"
   },
   "repository": {
@@ -44,6 +44,7 @@
     "underscore.string": "^3.3.4"
   },
   "devDependencies": {
+    "docdash": "^0.1.0",
     "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
   }
 }

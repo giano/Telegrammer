@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+* @alias mawkish
+* @member {Object} mawkish
+* @description Local hook with confirmation and custom keyboard
+* @memberOf hooks/examples
+*/
+
 const Promise = require('promise');
 
 module.exports = {
