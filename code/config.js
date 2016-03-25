@@ -1,17 +1,28 @@
 "use strict";
 
-const nconf = require('nconf');
+/**
+ * Config
+ * @description Load config files cascading from command line, environment variables to json/js files in config path
+ * @namespace Config
+ */
+
+/**
+* @class
+* @classdesc Load config files cascading from command line, environment variables to json/js files in config path
+*/
+
+const Config = require('nconf');
 const path = require('path');
 const dir = path.resolve(__dirname, '..');
 const _ = require('underscore');
 const s = require("underscore.string");
 _.mixin(s.exports());
 
-nconf.argv().env('__');
+Config.argv().env('__');
 
-const env = (nconf.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
+const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
 
-nconf.add("env_js", {
+Config.add("env_js", {
     type: 'file',
     readOnly: true,
     file: path.resolve(dir, `config/${env}.js`)
@@ -32,11 +43,11 @@ nconf.add("env_js", {
     file: path.resolve(dir, 'config/shared.json')
   });
 
-for (let key in nconf.stores) {
-  let store = nconf.stores[key];
+for (let key in Config.stores) {
+  let store = Config.stores[key];
   if (store.type == 'file') {
     store.loadSync();
   }
 }
 
-module.exports = nconf;
+module.exports = Config;

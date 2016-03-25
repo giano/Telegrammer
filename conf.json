@@ -1,0 +1,24 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "source": {
+    "include": ["code", "hooks"],
+    "excludePattern": "(^|\\/|\\\\)_",
+    "exclude": [
+      "node_modules",
+      "plugins"
+    ]
+  },
+  "markdown": {
+    "hardwrap": true
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true
+  }
+}

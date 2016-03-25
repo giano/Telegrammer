@@ -10,7 +10,7 @@ module.exports = {
     if (response_text.indexOf("yes") == 0) {
       api.respond(response_message, "Thank you. I love you too 😍.");
     } else {
-      api.respond(response_message, "Oh, I just killed a kitten 🐱 for this.")
+      api.respond(response_message, "Oh, I just killed a kitten 🐱for this.")
     }
     return Promise.resolve();
   },
