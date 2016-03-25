@@ -57,7 +57,7 @@ _You can define different kinds of hooks, and the same hook can "activate" many 
 
 > The syntax is simple but powerful, I promise you that.
 
-#### Input Hook (local command)
+### Input Hook (local command)
 
 **Those hooks are waiting for you to text them!** They will react to a command or regex and act accordingly, running a node function, a GPIO sequence (_if you are on a device like a Raspberry Pi_), a shell command or script. Then Telegrammer will send you back a result or error.
 
@@ -71,7 +71,7 @@ You need to define some properties:
 
 All the hooks can define **name** and **namespace** properties, or those will be inferred using path and file name. You should define a **description** too, and an **help** that will be shown on home page or command line manual.
 
-#### Web Hook (http triggered command)
+### Web Hook (http triggered command)
 
 **Those hooks are waiting for you to "trigger" them POSTing or GETting webpages!** They will react to a specific express route, activate and send you a chat message.
 
