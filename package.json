@@ -17,7 +17,7 @@
     "node": ">=4.4"
   },
   "author": "Stefano Valicchia",
-  "license": "ISC",
+  "license": "MIT",
   "maintainers": [
     {
       "name": "Stefano Valicchia",

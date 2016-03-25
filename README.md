@@ -3,6 +3,8 @@
      ║ ├┤ │  ├┤ │ ┬├┬┘├─┤││││││├┤ ├┬┘
      ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─
 
+Manage your device or server using [**Telegram Messenger**](https://telegram.org/). Two way communication!
+
 ---
 
 # Synopsis
@@ -147,7 +149,9 @@ node index.js stop
 
 # Help!
 
-If express is on you can navigate to your Telegrammer home page (localhost:express_port) to explore all hooks definitions. You can have a little help using command line interface:
+If express is on you can navigate to your Telegrammer home page (**localhost:express_port**) to explore all hooks definitions. Standard port is 3000, but you cand write in config or use PORT environment value to control it.
+
+You can have a little help using command line interface:
 
 ```
 ./tel.sh help
@@ -164,3 +168,33 @@ and following instructions.
 __Your help output will include installed command line hooks, so it may change.__
 
 > You can read JsDocs generated documentation in the docs directory.
+
+# Issues
+
+As noted before you'll have to register a different Telegram Bot for every Telegrammer instance running as a server. It can be **boooring** (expecially as Bot names will fill up), but _no way out from this hell at the moment_.
+
+Consider disabling **express manager** and **web hooks** on _memory-frugal_ devices. Those are the most "memory consuming" managers.
+
+# license
+
+MIT License
+
+Copyright (c) [2016] [Stefano Valicchia]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
