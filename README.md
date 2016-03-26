@@ -21,7 +21,9 @@ _**Making IT simple?** Chat with your **server** or **device**. It will chat to 
 
 ### Cloning/Forking this repository
 
-Step **one** is cloning or forking this repository in a directory on your computer, server or device.
+Step **one** is cloning or forking this repository in a directory on your computer, server or device. You can get using _npm_ too.
+
+Then _npm install_ as usual.
 
 ### Chatting with a BotFather
 
