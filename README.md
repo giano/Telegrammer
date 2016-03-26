@@ -103,7 +103,7 @@ You need to define some properties:
 
 ### Monitor Hook (monitoring commands)
 
-**Those hooks are will "trigger" themself whenever they want!** They will react check at specified intervals something or react to GPIO inputs.
+**Those hooks will "trigger" themself whenever they want!** They will react check at specified intervals something or react to GPIO inputs.
 
 You can use those hooks to monitor cpu usage, disk space, file/directories changing or GPIO input if you are on a "Raspberry Pi" like device.
 
