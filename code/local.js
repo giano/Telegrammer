@@ -237,13 +237,15 @@ const LocalService = {
               } : function (response_message) {
                 let response_text = response_message.text.toString().toLowerCase();
                 if (response_text == "yes") {
-                  return _action(message, service, matches).then(function (output, plain) {
-                    manage_response(message, hook_def, null, output, (hook_def.plain || plain)).then(resolve).catch(reject);
-                  }).catch(function (error) {
-                    manage_response(message, hook_def, error, null, hook_def.plain).then(resolve).catch(reject);
-                  });
+                  return api.respond(response_message, (hook_def.continue || "Ok, executing action...")).then(function () {
+                    return _action(message, service, matches).then(function (output, plain) {
+                      manage_response(message, hook_def, null, output, (hook_def.plain || plain)).then(resolve).catch(reject);
+                    }).catch(function (error) {
+                      manage_response(message, hook_def, error, null, hook_def.plain).then(resolve).catch(reject);
+                    });
+                  }).catch(reject);
                 } else {
-                  manage_response(message, hook_def, (hook_def.abort || "Ok, nevermind..."), null, hook_def.plain).then(resolve).catch(reject);
+                  manage_response(message, hook_def, (hook_def.abort || "Oh, nevermind..."), null, hook_def.plain).then(resolve).catch(reject);
                 }
               };
               return api.send(confirm_message, buttons, (hook_def.accepted_responses || true), hook_def.one_time_keyboard, hook_def.plain).then(parse_response).catch(reject);
