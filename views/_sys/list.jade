@@ -284,7 +284,8 @@ html(lang="en")
                               li
                                 strong Page Route
                                 span :&nbsp;
-                                span #{hook.route_path}
+                                span 
+                                  a(href=hook.route_path, target="_blank") #{hook.route_path}
                                 
                               li
                                 strong Method

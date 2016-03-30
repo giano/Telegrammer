@@ -7,9 +7,9 @@
  */
 
 /**
-* @class
-* @classdesc Load config files cascading from command line, environment variables to json/js files in config path
-*/
+ * @class
+ * @classdesc Load config files cascading from command line, environment variables to json/js files in config path
+ */
 
 const Config = require('nconf');
 const path = require('path');

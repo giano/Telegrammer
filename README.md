@@ -27,7 +27,7 @@ Then _npm install_ as usual.
 
 ### Chatting with a BotFather
 
-Next step is creating a Bot on Telegram and obtain an authorization token. You'll have to chat with a special Bot called **BotFather** register your Bot.
+Next step is creating a Bot on Telegram and obtain an authorization token. You'll have to chat with a special Bot called **BotFather** to register your Bot.
 
 Just follow [this guide](https://core.telegram.org/bots) to authorize your Bot.
 
@@ -66,10 +66,10 @@ _You can define different kinds of hooks, and the same hook can "activate" many 
 You need to define some properties:
 
 * either __command__ or __match__. Your bot will react to the string defined in __command__ preceded by __/__ (so if you write 'blow_candles' it will react to '/blow_candles'), or to the regex pattern you'll define in match.
-* either __action__ (that can be a string containing a shell command or a node function returning a *Promise*), __shell__ (with the name of an executable in the same directory), a __signal__ (that can be an array defining a GPIO pattern or a function returning a *Promise*) or a function named __parse_response__ for "confirmation enabled" hooks.
+* either __action__ (that can be a string containing a shell command or a node function returning a *Promise*), __shell__ (with the name of an executable in the same directory), a __signal__ (that can be an array defining a GPIO pattern, an array of array of GPIO signals for multi PIN parallel signaling or a function returning a *Promise*) or a function named __parse_response__ for "confirmation enabled" hooks.
 * a __response__ and __error__ strings. You can use some variables too (@error@ and @response@) to include action output/error.
 
-> Most of the defined functions require you to return a Promise. Telegrammer will send you back to the chat anything you will output "resolving" or "rejecting" your Promise, unless you define __response: false__ in your hook or resolve with __null__. Just remember to resolve your Promises, or the **BotFather** will be very unhappy
+> Most of the defined functions require you to return a Promise. Telegrammer will send you back to the chat anything you will output "resolving" or "rejecting" your Promise, unless you define __response: false__ in your hook or resolve with __null__. Just remember to resolve your Promises, or the **BotFather** will be very unhappy.
 
 All the hooks can define **name** and **namespace** properties, or those will be inferred using path and file name. You should define a **description** too, and an **help** that will be shown on home page or command line manual.
 
@@ -83,7 +83,7 @@ You can use those hooks to create a "central dispatcher" server for a little net
 
 You need to define some properties:
 
-* a __route__ function that will execute your code and will respond to a route path and executes some code and returns a Promise. Will receive an object **params** with the params you defined in your hooks, the Telegrammer api (you can use it to send any message you want) and request & response objects. Your page will answer with your "resolve" param, unless you return null.
+* a __route__ function that will execute your code and that responds to a route path and executes some code. I must returns a Promise. It will receive an object **params** with the params you defined in your hooks, the Telegrammer api (you can use it to send any message you want) and request & response objects. Your page will answer with your "resolve" param, unless you return null.
 * Optionally the **route_path** or it will be generated using namespace/name of the hook.
 * Optionally a **params** key defining expected GET or POST params following [Command Line Args](https://github.com/75lb/command-line-args.git) syntax.
 
@@ -151,7 +151,7 @@ node index.js stop
 
 # Help!
 
-If express is on you can navigate to your Telegrammer home page (**localhost:express_port**) to explore all hooks definitions. Standard port is 3000, but you cand write in config or use PORT environment value to control it.
+If Express is on you can navigate to your Telegrammer home page (**localhost:express_port**) to explore all hooks definitions. Standard port is 3000, but you can write in config or use PORT environment variable to control it.
 
 You can have a little help using command line interface:
 
@@ -169,7 +169,7 @@ and following instructions.
 
 __Your help output will include installed command line hooks, so it may change.__
 
-> You can read JsDocs generated documentation in the docs directory.
+> You can also read JsDocs generated documentation in the docs directory.
 
 # Issues
 
@@ -179,7 +179,7 @@ Consider disabling **express manager** and **web hooks** on _memory-frugal_ devi
 
 # Team
 
-* Stefano "Giano" valicchia - [Linkedin](https://it.linkedin.com/in/stefanovalicchia) - [Github](https://github.com/giano) - [Twitter](https://twitter.com/tulo69)
+* Stefano "Giano" Valicchia - [LinkedIn](https://it.linkedin.com/in/stefanovalicchia) - [Github](https://github.com/giano) - [Twitter](https://twitter.com/tulo69)
 
 # License
 
