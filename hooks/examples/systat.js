@@ -9,6 +9,7 @@
 
 const Promise = require('promise');
 const os = require("os");
+const memory_command = "free | grep Mem | awk '{print $3/$2 * 100.0}'";
 
 module.exports = {
   command: "systat",
@@ -26,7 +27,15 @@ module.exports = {
         used += cpu.times["user"] + cpu.times["nice"] + cpu.times["sys"];
       }
       out += "CPUs (" + cpus.length + "): " + Math.round(100 * used / total) + "%\n";
-      resolve(out);
+      const exec = require('child_process').exec;
+      let child = exec(memory_command, {}, function (error, stdout, stderr) {
+        let stderr_str = stderr.toString('utf8');
+        if(!stderr_str){
+          out += "Memory Usage: " + stdout.toString('utf8') + " %\n";
+        }
+        resolve(out);
+      });
+
     });
   },
   description: "Example of command line hook linked to non regex command \/systat."
