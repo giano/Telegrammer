@@ -25,6 +25,8 @@ Step **one** is cloning or forking this repository in a directory on your comput
 
 Then _npm install_ as usual.
 
+You can install globally too (or _npm link_ it). In this case You'll have a nice "telegrammer" executable in your bin folder to launch this software.
+
 ### Chatting with a BotFather
 
 Next step is creating a Bot on Telegram and obtain an authorization token. You'll have to chat with a special Bot called **BotFather** to register your Bot.
@@ -121,7 +123,7 @@ You need to define some properties:
 
 # Run (for your life)
 
-You can run the server using three alternatives:
+You can run the server using three (or four) alternatives:
 
 ```
 npm start
@@ -137,6 +139,12 @@ or you can use the little shell script tel.sh
 ./tel.sh start
 ```
 
+If you installed it globally (-g) or _npm link_-ed it you can access to it from your console using the executable in your bin folder as this:
+
+```
+telegrammer start
+```
+
 Feel free to **daemonize** Telegrammer. You can later stop the server just executing:
 
 ```
@@ -147,6 +155,11 @@ or
 
 ```
 node index.js stop
+```
+or
+
+```
+telegrammer stop
 ```
 
 # Help!
@@ -163,6 +176,11 @@ or
 
 ```
 node index.js help
+```
+or
+
+```
+telegrammer help
 ```
 
 and following instructions.

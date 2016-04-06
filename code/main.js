@@ -390,7 +390,7 @@ const MainService = {
           MainService.help(config, command.options.hook).then(resolve).catch(reject);
           break
         case '':
-          return reject(new Error("No command specified"));
+          return reject("No command specified");
         case 'monitor:start':
           rpc.send("start_monitor", command.options.hook).then(resolve).catch(reject);
           break

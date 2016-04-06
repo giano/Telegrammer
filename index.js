@@ -5,14 +5,11 @@ const Main = require('./code/main');
 const logger = require('./code/logger');
 
 Main.main(config).then(function (result) {
-  if (result) {
-    logger.log(result);
-  }
-  process.exit(0);
+    if (result) {
+      logger.log(result);
+    }
+    process.exit(0);
 }).catch(function (error) {
-  if (error) {
-    console.trace();
     logger.error(error);
-  }
-  process.exit(1);
+    process.exit(1);
 });
