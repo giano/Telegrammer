@@ -2,7 +2,11 @@
 
 (function () {
     var _ = require("lodash");
-    var args = _.rest(_.toArray(process.argv), 2);
+    var args = _.toArray(process.argv);
+    var telegg_position = _.findIndex(args, function(el){
+      return el.indexOf("telegrammer") != -1;
+    });
+    args = args.slice(telegg_position + 1);
     var path = require('path');
     var index_path = path.resolve(__dirname, '..', "index.js");
     var execFile = require('child_process').execFile;
