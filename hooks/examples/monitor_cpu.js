@@ -33,6 +33,7 @@ module.exports = {
       } else {
         resolve(null);
       }
+      used = total = out = cpu = null;
     });
   },
   description: "Example of monitoring hook. Read config too."

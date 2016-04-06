@@ -1,11 +1,11 @@
 {
   "name": "telegrammer",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
     "compile-docs": "node_modules/.bin/jsdoc -c conf.json",
-    "start": "node index.js start",
+    "start": "./tel.sh start",
     "stop": "node index.js stop",
     "help": "node index.js help"
   },
@@ -24,6 +24,7 @@
       "email": "stefano.valicchia@gmail.com"
     }
   ],
+  "keywords": ["telegram", "server", "manage", "monitoring", "bot", "gpio", "raspberry", "raspberrypi", "pi", "express"],
   "dependencies": {
     "ansi-escape-sequences": "^2.2.2",
     "async-promises": "^0.1.2",
