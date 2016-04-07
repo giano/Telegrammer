@@ -11,43 +11,70 @@
  * @classdesc Load config files cascading from command line, environment variables to json/js files in config path
  */
 
+
 const Config = require('nconf');
-const path = require('path');
-const dir = path.resolve(__dirname, '..');
 const _ = require('underscore');
 const s = require("underscore.string");
 _.mixin(s.exports());
 
-Config.argv().env('__');
+const path = require('path');
+const default_config_dir = process.env.TELEGRAMMER_CONFIG_DIR || path.resolve(__dirname, '..', "config");
 
-const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
+/**
+ * @property {Boolean} initialized If initialized
+ * @private
+ * @memberof Config
+  */
+let initialized = false;
 
-Config.add("env_js", {
-    type: 'file',
-    readOnly: true,
-    file: path.resolve(dir, `config/${env}.js`)
-  })
-  .add("env_json", {
-    type: 'file',
-    readOnly: true,
-    file: path.resolve(dir, `config/${env}.json`)
-  })
-  .add("shared_js", {
-    type: 'file',
-    readOnly: true,
-    file: path.resolve(dir, 'config/shared.js')
-  })
-  .add("shared_json", {
-    type: 'file',
-    readOnly: true,
-    file: path.resolve(dir, 'config/shared.json')
-  });
+/**
+ * @function init
+ * @description Initialize config manager
+ * @static
+ * @param {String} config_dir Config dir path
+ * @memberof Config
+ * @public
+ * @returns {Config}
+ */
 
-for (let key in Config.stores) {
-  let store = Config.stores[key];
-  if (store.type == 'file') {
-    store.loadSync();
-  }
+function init (config_dir) {
+    Config.argv().env('__');
+    const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
+    Config.add("env_js", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(config_dir, `${env}.js`)
+        })
+        .add("env_json", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(config_dir, `${env}.json`)
+        })
+        .add("shared_js", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(config_dir, 'shared.js')
+        })
+        .add("shared_json", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(config_dir, 'shared.json')
+        });
+
+    for (let key in Config.stores) {
+        let store = Config.stores[key];
+        if (store.type == 'file') {
+            store.loadSync();
+        }
+    }
+
+    Config.load_from = arguments.callee;
+    initialized = true;
+    return Config;
+}
+
+if(!initialized){
+  load_config(default_config_dir);
 }
 
 module.exports = Config;
