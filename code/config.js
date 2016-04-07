@@ -37,7 +37,7 @@ let initialized = false;
  * @returns {Config}
  */
 
-function init (config_dir) {
+function init(config_dir) {
     Config.argv().env('__');
     const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
     Config.add("env_js", {
@@ -68,13 +68,13 @@ function init (config_dir) {
         }
     }
 
-    Config.load_from = arguments.callee;
+    Config.load_from = init;
     initialized = true;
     return Config;
 }
 
 if(!initialized){
-  load_config(default_config_dir);
+  init(default_config_dir);
 }
 
 module.exports = Config;

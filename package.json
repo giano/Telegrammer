@@ -1,66 +1,80 @@
 {
-    "name": "telegrammer",
-    "version": "0.5.4",
-    "description": "Manage your device or server using Telegram. Two way communication!",
-    "main": "index.js",
-    "scripts": {
-        "compile-docs": "node_modules/.bin/jsdoc -c conf.json",
-        "install-command": "npm link",
-        "uninstall-command": "npm unlink",
-        "start": "./tel.sh start",
-        "stop": "./tel.sh stop",
-        "help": "./tel.sh help"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/giano/Telegrammer.git"
-    },
-    "engines": {
-        "node": ">=4.4"
-    },
-    "author": "Stefano Valicchia",
-    "license": "MIT",
-    "maintainers": [{
-        "name": "Stefano Valicchia",
-        "email": "stefano.valicchia@gmail.com"
-    }],
-    "bin": {
-        "telegrammer": "./bin/telegrammer.js"
-    },
-    "keywords": ["telegram", "server", "manage", "monitoring", "bot", "gpio", "raspberry", "raspberry pi", "pi", "express"],
-    "dependencies": {
-        "ansi-escape-sequences": "^2.2.2",
-        "async-promises": "^0.1.2",
-        "body-parser": "^1.15.0",
-        "command-line-commands": "^0.1.2",
-        "command-line-usage": "^2.0.3",
-        "dnode": "^1.2.2",
-        "escape-string-regexp": "^1.0.5",
-        "express": "^4.13.4",
-        "glob": "^7.0.3",
-        "jade": "^1.11.0",
-        "nconf": "^0.8.4",
-        "node-telegram-bot-api": "^0.21.1",
-        "npid": "^0.4.0",
-        "onoff": "^1.0.4",
-        "promise": "^7.1.1",
-        "singleton-symbol": "0.0.5",
-        "terminate": "^1.0.8",
-        "underscore": "^1.8.3",
-        "underscore.string": "^3.3.4"
-    },
-    "files": [
-        "bin",
-        "assets",
-        "code",
-        "hooks",
-        "docs",
-        "config",
-        "public",
-        "views"
-    ],
-    "devDependencies": {
-        "docdash": "^0.1.0",
-        "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
+  "name": "telegrammer",
+  "version": "0.5.4",
+  "description": "Manage your device or server using Telegram. Two way communication!",
+  "main": "index.js",
+  "scripts": {
+    "compile-docs": "node_modules/.bin/jsdoc -c conf.json",
+    "install-command": "npm link",
+    "uninstall-command": "npm unlink",
+    "start": "./tel.sh start",
+    "stop": "./tel.sh stop",
+    "help": "./tel.sh help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giano/Telegrammer.git"
+  },
+  "engines": {
+    "node": ">=4.4"
+  },
+  "author": "Stefano Valicchia",
+  "license": "MIT",
+  "maintainers": [
+    {
+      "name": "Stefano Valicchia",
+      "email": "stefano.valicchia@gmail.com"
     }
+  ],
+  "bin": {
+    "telegrammer": "./bin/telegrammer.js"
+  },
+  "keywords": [
+    "telegram",
+    "server",
+    "manage",
+    "monitoring",
+    "bot",
+    "gpio",
+    "raspberry",
+    "raspberry pi",
+    "pi",
+    "express"
+  ],
+  "dependencies": {
+    "ansi-escape-sequences": "^2.2.2",
+    "async-promises": "^0.1.2",
+    "body-parser": "^1.15.0",
+    "command-line-commands": "^0.1.2",
+    "command-line-usage": "^2.0.3",
+    "dnode": "^1.2.2",
+    "escape-string-regexp": "^1.0.5",
+    "express": "^4.13.4",
+    "glob": "^7.0.3",
+    "jade": "^1.11.0",
+    "lodash": "^4.8.2",
+    "nconf": "^0.8.4",
+    "node-telegram-bot-api": "^0.21.1",
+    "npid": "^0.4.0",
+    "onoff": "^1.0.4",
+    "promise": "^7.1.1",
+    "singleton-symbol": "0.0.5",
+    "terminate": "^1.0.8",
+    "underscore": "^1.8.3",
+    "underscore.string": "^3.3.4"
+  },
+  "files": [
+    "bin",
+    "assets",
+    "code",
+    "hooks",
+    "docs",
+    "config",
+    "public",
+    "views"
+  ],
+  "devDependencies": {
+    "docdash": "^0.1.0",
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
+  }
 }
