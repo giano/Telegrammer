@@ -17,7 +17,7 @@ _.mixin(s.exports());
 
 const path = require('path');
 const dir = path.resolve(__dirname, '..');
-let hooks_dir = process.env.TELEGRAMMER_HOOKS_DIR || path.isAbsolute(config.get('hooks:folder')) ? config.get('hooks:folder') : path.resolve(dir, config.get('hooks:folder'));
+let hooks_dir = process.env.TEL_HOOKS_DIR || path.isAbsolute(config.get('hooks:folder')) ? config.get('hooks:folder') : path.resolve(dir, config.get('hooks:folder'));
 
 let hooks_cache = [];
 

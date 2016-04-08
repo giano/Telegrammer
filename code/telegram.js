@@ -81,7 +81,7 @@ const register_message_hook = function (hook) {
  */
 
 const manage_message = function (message, matches, hook) {
-  if (message.from && (config.get('allowed_usernames') && _.contains(config.get('allowed_usernames'), message.from.username.toLowerCase()))) {
+  if (message.from && message.from.username && (!config.get('allowed_usernames') || ((config.get('allowed_usernames') && _.contains(config.get('allowed_usernames')), message.from.username.toLowerCase())))) {
     let message_text = message.text || message.caption;
     if (message_text) {
       message_text = _.clean(message_text);
@@ -291,7 +291,7 @@ const TelegramService = {
     return new Promise(function (resolve, reject) {
 
       hooks.load().then(function () {
-        let token = config.get("telegram:token");
+        let token = config.get("telegram:token") || process.env.TEL_TOKEN;
 
         if (tcid) {
           TelegramService.set_hook_id(tcid);
