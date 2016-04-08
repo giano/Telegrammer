@@ -27,9 +27,11 @@ const Logger = _.extend({}, console, {
      * @memberof Logger
      * @public
      */
-    notify: function () {
+    notify: function (message) {
         if (config.get("verbose")) {
-            console.log.apply(console, _.toArray(arguments));
+            process.nextTick(function () {
+                console.log(ansi.format(_.clean(message), "yellow"));
+            });
         }
     },
     /**
@@ -43,8 +45,24 @@ const Logger = _.extend({}, console, {
     error: function (error) {
         if (error) {
             Logger.trace();
-            var error_msg = ansi.format(error.message || error, "red");
-            console.error.apply(console, [error_msg]);
+            var error_msg = ansi.format(_.clean(error.message || error), "red");
+            console.error(error_msg);
+        }
+    },
+    /**
+     * @function log
+     * @description Log override
+     * @static
+     * @memberof Logger
+     * @param {Error} error Exception to be traced
+     * @public
+     */
+    log: function () {
+        let args = _.toArray(arguments);
+        if (args.length == 1) {
+            console.log(_.clean(args[0]));
+        } else {
+            console.log.apply(console, args);
         }
     },
     /**

@@ -221,6 +221,8 @@ const ExpressService = {
                     });
                   }
                 });
+
+                logger.notify(`Registered "${hook.full_name}" web hook at /${route_path} route`);
               }
             }
 

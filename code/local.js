@@ -260,7 +260,10 @@ const LocalService = {
         }, hook_def);
       }
 
-      return api.register_message_hook(hook_def).then(resolve).catch(reject);
+      return api.register_message_hook(hook_def).then(function(){
+        logger.notify(`Registered "${hook_def.full_name}" local hook with ${hook_def.command || hook_def.match} ${hook_def.command ? "command" : "match"}`);
+        resolve();
+      }).catch(reject);
     });
   },
   /**

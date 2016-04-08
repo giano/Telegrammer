@@ -154,23 +154,31 @@ telegrammer stop
 Telegrammer can be configured in a _plètora_ of ways. You can pass arguments when you start it, set environment variables, use a config file in your home folder or use the specific _environment-cascading_ folder.
 
 Specifically "base" arguments (usable on every command) are:
-- --verbose (-V) _Set verbosity on or off_
-- --telegramid (-T) _Set Telegram chat ID_
-- --token (-K) _Set Bot token_
-- --config-dir _Set config dir (useful when you install Telegram as global npm module)_
-- --hooks-dir _Set hooks dir (useful when you install Telegram as global npm module)_
+
+| Command      | Short | Description                                                              |
+|--------------|:-----:|--------------------------------------------------------------------------|
+| --verbose    |   -V  | _Set verbosity on or off_                                                |
+| --telegramid |   -T  | _Set Telegram chat ID_                                                   |
+| --token      |   -K  | _Set Bot token_                                                          |
+| --config-dir |       | _Set config dir (useful when you install Telegram as global npm module)_ |
+| --hooks-dir  |       | _Set hooks dir (useful when you install Telegram as global npm module)_  |
 
 You can set some of those using environment variables too:
-- TEL_CONFIG_DIR _Set config dir_
-- TEL_HOOKS_DIR _Set hooks dir_
-- TEL_CID _Set Telegram chat ID_
-- TEL_TOKEN _Set Bot token_
 
-When Telegrammer starts will try to load a .js (or .json) file named ".telegrammer.js" (or ".telegrammer.json") in your home folder (for _unix talkers_ something like ~/.telegrammer.json). You can use this file to store your token or "base config". Keep in mind that if you launch Telegrammer using a _root_ bash script (like, for example, _/etc/rc.local_) you need to put this file in _root_'s home folder.
+| Env Variable   | Description            |
+|----------------|------------------------|
+| TEL_CONFIG_DIR | _Set config dir_       |
+| TEL_HOOKS_DIR  | _Set hooks dir_        |
+| TEL_CID        | _Set Telegram chat ID_ |
+| TEL_TOKEN      | _Set Bot token_        |
+
+When Telegrammer starts will try to load a .js (or .json) file named ".telegrammer.js" (or ".telegrammer.json") in your home folder (for _unix talkers_ something like ~/.telegrammer.json). You can use this file to store your token or "base config".
+
+> Keep in mind that if you launch Telegrammer using a _root_ bash script (like, for example, _/etc/rc.local_) you need to put this file in _root_'s home folder.
 
 Then Telegrammer will read "shared.js" (or "shared.json") in your config folder (overriding "home file" values) and, as last step, environment specific files in the same folder (production.js, production.json, development.js, etc...)
 
-You can set hooks directory in config files too, using absolute path names or relative (to Telegrammer folder) ones.
+> You can set hooks directory in config files too, using absolute path names or relative (to Telegrammer folder) ones.
 
 # Help!
 If Express is on you can navigate to your Telegrammer home page (**localhost:express_port**) to explore all hooks definitions. Standard port is 3000, but you can write in config or use PORT environment variable to control it.
@@ -205,7 +213,7 @@ As noted before you'll have to register a different Telegram Bot for every Teleg
 Consider disabling **express manager** and **web hooks** on _memory-frugal_ devices. Those are the most "memory consuming" managers.
 
 # Team
-- Stefano "Giano" Valicchia - [LinkedIn](https://it.linkedin.com/in/stefanovalicchia) - [Github](https://github.com/giano) - [Twitter](https://twitter.com/tulo69)
+- Stefano "Giano" Valicchia - [LinkedIn](https://it.linkedin.com/in/stefanovalicchia) - [Github](https://github.com/giano) - [Twitter](https://twitter.com/tulo69) - [Npm](https://www.npmjs.com/~giano)
 
 # License
 MIT License

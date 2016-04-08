@@ -257,6 +257,7 @@ const MainService = {
                                 definitions: cli_common_conf
                             });
                         }
+                        logger.notify(`Registered "${cml.full_name}" command line hook with command ${cml.cmd_name}`);
                     }
                 }
 
@@ -399,6 +400,7 @@ const MainService = {
     main: function (config, cmd_arguments) {
         return new Promise(function (resolve, reject) {
             return MainService.parse_commands(config, cmd_arguments).then(function (command) {
+                console.log(command.options.verbose);
                 if (command.options.verbose) {
                     config.set("verbose", true);
                 }

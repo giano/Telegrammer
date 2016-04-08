@@ -62,11 +62,11 @@ const MonitorService = {
           if (hook) {
             return MonitorService.start(hook_ref);
           } else {
-            return reject(new Error(`Hook ${hook_or_name} was not found.`));
+            return reject(new Error(`Hook ${hook_or_name} was not found`));
           }
         } else {
           let hook = hook_or_name;
-          logger.notify(`Starting monitor hook ${hook.full_name}...`);
+          logger.notify(`Starting monitor hook "${hook.full_name}"...`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
               if (config.get("gpio") == false) {
@@ -88,7 +88,7 @@ const MonitorService = {
                   api.send((error.message || error), null, null, null, hook.plain);
                 });
               });
-              logger.log(`Gpio Monitor hook ${hook.full_name} started.`);
+              logger.log(`Gpio Monitor hook "${hook.full_name}" started`);
               hook.started = true;
               return resolve(true);
             } catch (e) {
@@ -97,7 +97,7 @@ const MonitorService = {
           } else if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
               hook.started = true;
-              logger.log(`Monitor hook ${hook.full_name} started.`);
+              logger.log(`Monitor hook "${hook.full_name}" started`);
               return resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
@@ -115,7 +115,7 @@ const MonitorService = {
               clearInterval(hook._interval);
             }
             hook._interval = setInterval(check, hook.interval || config.get("monitor:default_interval") || 5000);
-            logger.notify(`Monitor hook ${hook.full_name} started.`);
+            logger.notify(`Monitor hook "${hook.full_name}" started`);
             hook.started = true;
             return resolve(true);
           } else {
@@ -160,11 +160,11 @@ const MonitorService = {
           if (hook) {
             return MonitorService.stop(hook_ref);
           } else {
-            return reject(new Error(`Hook ${hook_or_name} was not found.`));
+            return reject(new Error(`Hook "${hook_or_name}" was not found`));
           }
         } else {
           var hook = hook_or_name;
-          logger.notify(`Stopping monitor hook ${hook.full_name}`);
+          logger.notify(`Stopping monitor hook "${hook.full_name}"`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
               if (config.get("gpio") == false) {
@@ -176,7 +176,7 @@ const MonitorService = {
                 hook.gpio.device.unwatchAll();
                 delete hook.gpio.device;
               }
-              logger.log(`Gpio Monitor hook ${hook.full_name} stopped.`);
+              logger.log(`Gpio Monitor hook "${hook.full_name}" stopped`);
               hook.started = false;
               return resolve(true);
             } catch (e) {
@@ -185,7 +185,7 @@ const MonitorService = {
 
           } else if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
-              logger.log(`Monitor hook ${hook.full_name} stopped.`);
+              logger.log(`Monitor hook "${hook.full_name}" stopped`);
               hook.started = false;
               return resolve(arg);
             });
@@ -193,7 +193,7 @@ const MonitorService = {
             if (hook._interval) {
               clearInterval(hook._interval);
             }
-            logger.log(`Monitor hook ${hook.full_name} stopped.`);
+            logger.log(`Monitor hook "${hook.full_name}" stopped`);
             hook.started = false;
             return resolve(true);
           } else {
