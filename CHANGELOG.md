@@ -1,5 +1,12 @@
 ### v0.5.5
 
+### FIXES
+
+- Swapped nconf order
+- Removed console.log override
+
+### v0.5.5
+
 #### IMPROVEMENTS
 
 - Added start options and environment variables to configure config and hook dir (If you want to install Telegrammer globally)
