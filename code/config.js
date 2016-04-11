@@ -40,7 +40,7 @@ let initialized = false;
 
 function init(config_dir) {
     Config.argv();
-    const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
+    const env = (Config.get('environment') || process.env.NODE_ENV || "development").toLowerCase();
     Config
         .add("env_js", {
             type: 'file',
