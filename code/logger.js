@@ -50,22 +50,6 @@ const Logger = _.extend({}, console, {
         }
     },
     /**
-     * @function log
-     * @description Log override
-     * @static
-     * @memberof Logger
-     * @param {Error} error Exception to be traced
-     * @public
-     */
-    log: function () {
-        let args = _.toArray(arguments);
-        if (args.length == 1) {
-            console.log(_.clean(args[0]));
-        } else {
-            console.log.apply(console, args);
-        }
-    },
-    /**
      * @function trace
      * @description Trace logging override
      * @static

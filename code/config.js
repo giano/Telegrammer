@@ -39,18 +39,10 @@ let initialized = false;
  */
 
 function init(config_dir) {
-    Config.argv().env('__');
+    Config.argv();
     const env = (Config.get('NODE_ENV') || process.NODE_ENV || "development").toLowerCase();
     Config
-        .add("home_js", {
-            type: 'file',
-            readOnly: true,
-            file: path.resolve(user_home, `.telegrammer.js`)
-        }).add("home_json", {
-            type: 'file',
-            readOnly: true,
-            file: path.resolve(user_home, `.telegrammer.json`)
-        }).add("env_js", {
+        .add("env_js", {
             type: 'file',
             readOnly: true,
             file: path.resolve(config_dir, `${env}.js`)
@@ -66,6 +58,14 @@ function init(config_dir) {
             type: 'file',
             readOnly: true,
             file: path.resolve(config_dir, 'shared.json')
+        }).add("home_js", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(user_home, `.telegrammer.js`)
+        }).add("home_json", {
+            type: 'file',
+            readOnly: true,
+            file: path.resolve(user_home, `.telegrammer.json`)
         });
 
     for (let key in Config.stores) {
@@ -76,6 +76,7 @@ function init(config_dir) {
     }
 
     Config.load_from = init;
+    Config.env('__');
     initialized = true;
     return Config;
 }
