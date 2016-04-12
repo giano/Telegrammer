@@ -1,6 +1,6 @@
 {
   "name": "telegrammer",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {

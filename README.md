@@ -1,9 +1,8 @@
+<!-- language: lang-none -->
 
-```
-╔╦╗┌─┐┬  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌┬┐┌─┐┬─┐
- ║ ├┤ │  ├┤ │ ┬├┬┘├─┤││││││├┤ ├┬┘
- ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─
-```
+    ╔╦╗┌─┐┬  ┌─┐┌─┐┬─┐┌─┐┌┬┐┌┬┐┌─┐┬─┐
+     ║ ├┤ │  ├┤ │ ┬├┬┘├─┤││││││├┤ ├┬┘
+     ╩ └─┘┴─┘└─┘└─┘┴└─┴ ┴┴ ┴┴ ┴└─┘┴└─
 
 Manage your device or server using [**Telegram Messenger**](https://telegram.org/). Two way communication!
 
@@ -160,8 +159,10 @@ Specifically "base" arguments (usable on every command) are:
 | --verbose    |   -V  | _Set verbosity on or off_                                                |
 | --telegramid |   -T  | _Set Telegram chat ID_                                                   |
 | --token      |   -K  | _Set Bot token_                                                          |
+| --config-file|       | _Set config file path (ignore config dir option)_                        |
 | --config-dir |       | _Set config dir (useful when you install Telegram as global npm module)_ |
 | --hooks-dir  |       | _Set hooks dir (useful when you install Telegram as global npm module)_  |
+| --log-file   |       | _Set log file path_                                                      |
 
 You can set some of those using environment variables too:
 
