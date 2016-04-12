@@ -11,6 +11,8 @@ const config = require('./config');
 const _ = require('underscore');
 const s = require("underscore.string");
 const ansi = require('ansi-escape-sequences');
+const fs = require('fs');
+
 _.mixin(s.exports());
 
 /**
@@ -19,18 +21,38 @@ _.mixin(s.exports());
  * @extends console
  */
 
+let log_file_path = (config.get("logfile") || "");
+
+function formatForLogFile(){
+  let msg = _.toArray(arguments).join("\n") + "\n";
+  return (new Date()).toISOString() + " - " + msg;
+}
+
 const Logger = _.extend({}, console, {
+  /**
+   * @function setLogFile
+   * @description Set log file to write to. Pass empty if you want to redirect to console.
+   * @static
+   * @param {String} log_file Absolute path to file
+   * @memberof Logger
+   * @public
+   */
+    set_log_file: function(log_file){
+      log_file_path = log_file || "";
+      config.set("logfile", log_file_path);
+    },
     /**
      * @function notify
      * @description Logger will only write those messages if verbose is on
      * @static
      * @memberof Logger
+     * @param {String} message Message to be traced
      * @public
      */
     notify: function (message) {
         if (config.get("verbose")) {
             process.nextTick(function () {
-                console.log(ansi.format(_.clean(message), "yellow"));
+                Logger.log(ansi.format(_.clean(message), "yellow"));
             });
         }
     },
@@ -46,7 +68,34 @@ const Logger = _.extend({}, console, {
         if (error) {
             Logger.trace();
             var error_msg = ansi.format(_.clean(error.message || error), "red");
-            console.error(error_msg);
+            if (log_file_path) {
+                try {
+                    fs.appendFile(log_file_path, formatForLogFile(error_msg));
+                } catch (e) {
+
+                }
+            } else {
+                console.error(error_msg);
+            }
+        }
+    },
+    /**
+     * @function log
+     * @description Log override
+     * @static
+     * @memberof Logger
+     * @param {Error} error Exception to be traced
+     * @public
+     */
+    log: function () {
+        if (log_file_path) {
+            try {
+                fs.appendFile(log_file_path, formatForLogFile.apply(null, _.toArray(arguments)));
+            } catch (e) {
+
+            }
+        } else {
+            console.log.apply(console, _.toArray(arguments));
         }
     },
     /**
@@ -58,7 +107,16 @@ const Logger = _.extend({}, console, {
      */
     trace: function () {
         if (config.get("verbose")) {
-            console.trace.apply(trace, _.toArray(arguments));
+            if (log_file_path) {
+                try {
+                    let stack = new Error().stack;
+                    fs.appendFile(log_file_path, formatForLogFile(stack));
+                } catch (e) {
+
+                }
+            } else {
+                console.trace.apply(trace, _.toArray(arguments));
+            }
         }
     }
 });

@@ -44,7 +44,13 @@ const cli_common_conf = [{
     name: 'config-dir',
     type: String
 }, {
+    name: 'config-file',
+    type: String
+}, {
     name: 'hooks-dir',
+    type: String
+}, {
+    name: 'log-file',
     type: String
 }];
 
@@ -283,8 +289,8 @@ const MainService = {
                     config.set("telegram:token", command.token);
                 }
 
-                if (command["config-dir"]) {
-                    config.load_from(command["config-dir"]);
+                if (command["config-dir"] || command["config-file"]) {
+                    config.load_from(command["config-file"] || command["config-dir"]);
                 }
 
                 if (command["hooks-dir"] && config.get("hooks:folder") != command["hooks-dir"]) {
@@ -402,6 +408,9 @@ const MainService = {
             return MainService.parse_commands(config, cmd_arguments).then(function (command) {
                 if (command.options.verbose) {
                     config.set("verbose", true);
+                }
+                if (command.options["log-file"]) {
+                    logger.set_log_file(command.options["log-file"]);
                 }
                 switch (command.name) {
                 case 'help':
