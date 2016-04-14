@@ -1,4 +1,18 @@
-### v0.5.5
+### v0.5.9
+
+### FIXES
+
+- Fixed 'one shot' commands hanging because a Promise wasn't handled
+- 'one shot' commands are not registered for polling Telegram anymore
+- Added some "spice" on README :)
+
+### v0.5.7
+
+### IMPROVEMENTS
+
+- added log and config file options
+
+### v0.5.6
 
 ### FIXES
 
