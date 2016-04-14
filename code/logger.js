@@ -25,7 +25,7 @@ let log_file_path = (config.get("logfile") || "");
 
 function formatForLogFile(){
   let msg = _.toArray(arguments).join("\n") + "\n";
-  return (new Date()).toISOString() + " - " + msg;
+  return (new Date()).toISOString() + " - " + _.trim(msg);
 }
 
 const Logger = _.extend({}, console, {
@@ -52,7 +52,7 @@ const Logger = _.extend({}, console, {
     notify: function (message) {
         if (config.get("verbose")) {
             process.nextTick(function () {
-                Logger.log(ansi.format(_.clean(message), "yellow"));
+                Logger.log(ansi.format(message, "yellow"));
             });
         }
     },
@@ -67,7 +67,7 @@ const Logger = _.extend({}, console, {
     error: function (error) {
         if (error) {
             Logger.trace();
-            var error_msg = ansi.format(_.clean(error.message || error), "red");
+            var error_msg = ansi.format(_.trim(error.message || error), "red");
             if (log_file_path) {
                 try {
                     fs.appendFile(log_file_path, formatForLogFile(error_msg));

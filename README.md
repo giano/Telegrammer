@@ -64,7 +64,7 @@ You need to define some properties:
 - either **action** (that can be a string containing a shell command or a node function returning a _Promise_), **shell** (with the name of an executable in the same directory), a **signal** (that can be an array defining a GPIO pattern, an array of array of GPIO signals for multi PIN parallel signaling or a function returning a _Promise_) or a function named **parse_response** for "confirmation enabled" hooks.
 - a **response** and **error** strings. You can use some variables too (@error@ and @response@) to include action output/error.
 
-> Most of the defined functions require you to return a Promise. Telegrammer will send you back to the chat anything you will output "resolving" or "rejecting" your Promise, unless you define **response: false** in your hook or resolve with **null**. Just remember to resolve your Promises, or the **BotFather** will be very unhappy.
+> Most of the defined functions require you to return a Promise. Telegrammer will send you back to the chat anything you will output "resolving" or "rejecting" your Promise, unless you define **response: false** in your hook or resolve with **null**. Just remember to resolve or reject your Promises, or the **BotFather** will be very unhappy and you'll risk finding a sewed horse head in your bed.
 
 All the hooks can define **name** and **namespace** properties, or those will be inferred using path and file name. You should define a **description** too, and an **help** that will be shown on home page or command line manual.
 

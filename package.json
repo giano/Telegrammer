@@ -1,6 +1,6 @@
 {
   "name": "telegrammer",
-  "version": "0.5.8",
+  "version": "0.5.9",
   "description": "Manage your device or server using Telegram. Two way communication!",
   "main": "index.js",
   "scripts": {
@@ -52,7 +52,7 @@
     "express": "^4.13.4",
     "glob": "^7.0.3",
     "jade": "^1.11.0",
-    "lodash": "^4.10.0",
+    "lodash": "^4.11.0",
     "nconf": "^0.8.4",
     "node-telegram-bot-api": "^0.21.1",
     "npid": "^0.4.0",

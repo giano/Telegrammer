@@ -230,11 +230,24 @@ html(lang="en")
                                 strong Terminal Command
                                 span :&nbsp;
                                 span #{hook.cmd_name}&nbsp;
-                                  small
-                                    kbd 
-                                      span.text-primary ./tel.sh&nbsp;
-                                      strong #{hook.cmd_name}
-                                      
+                              li 
+                                strong Example
+                                span :&nbsp;
+                                kbd 
+                                  span.text-primary telegrammer&nbsp;
+                                  if hook.example
+                                    span!= hook.example
+                                  else
+                                    strong #{hook.cmd_name}
+                                    if _.isArray(hook.params) && hook.params.length > 0
+                                      each command_def, command_def_index in hook.params
+                                        if !command_def.defaultOption
+                                          if command_def.alias
+                                            span.text-primary!= "&nbsp-" + command_def.alias
+                                          else
+                                            span.text-primary!= "&nbsp--" + command_def.name
+                                        strong!= "&nbsp" + JSON.stringify(command_def.default || command_def.exampleValue || (new command_def.type()) || "value")
+                                              
                               if _.isArray(hook.params) && hook.params.length > 0
                                 li
                                   strong Command Line Params

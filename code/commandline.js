@@ -68,7 +68,7 @@ const CommandLineService = {
           var command_hook = cm_hooks[command];
           if (command_hook.exec) {
             if (_.isFunction(command_hook.exec)) {
-              return command_hook.exec(params, api);
+              return command_hook.exec(params, api).then(resolve).catch(reject);
             } else if (_.isString(command_hook.exec)) {
               var out_str = command_hook.exec;
 

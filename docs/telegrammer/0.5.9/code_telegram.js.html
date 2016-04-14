@@ -1,4 +1,44 @@
-"use strict";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>code/telegram.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CommandLineService.html">CommandLineService</a><ul class='methods'><li data-type='method'><a href="CommandLineService.html#.execute">execute</a></li><li data-type='method'><a href="CommandLineService.html#.init">init</a></li></ul></li><li><a href="Config.html">Config</a><ul class='methods'><li data-type='method'><a href="Config.html#.init">init</a></li></ul></li><li><a href="ExpressService.html">ExpressService</a><ul class='methods'><li data-type='method'><a href="ExpressService.html#.authorized">authorized</a></li><li data-type='method'><a href="ExpressService.html#.init">init</a></li><li data-type='method'><a href="ExpressService.html#.list_methods">list_methods</a></li></ul></li><li><a href="HooksManager.html">HooksManager</a><ul class='methods'><li data-type='method'><a href="HooksManager.html#.get_commands">get_commands</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks">get_hooks</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks_dir">get_hooks_dir</a></li><li data-type='method'><a href="HooksManager.html#.load">load</a></li><li data-type='method'><a href="HooksManager.html#.reload">reload</a></li><li data-type='method'><a href="HooksManager.html#.work_hook">work_hook</a></li></ul></li><li><a href="LocalService.html">LocalService</a><ul class='methods'><li data-type='method'><a href="LocalService.html#.connect_hook">connect_hook</a></li><li data-type='method'><a href="LocalService.html#.init">init</a></li><li data-type='method'><a href="LocalService.html#.manage_response">manage_response</a></li></ul></li><li><a href="log_file_path.html">log_file_path</a></li><li><a href="MainService.html">MainService</a><ul class='methods'><li data-type='method'><a href="MainService.html#.help">help</a></li><li data-type='method'><a href="MainService.html#.main">main</a></li><li data-type='method'><a href="MainService.html#.parse_commands">parse_commands</a></li><li data-type='method'><a href="MainService.html#.start_server">start_server</a></li><li data-type='method'><a href="MainService.html#.stop_server">stop_server</a></li></ul></li><li><a href="MonitorService.html">MonitorService</a><ul class='methods'><li data-type='method'><a href="MonitorService.html#.init">init</a></li><li data-type='method'><a href="MonitorService.html#.restart">restart</a></li><li data-type='method'><a href="MonitorService.html#.start">start</a></li><li data-type='method'><a href="MonitorService.html#.stop">stop</a></li></ul></li><li><a href="RpcService.html">RpcService</a><ul class='methods'><li data-type='method'><a href="RpcService.html#.init">init</a></li><li data-type='method'><a href="RpcService.html#.send">send</a></li></ul></li><li><a href="TelegramService.html">TelegramService</a><ul class='methods'><li data-type='method'><a href="TelegramService.html#.get_hook_id">get_hook_id</a></li><li data-type='method'><a href="TelegramService.html#.init">init</a></li><li data-type='method'><a href="TelegramService.html#.is_hooked">is_hooked</a></li><li data-type='method'><a href="TelegramService.html#.manage_message">manage_message</a></li><li data-type='method'><a href="TelegramService.html#.register_message_hook">register_message_hook</a></li><li data-type='method'><a href="TelegramService.html#.respond">respond</a></li><li data-type='method'><a href="TelegramService.html#.send">send</a></li><li data-type='method'><a href="TelegramService.html#.set_hook_id">set_hook_id</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="hooks_examples.html">hooks/examples</a></li><li><a href="hooks_sys.html">hooks/sys</a></li><li><a href="Logger.html">Logger</a><ul class='methods'><li data-type='method'><a href="Logger.html#.error">error</a></li><li data-type='method'><a href="Logger.html#.log">log</a></li><li data-type='method'><a href="Logger.html#.notify">notify</a></li><li data-type='method'><a href="Logger.html#.setLogFile">setLogFile</a></li><li data-type='method'><a href="Logger.html#.trace">trace</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">code/telegram.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use strict";
 
 /**
  * TelegramService
@@ -81,12 +121,12 @@ const register_message_hook = function (hook) {
  */
 
 const manage_message = function (message, matches, hook) {
-  if (message.from && message.from.username && (!config.get('allowed_usernames') || ((config.get('allowed_usernames') && _.contains(config.get('allowed_usernames')), message.from.username.toLowerCase())))) {
+  if (message.from &amp;&amp; message.from.username &amp;&amp; (!config.get('allowed_usernames') || ((config.get('allowed_usernames') &amp;&amp; _.contains(config.get('allowed_usernames')), message.from.username.toLowerCase())))) {
     let message_text = message.text || message.caption;
     if (message_text) {
       message_text = _.clean(message_text);
 
-      if (!TelegramService.is_hooked() && message.chat && message.chat.id) {
+      if (!TelegramService.is_hooked() &amp;&amp; message.chat &amp;&amp; message.chat.id) {
         TelegramService.set_hook_id(message.chat.id);
         logger.log(`Hooked to chat id #${TelegramService.get_hook_id()}`);
       }
@@ -199,11 +239,11 @@ const TelegramService = {
 
       let has_keyboard = false;
 
-      if (_.isBoolean(reply) && reply) {
+      if (_.isBoolean(reply) &amp;&amp; reply) {
         options.reply_markup = {
           force_reply: true
         };
-      } else if (_.isArray(reply) && reply.length > 0) {
+      } else if (_.isArray(reply) &amp;&amp; reply.length > 0) {
         has_keyboard = true;
 
         if (!accepted_responses) {
@@ -231,14 +271,14 @@ const TelegramService = {
         return new Promise(function (resolve, reject) {
 
           return api.sendMessage(TelegramService.get_hook_id(), content, options).then(function (output) {
-            if (output && output.message_id) {
+            if (output &amp;&amp; output.message_id) {
 
               let chat_id = (output.chat.id || TelegramService.get_hook_id());
 
               let manage_reply = function (reply_message) {
-                if (reply_message && reply_message.text) {
+                if (reply_message &amp;&amp; reply_message.text) {
                   let reply_message_compare = _.trim(reply_message.text).toLowerCase();
-                  if (accepted_responses && _.isArray(accepted_responses) && accepted_responses.length) {
+                  if (accepted_responses &amp;&amp; _.isArray(accepted_responses) &amp;&amp; accepted_responses.length) {
                     if (_.contains(accepted_responses, reply_message_compare)) {
                       resolve(reply_message);
                     } else {
@@ -322,7 +362,7 @@ const TelegramService = {
 
           api.on("message", function (message) {
             let chat_id = (message.chat.id || TelegramService.get_hook_id());
-            if (message && chat_id && next_manage_reply[chat_id]) {
+            if (message &amp;&amp; chat_id &amp;&amp; next_manage_reply[chat_id]) {
               let handler = next_manage_reply[chat_id];
               let text = _.trim(message.text || "").toLowerCase();
               handler.resolve(message);
@@ -342,3 +382,22 @@ const TelegramService = {
 }
 
 module.exports = TelegramService;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Thu Apr 14 2016 15:58:08 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
