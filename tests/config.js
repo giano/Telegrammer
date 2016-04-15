@@ -4,12 +4,12 @@ const chai = require('chai');
 chai.should();
 const assert = chai.assert;
 
+process.env.NODE_ENV = 'test';
+let config = require('../code/config.js');
+
 vows.describe('Config').addBatch({
   'Test config': {
-    topic: function () {
-      process.env.NODE_ENV = 'test';
-      return require('../code/config.js');
-    },
+    topic: config,
     'Can be read': function (config) {
       assert.equal(config.get('leave_me_here_for_tests'), true);
     },
