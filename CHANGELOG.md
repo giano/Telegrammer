@@ -1,3 +1,17 @@
+### v0.6.0
+
+#### IMPROVEMENTS
+
+- started some tests writing
+- wrote systemd config
+
+#### FIXES
+
+- better systat memory reporting
+- code refactoring following standard js guidelines (plus semicolons)
+
+---
+
 ### v0.5.9
 
 #### FIXES

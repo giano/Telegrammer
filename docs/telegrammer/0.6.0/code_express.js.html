@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>code/express.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CommandLineService.html">CommandLineService</a><ul class='methods'><li data-type='method'><a href="CommandLineService.html#.execute">execute</a></li><li data-type='method'><a href="CommandLineService.html#.init">init</a></li></ul></li><li><a href="Config.html">Config</a><ul class='methods'><li data-type='method'><a href="Config.html#.init">init</a></li></ul></li><li><a href="ExpressService.html">ExpressService</a><ul class='methods'><li data-type='method'><a href="ExpressService.html#.authorized">authorized</a></li><li data-type='method'><a href="ExpressService.html#.init">init</a></li><li data-type='method'><a href="ExpressService.html#.list_methods">list_methods</a></li></ul></li><li><a href="HooksManager.html">HooksManager</a><ul class='methods'><li data-type='method'><a href="HooksManager.html#.get_commands">get_commands</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks">get_hooks</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks_dir">get_hooks_dir</a></li><li data-type='method'><a href="HooksManager.html#.load">load</a></li><li data-type='method'><a href="HooksManager.html#.reload">reload</a></li><li data-type='method'><a href="HooksManager.html#.work_hook">work_hook</a></li></ul></li><li><a href="LocalService.html">LocalService</a><ul class='methods'><li data-type='method'><a href="LocalService.html#.connect_hook">connect_hook</a></li><li data-type='method'><a href="LocalService.html#.init">init</a></li><li data-type='method'><a href="LocalService.html#.manage_response">manage_response</a></li></ul></li><li><a href="log_file_path.html">log_file_path</a></li><li><a href="MainService.html">MainService</a><ul class='methods'><li data-type='method'><a href="MainService.html#.help">help</a></li><li data-type='method'><a href="MainService.html#.main">main</a></li><li data-type='method'><a href="MainService.html#.parse_commands">parse_commands</a></li><li data-type='method'><a href="MainService.html#.start_server">start_server</a></li><li data-type='method'><a href="MainService.html#.stop_server">stop_server</a></li></ul></li><li><a href="MonitorService.html">MonitorService</a><ul class='methods'><li data-type='method'><a href="MonitorService.html#.init">init</a></li><li data-type='method'><a href="MonitorService.html#.restart">restart</a></li><li data-type='method'><a href="MonitorService.html#.start">start</a></li><li data-type='method'><a href="MonitorService.html#.stop">stop</a></li></ul></li><li><a href="RpcService.html">RpcService</a><ul class='methods'><li data-type='method'><a href="RpcService.html#.init">init</a></li><li data-type='method'><a href="RpcService.html#.send">send</a></li></ul></li><li><a href="TelegramService.html">TelegramService</a><ul class='methods'><li data-type='method'><a href="TelegramService.html#.get_hook_id">get_hook_id</a></li><li data-type='method'><a href="TelegramService.html#.init">init</a></li><li data-type='method'><a href="TelegramService.html#.is_hooked">is_hooked</a></li><li data-type='method'><a href="TelegramService.html#.manage_message">manage_message</a></li><li data-type='method'><a href="TelegramService.html#.register_message_hook">register_message_hook</a></li><li data-type='method'><a href="TelegramService.html#.respond">respond</a></li><li data-type='method'><a href="TelegramService.html#.send">send</a></li><li data-type='method'><a href="TelegramService.html#.set_hook_id">set_hook_id</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="hooks_examples.html">hooks/examples</a></li><li><a href="hooks_sys.html">hooks/sys</a></li><li><a href="Logger.html">Logger</a><ul class='methods'><li data-type='method'><a href="Logger.html#.error">error</a></li><li data-type='method'><a href="Logger.html#.log">log</a></li><li data-type='method'><a href="Logger.html#.notify">notify</a></li><li data-type='method'><a href="Logger.html#.setLogFile">setLogFile</a></li><li data-type='method'><a href="Logger.html#.trace">trace</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">code/express.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * ExpressService
+ * @namespace ExpressService
+ * @description Manages web hooks
+ * @example See ['hooks/examples/webhook_spammer.js']{@link hooks/examples.webhook_spammer} for a web hook definition
+ */
+
+const hooks = require('./hooks');
+const monitor = require('./monitor');
+const config = require('./config');
+const logger = require('./logger');
+
+const _ = require('underscore');
+const s = require('underscore.string');
+_.mixin(s.exports());
+
+const Promise = require('promise');
+const express = require('express');
+
+const bodyParser = require('body-parser');
+
+/**
+ * @property {TelegramService} api Link to TelegramService
+ * @private
+ * @memberof ExpressService
+ */
+
+let api = null;
+
+/**
+ * @property {Express} app Link to Express app
+ * @private
+ * @memberof ExpressService
+ */
+
+let app = null;
+
+/**
+ * @property {Boolean} initialized If initialized
+ * @private
+ * @memberof ExpressService
+ */
+
+let initialized = false;
+
+/**
+ * @function authorized
+ * @description Check if call is authorized
+ * @static
+ * @param {Request} req Web request
+ * @param {Response} res Web response
+ * @memberof ExpressService
+ * @private
+ * @returns {Boolean}
+ */
+const authorized = function (req, res) {
+  if (config.get('express:auth') &amp;&amp; config.get('express:auth_token_name')) {
+    if (req.get(config.get('express:auth_token_name')) === config.get('express:auth')) {
+      return true;
+    } else {
+      res.sendStatus(403);
+      return false;
+    }
+  } else {
+    return true;
+  }
+};
+
+/**
+ * @class
+ * @classdesc Manages web hooks
+ */
+
+const ExpressService = {
+  /**
+   * @function list_methods
+   * @description Return an help page listing all mounted hooks
+   * @static
+   * @param {Request} req Web request
+   * @param {Response} res Web response
+   * @memberof ExpressService
+   * @public
+   */
+  list_methods: function (req, res) {
+    if (authorized(req, res)) {
+      let out_hooks = _.groupBy(_.sortBy(_.sortBy(hooks.get_hooks(), 'name'), 'namespace'), 'namespace');
+      res.render('_sys/list', {
+        _: _,
+        config: config,
+        header: require('../assets/ansi-header-html.js'),
+        hooks: out_hooks,
+        package_def: require('../package.json')
+      });
+    }
+  },
+
+  /**
+   * @function init
+   * @description Initialize web hooks manager
+   * @static
+   * @param {TelegramService} tapi Link to Telegram service
+   * @memberof ExpressService
+   * @public
+   * @returns {Promise}
+   */
+  init: function (tapi) {
+    return new Promise(function (resolve, reject) {
+      api = tapi;
+
+      hooks.load().then(function () {
+        if (config.get('express:active') === false) {
+          initialized = true;
+          return resolve(api);
+        }
+
+        if (app) {
+          app.close();
+        }
+
+        const path = require('path');
+        const dir = path.resolve(__dirname, '..');
+
+        let express_hooks = hooks.get_hooks('has_web_hook', 'route_path');
+
+        app = express();
+
+        app.set('view engine', 'jade');
+        app.set('views', path.resolve(dir, 'views'));
+
+        app.use(bodyParser.urlencoded({
+          extended: false
+        }));
+
+        app.use(bodyParser.json());
+
+        app.use(express.static('public'));
+
+        let port = (process.env.PORT || config.get('express:port') || 3000);
+
+        app.listen(port, function (error) {
+          if (error) {
+            reject(error);
+          } else {
+            logger.log(`WebServer is listening on port ${port}`);
+
+            app.get('/', ExpressService.list_methods);
+
+            app.get('/tid', function (req, res) {
+              if (authorized(req, res)) {
+                res.json(api.get_hook_id() || false);
+              }
+            });
+
+            app.post('/tid', function (req, res) {
+              if (authorized(req, res)) {
+                api.set_hook_id(req.body('id'));
+                res.json((api.get_hook_id() || false) === req.body('id'));
+              }
+            });
+
+            app.get('/hooked', function (req, res) {
+              if (authorized(req, res)) {
+                res.json(api.is_hooked());
+              }
+            });
+
+            app.all('/start/:hook', function (req, res) {
+              if (authorized(req, res)) {
+                monitor.start(req.param('hook')).then(res.send).catch(res.send);
+              }
+            });
+
+            app.all('/stop/:hook', function (req, res) {
+              if (authorized(req, res)) {
+                monitor.stop(req.param('hook')).then(res.send).catch(res.send);
+              }
+            });
+
+            app.all('/restart/:hook', function (req, res) {
+              if (authorized(req, res)) {
+                monitor.restart(req.param('hook')).then(res.send).catch(res.send);
+              }
+            });
+
+            for (let route_path in express_hooks) {
+              if (express_hooks.hasOwnProperty(route_path)) {
+                let hook = express_hooks[route_path];
+
+                let router = _.bind(hook.route, hook);
+                let method = (hook.method || 'all').toLowerCase();
+                let filter_params = [];
+
+                if (_.isArray(hook.params)) {
+                  for (let i = 0; i &lt; hook.params.length; i++) {
+                    filter_params = _.union([], filter_params, [hook.params[i].name, hook.params[i].alias]);
+                  }
+                }
+
+                filter_params = _.compact(filter_params);
+
+                app[method]('/' + route_path, function (req, res) {
+                  if (authorized(req, res)) {
+                    let params = _.pick(_.extend({}, req.params, req.query, req.body), filter_params);
+
+                    router(params, api, req, res).then(function (content) {
+                      if (_.isString(hook.response)) {
+                        res.send(hook.response);
+                      } else if (content !== null) {
+                        res.json(content);
+                      }
+                    }).catch(function (error) {
+                      if (_.isString(hook.error)) {
+                        res.status(500).send(hook.error);
+                      } else {
+                        res.status(500).send(error.message || error);
+                      }
+                    }).finally(function () {
+                      res.end();
+                    });
+                  }
+                });
+
+                logger.notify(`Registered "${hook.full_name}" web hook at /${route_path} route`);
+              }
+            }
+
+            initialized = true;
+
+            resolve({
+              api: api,
+              hooks: hooks
+            });
+          }
+        });
+      }).catch(reject);
+    });
+  }
+};
+
+module.exports = ExpressService;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Fri Apr 15 2016 20:36:30 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
