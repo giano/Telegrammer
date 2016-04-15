@@ -149,6 +149,51 @@ or
 telegrammer stop
 ```
 
+# Making it run...
+
+You can make your Telegrammer start at device/server boot in many ways. My favourite one is **systemd**. You can create a file named **telegrammer.service** in your **/etc/systemd/system/** folder with this content (replace installation path, npm path and environment variables with yours, of course).
+
+```
+[Service]
+WorkingDirectory=/your/path/to/telegrammer
+ExecStart=/usr/local/bin/npm start
+ExecStop=/usr/local/bin/npm run-script stop
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=telegrammer
+User=root
+Group=root
+Environment=NODE_ENV=development
+Environment=MAX_MEM=128
+After=network.target local-fs.target
+PIDFile=/your/path/to//.pid
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then enable it:
+
+```
+sudo systemctl enable telegrammer
+```
+
+That way your service will boot at start, after network is available, and you can start and stop telegrammer using **systemd**:
+
+```
+sudo systemctl start telegrammer
+```
+
+```
+sudo systemctl stop telegrammer
+```
+
+```
+sudo systemctl restart telegrammer
+```
+> You can use your *rc.local* file too, but I found it less reliable.
+
 # Configure
 Telegrammer can be configured in a _plètora_ of ways. You can pass arguments when you start it, set environment variables, use a config file in your home folder or use the specific _environment-cascading_ folder.
 
