@@ -167,7 +167,7 @@ Group=root
 Environment=NODE_ENV=development
 Environment=MAX_MEM=128
 After=network.target local-fs.target
-PIDFile=/your/path/to//.pid
+PIDFile=/your/path/to/telegrammer/.pid
 
 [Install]
 WantedBy=multi-user.target
