@@ -2,7 +2,8 @@
   "allowed_usernames": ["YOUR-TELEGRAM-USERNAME", "YOUR-FIANCEE-TELEGRAM-USERNAME", "YOUR-DOG-TELEGRAM-USERNAME"],
   "telegram": {
     "token": "YOUR-TELEGRAM-BOT-TOKEN",
-    "chat_id": "YOU-CAN-OBTAIN-THAT-RUNNING-LOCALLY-AND-CHATTING-WITH-YOUR-BOT"
+    "chat_id": "YOU-CAN-OBTAIN-THAT-RUNNING-LOCALLY-AND-CHATTING-WITH-YOUR-BOT".
+    "parse_mode": "Markdown"
   },
   "hooks": {
     "folder": "hooks",
@@ -14,9 +15,6 @@
   },
   "commandline": {
     "active": true
-  },
-  "telegram": {
-    "parse_mode": "Markdown"
   },
   "monitor": {
     "active": true,

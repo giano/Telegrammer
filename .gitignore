@@ -23,6 +23,7 @@ hooks/hooks.cryo
 node_modules
 config/*
 config/!example.json
+config/!test.json
 
 dump.rdb
 npm-debug.log
