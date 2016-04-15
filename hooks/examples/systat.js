@@ -31,7 +31,7 @@ module.exports = {
       let child = exec(memory_command, {}, function (error, stdout, stderr) {
         let stderr_str = stderr.toString('utf8');
         if(!stderr_str){
-          out += "Memory Usage: " + stdout.toString('utf8') + " %\n";
+          out += "Memory Usage: " + (Math.round(stdout.toString('utf8') * 10) / 10) + " %\n";
         }
         resolve(out);
       });
