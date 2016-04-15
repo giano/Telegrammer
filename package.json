@@ -75,7 +75,6 @@
     "views"
   ],
   "devDependencies": {
-    "chai": "^3.5.0",
     "docdash": "^0.1.0",
     "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
     "semistandard": "^7.0.5",

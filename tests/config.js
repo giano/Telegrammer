@@ -1,26 +1,23 @@
 'use strict';
 const vows = require('vows');
-const chai = require('chai');
-chai.should();
-const assert = chai.assert;
+const assert = require('assert');
 
 vows.describe('Config').addBatch({
   'Test config': {
     topic: function () {
       process.env.NODE_ENV = 'test';
-      let config = require('../code/config.js');
-      this.callback(null, config);
+      return require('../code/config.js');
     },
-    'Can be read': function (err, config) {
+    'Can be read': function (config) {
       assert.equal(config.get('leave_me_here_for_tests'), true);
     },
-    'Allows tree traversing': function (err, config) {
+    'Allows tree traversing': function (config) {
       assert.ok(config.get('hooks:folder'));
     },
-    'Has Telegram Token set': function (err, config) {
+    'Has Telegram Token set': function (config) {
       assert.ok(config.get('telegram:token'));
     },
-    'Allows setting': function (err, config) {
+    'Allows setting': function (config) {
       config.set('just_a_test', true);
       assert.ok(config.get('just_a_test'));
     }
