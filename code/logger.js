@@ -24,8 +24,8 @@ _.mixin(s.exports());
 let log_file_path = (config.get("logfile") || "");
 
 function formatForLogFile(){
-  let msg = _.toArray(arguments).join("\n") + "\n";
-  return (new Date()).toISOString() + " - " + _.trim(msg);
+  let msg = _.toArray(arguments).join("\n");
+  return (new Date()).toISOString() + " - " + _.trim(msg) + "\n";
 }
 
 const Logger = _.extend({}, console, {
