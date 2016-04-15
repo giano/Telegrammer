@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
 /**
  * LocalService
  * @namespace LocalService
  * @description Manages local connected hooks, allowing device/server code execution
- * @example See ["hooks/examples/helloworld.js"]{@link hooks/examples.helloworld} for a basic local hook definition
- * @example See ["hooks/examples/beep.js"]{@link hooks/examples.beep} for a regex local hook definition
- * @example See ["hooks/examples/systat.js"]{@link hooks/examples.systat} for a system local hook definition
- * @example See ["hooks/examples/blink.js"]{@link hooks/examples.blink} for a GPIO local hook definition
- * @example See ["hooks/examples/mawkish.js"]{@link hooks/examples.mawkish} for a local hook with confirmation and custom keyboard
+ * @example See ['hooks/examples/helloworld.js']{@link hooks/examples.helloworld} for a basic local hook definition
+ * @example See ['hooks/examples/beep.js']{@link hooks/examples.beep} for a regex local hook definition
+ * @example See ['hooks/examples/systat.js']{@link hooks/examples.systat} for a system local hook definition
+ * @example See ['hooks/examples/blink.js']{@link hooks/examples.blink} for a GPIO local hook definition
+ * @example See ['hooks/examples/mawkish.js']{@link hooks/examples.mawkish} for a local hook with confirmation and custom keyboard
  */
 
 const hooks = require('./hooks');
@@ -16,7 +16,7 @@ const config = require('./config');
 const logger = require('./logger');
 const path = require('path');
 const _ = require('underscore');
-const s = require("underscore.string");
+const s = require('underscore.string');
 const asyncP = require('async-promises');
 _.mixin(s.exports());
 
@@ -52,8 +52,8 @@ let initialized = false;
  */
 
 let manage_response = function (message, hook_def, error, output, plain) {
-  let error_msg = hook_def.error || "@error@";
-  let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || "@response@";
+  let error_msg = hook_def.error || '@error@';
+  let response_msg = (_.isString(hook_def.response) ? hook_def.response : null) || '@response@';
 
   return new Promise(function (resolve, reject) {
     if (hook_def.response === false) {
@@ -62,7 +62,7 @@ let manage_response = function (message, hook_def, error, output, plain) {
 
     if (_.isFunction(hook_def.response)) {
       return hook_def.response(message, error, output).then(function () {
-        output = output || "";
+        output = output || '';
         if (!output) {
           return resolve();
         }
@@ -78,7 +78,7 @@ let manage_response = function (message, hook_def, error, output, plain) {
           reject(error.message || error);
         }
       } else {
-        output = output || "";
+        output = output || '';
         api.respond(message, response_msg.replace(/@response@/mi, output), plain).then(resolve).catch(reject);
       }
     }
@@ -102,16 +102,14 @@ const LocalService = {
    */
   connect_hook: function (hook_def) {
     return new Promise(function (resolve, reject) {
-
-      hook_def.action_type = _.isString(hook_def.action) ? "string" : "function";
-      if (config.get("gpio") !== false) {
-
+      hook_def.action_type = _.isString(hook_def.action) ? 'string' : 'function';
+      if (config.get('gpio') !== false) {
         if (_.isArray(hook_def.signal)) {
           hook_def.action = function (message, service, matches) {
             return new Promise(function (resolve, reject) {
               try {
                 const Gpio = require('onoff').Gpio;
-                let gpios = _.uniq(_.pluck(hook_def.signal, "gpio"));
+                let gpios = _.uniq(_.pluck(hook_def.signal, 'gpio'));
                 let gpios_map = {};
                 _.each(gpios, function (gpio) {
                   gpios_map[gpio] = new Gpio(gpio, 'out');
@@ -142,7 +140,7 @@ const LocalService = {
                   _.each(gpios, function (gpio) {
                     gpios_map[gpio] = new Gpio(gpio, 'out');
                   });
-                  resolve("");
+                  resolve('');
                 }).catch(reject);
               } catch (e) {
                 return reject(e);
@@ -155,7 +153,7 @@ const LocalService = {
       }
 
       if (_.isString(hook_def.shell)) {
-        let path_to_script = path.resolve(hooks_dir, path.dirname(hook_def.path), ".", hook_def.shell);
+        let path_to_script = path.resolve(hooks_dir, path.dirname(hook_def.path), '.', hook_def.shell);
         hook_def.action = `"${path_to_script}"`;
       }
 
@@ -178,10 +176,7 @@ const LocalService = {
             if (config.get('shell')) {
               options.shell = config.get('shell');
             }
-
-            let child = exec(result_command, options, function (error, stdout, stderr) {
-
-              let error_msg = hook_def.error || "Error: @error@";
+            exec(result_command, options, function (error, stdout, stderr) {
               let has_error = false;
 
               if (error) return reject(error, null);
@@ -193,7 +188,7 @@ const LocalService = {
 
               if (hook_def.check) {
                 if (_.isString(hook_def.check)) {
-                  has_error = hook_def.check.toLowerCase() != stdout_str.toLowerCase();
+                  has_error = hook_def.check.toLowerCase() !== stdout_str.toLowerCase();
                 } else if (_.isFunction(hook_def.check)) {
                   has_error = !hook_def.check(message, stdout_str);
                 } else if (_.isRegExp(hook_def.check)) {
@@ -206,7 +201,6 @@ const LocalService = {
               } else if (hook_def.response !== false) {
                 resolve(stdout_str);
               }
-
             });
           });
         }, hook_def);
@@ -225,19 +219,18 @@ const LocalService = {
         hook_def.action = _.bind(function (message, service, matches) {
           return new Promise(function (resolve, reject) {
             if (hook_def.confirmation || hook_def.buttons) {
-
-              let confirm_message = _.isString(hook_def.confirmation) ? hook_def.confirmation : "Are you sure?";
+              let confirm_message = _.isString(hook_def.confirmation) ? hook_def.confirmation : 'Are you sure?';
 
               let buttons = hook_def.buttons || (_.isBoolean(hook_def.confirmation) ? [
-                ["Yes", "No"]
+                ['Yes', 'No']
               ] : true);
 
               let parse_response = _.isFunction(hook_def.parse_response) ? function (response_message) {
                 hook_def.parse_response(message, response_message, api).then(resolve).catch(reject);
               } : function (response_message) {
                 let response_text = response_message.text.toString().toLowerCase();
-                if (response_text == "yes") {
-                  return api.respond(response_message, (hook_def.continue || "Ok, executing action...")).then(function () {
+                if (response_text === 'yes') {
+                  return api.respond(response_message, (hook_def.continue || 'Ok, executing action...')).then(function () {
                     return _action(message, service, matches).then(function (output, plain) {
                       manage_response(message, hook_def, null, output, (hook_def.plain || plain)).then(resolve).catch(reject);
                     }).catch(function (error) {
@@ -245,7 +238,7 @@ const LocalService = {
                     });
                   }).catch(reject);
                 } else {
-                  manage_response(message, hook_def, (hook_def.abort || "Oh, nevermind..."), null, hook_def.plain).then(resolve).catch(reject);
+                  manage_response(message, hook_def, (hook_def.abort || 'Oh, nevermind...'), null, hook_def.plain).then(resolve).catch(reject);
                 }
               };
               return api.send(confirm_message, buttons, (hook_def.accepted_responses || true), hook_def.one_time_keyboard, hook_def.plain).then(parse_response).catch(reject);
@@ -260,8 +253,8 @@ const LocalService = {
         }, hook_def);
       }
 
-      return api.register_message_hook(hook_def).then(function(){
-        logger.notify(`Registered "${hook_def.full_name}" local hook with ${hook_def.command || hook_def.match} ${hook_def.command ? "command" : "match"}`);
+      return api.register_message_hook(hook_def).then(function () {
+        logger.notify(`Registered "${hook_def.full_name}" local hook with ${hook_def.command || hook_def.match} ${hook_def.command ? 'command' : 'match'}`);
         resolve();
       }).catch(reject);
     });
@@ -279,14 +272,12 @@ const LocalService = {
     api = tapi;
 
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-
-        if (config.get("local:active") == false) {
+        if (config.get('local:active') === false) {
           return resolve(api);
         }
 
-        var lo_hooks = hooks.get_hooks("has_local_hook", "full_name");
+        var lo_hooks = hooks.get_hooks('has_local_hook', 'full_name');
         var promises = [];
 
         for (let monitor_name in lo_hooks) {
@@ -308,6 +299,6 @@ const LocalService = {
       }).catch(reject);
     });
   }
-}
+};
 
 module.exports = LocalService;

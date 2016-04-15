@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * @alias blink
@@ -7,10 +7,8 @@
  * @memberOf hooks/examples
  */
 
-const Promise = require('promise');
-
 module.exports = {
-  command: "blink",
+  command: 'blink',
   signal: [{
     gpio: 14,
     value: 1,
@@ -36,7 +34,7 @@ module.exports = {
     value: 0,
     time: 3000
   }],
-  description: "Example of GPIO signaling. Would blink a LED connected to 14 GPIO pin three time, with a duration of 3 seconds for every blinks",
-  error: "Something wrong happened: @error@",
-  response: "What was that? Did you saw it?"
+  description: 'Example of GPIO signaling. Would blink a LED connected to 14 GPIO pin three time, with a duration of 3 seconds for every blinks',
+  error: 'Something wrong happened: @error@',
+  response: 'What was that? Did you saw it?'
 };

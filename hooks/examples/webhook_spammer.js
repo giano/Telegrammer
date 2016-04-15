@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * @alias webhook_spammer
@@ -13,17 +13,17 @@ module.exports = {
   route: function (params, service, req, res) {
     return new Promise(function (resolve, reject) {
       if (params.what || params.w) {
-        return service.send(params.what || api.w).then(resolve).catch(reject);
+        return service.send(params.what || params.w).then(resolve).catch(reject);
       } else {
-        return reject(new Error("Hey, why so silent?"));
+        return reject(new Error('Hey, why so silent?'));
       }
     });
   },
-  response: "Ok, sent.",
+  response: 'Ok, sent.',
   params: [{
     name: 'what',
     alias: 'w',
     type: String
   }],
-  description: "Example of web hook. Just send passed string to chat."
+  description: 'Example of web hook. Just send passed string to chat.'
 };

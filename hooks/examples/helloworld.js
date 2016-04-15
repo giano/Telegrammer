@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * @alias helloworld
@@ -10,10 +10,10 @@
 const Promise = require('promise');
 
 module.exports = {
-  match: "hello",
+  match: 'hello',
   action: function (message, service, matches) {
-    return Promise.resolve("...world");
+    return Promise.resolve('...world');
   },
-  description: "Can't miss in any dev project",
-  error: "Oh, darn..."
+  description: 'Can\'t miss in any dev project',
+  error: 'Oh, darn...'
 };

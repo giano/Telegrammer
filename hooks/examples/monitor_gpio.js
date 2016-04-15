@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * @alias monitor_gpio
@@ -8,7 +8,6 @@
  */
 
 const Promise = require('promise');
-const os = require("os");
 
 module.exports = {
   gpio: {
@@ -18,13 +17,13 @@ module.exports = {
         if (err) {
           return reject(err);
         }
-        if (value == 1) {
-          resolve("Button has been pressed. Ouch!");
+        if (value === 1) {
+          resolve('Button has been pressed. Ouch!');
         } else {
-          resolve("Button has been depressed. What a relief!");
+          resolve('Button has been depressed. What a relief!');
         }
       });
     }
   },
-  description: "Example of GPIO monitoring hook. Would react to a button connected to GPIO pin 4."
+  description: 'Example of GPIO monitoring hook. Would react to a button connected to GPIO pin 4.'
 };

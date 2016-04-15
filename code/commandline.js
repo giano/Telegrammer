@@ -1,16 +1,16 @@
-"use strict";
+'use strict';
 
 /**
  * CommandLineService
  * @namespace CommandLineService
  * @description Manages command line hooks. Callable using .tel.sh file or directly using index.js + command
- * @example See ["hooks/examples/spammer.js"]{@link hooks/examples.spammer} for a commandline hook definition
+ * @example See ['hooks/examples/spammer.js']{@link hooks/examples.spammer} for a commandline hook definition
  */
 
 const hooks = require('./hooks');
 const config = require('./config');
 const _ = require('underscore');
-const s = require("underscore.string");
+const s = require('underscore.string');
 const escape_string_regexp = require('escape-string-regexp');
 
 _.mixin(s.exports());
@@ -19,7 +19,7 @@ _.mixin(s.exports());
  * @property {TelegramService} api Link to TelegramService
  * @private
  * @memberof CommandLineService
-  */
+ */
 
 var api = null;
 
@@ -29,9 +29,9 @@ const Promise = require('promise');
  * @property {Boolean} initialized If initialized
  * @private
  * @memberof CommandLineService
-  */
+ */
 
-var initialized = false;
+let initialized = false;
 
 /**
  * @class
@@ -52,15 +52,14 @@ const CommandLineService = {
 
   execute: function (command, params) {
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-        var cm_hooks = hooks.get_hooks("has_command_line_hook", "cmd_name");
+        var cm_hooks = hooks.get_hooks('has_command_line_hook', 'cmd_name');
 
         params = params || {};
         command = command.toLowerCase();
 
         if (!api.is_hooked()) {
-          var error = new Error("Telegram service not hooked. Send first message.");
+          var error = new Error('Telegram service not hooked. Send first message.');
           return reject(error);
         }
 
@@ -71,29 +70,26 @@ const CommandLineService = {
               return command_hook.exec(params, api).then(resolve).catch(reject);
             } else if (_.isString(command_hook.exec)) {
               var out_str = command_hook.exec;
-
               for (let key in params) {
                 if (params.hasOwnProperty(key)) {
-                  let regsrc = new RegExp(`@${escape_string_regexp(hook_def.match)}@`, "img");
-                  out_str = out_str.replace(key, params[key]);
+                  let regsrc = new RegExp(`@${escape_string_regexp(key)}@`, 'img');
+                  out_str = out_str.replace(regsrc, params[key]);
                 }
               }
-
               return api.send(out_str);
             } else {
-              let error = new Error("Command not implemented.");
+              let error = new Error('Command not implemented.');
               return reject(error);
             }
           } else {
-            let error = new Error("Command not implemented.");
+            let error = new Error('Command not implemented.');
             return reject(error);
           }
         } else {
-          let error = new Error("Command not found.");
+          let error = new Error('Command not found.');
           return reject(error);
         }
       }).catch(reject);
-
     });
   },
 
@@ -111,7 +107,7 @@ const CommandLineService = {
     api = tapi;
 
     return new Promise(function (resolve, reject) {
-      if (config.get("commandline:active") == false) {
+      if (config.get('commandline:active') === false) {
         initialized = true;
         return resolve(api);
       }
@@ -120,9 +116,8 @@ const CommandLineService = {
         initialized = true;
         resolve(api);
       });
-
     });
   }
-}
+};
 
 module.exports = CommandLineService;

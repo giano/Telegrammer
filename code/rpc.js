@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * RpcService
@@ -6,15 +6,13 @@
  * @description Allows inter-service communication, allowing server start/stop/restart, etc...
  */
 
-
 const hooks = require('./hooks');
 const config = require('./config');
 const monitor = require('./monitor');
 
 const dnode = require('dnode');
-const net = require('net');
 const _ = require('underscore');
-const s = require("underscore.string");
+const s = require('underscore.string');
 
 _.mixin(s.exports());
 
@@ -26,7 +24,7 @@ let port = (config.get('rpc_port') || 5004) * 1;
  * @property {Boolean} initialized If initialized
  * @private
  * @memberof RpcService
-  */
+ */
 
 let initialized = false;
 
@@ -74,9 +72,9 @@ const actions = {
 };
 
 /**
-* @class
-* @classdesc Allows inter-service communication, allowing server start/stop/restart, etc...
-*/
+ * @class
+ * @classdesc Allows inter-service communication, allowing server start/stop/restart, etc...
+ */
 
 const RpcService = {
 
@@ -102,7 +100,7 @@ const RpcService = {
           });
         } else {
           conn.end();
-          reject(new Error(`${what} was not found`));
+          reject(new Error(`${command} was not found`));
         }
       });
     });
@@ -119,13 +117,9 @@ const RpcService = {
    */
 
   init: function (tapi) {
-    let api = tapi;
-
     return new Promise(function (resolve, reject) {
       initialized = true;
-
       server = dnode(function (remote, conn) {
-
         for (let action in actions) {
           let action_fn = actions[action];
           this[action] = _.bind(action_fn, this);
@@ -139,6 +133,6 @@ const RpcService = {
       server.listen(port);
     });
   }
-}
+};
 
 module.exports = RpcService;

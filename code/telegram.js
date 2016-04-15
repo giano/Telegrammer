@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * TelegramService
@@ -10,29 +10,26 @@ const hooks = require('./hooks');
 const config = require('./config');
 const logger = require('./logger');
 
-const escape_string_regexp = require('escape-string-regexp');
 const _ = require('underscore');
-const s = require("underscore.string");
+const s = require('underscore.string');
 _.mixin(s.exports());
 
 const Promise = require('promise');
 const Telegram = require('node-telegram-bot-api');
 
-
 /**
  * @property {Telegram} api Link to Telegram Module
  * @private
  * @memberof TelegramService
-  */
+ */
 
 let api = null;
-
 
 /**
  * @property {Boolean} initialized If initialized
  * @private
  * @memberof TelegramService
-  */
+ */
 
 let initialized = false;
 
@@ -50,13 +47,12 @@ let next_manage_reply = {};
 
 const register_message_hook = function (hook) {
   return new Promise(function (resolve, reject) {
-
     let match = null;
 
     if (hook.match) {
       match = hook.match;
     } else {
-      return reject(new Error("No matching string"));
+      return reject(new Error('No matching string'));
     }
 
     let manager = _.bind(function (msg, match) {
@@ -120,7 +116,7 @@ const TelegramService = {
    */
 
   get_hook_id: function () {
-    return process.env.TEL_CID || config.get("telegram:chat_id");
+    return process.env.TEL_CID || config.get('telegram:chat_id');
   },
 
   /**
@@ -148,7 +144,7 @@ const TelegramService = {
 
   set_hook_id: function (id) {
     process.env.TEL_CID = id;
-    config.set("telegram:chat_id", id);
+    config.set('telegram:chat_id', id);
     return TelegramService.get_hook_id();
   },
 
@@ -168,11 +164,11 @@ const TelegramService = {
     let chat_id = (message.chat.id || TelegramService.get_hook_id());
     if (chat_id) {
       return api.sendMessage(chat_id, content, {
-        parse_mode: plain == true ? null : config.get("telegram:parse_mode"),
+        parse_mode: plain === true ? null : config.get('telegram:parse_mode'),
         reply_to_message_id: message.id
       });
     } else {
-      let error = new Error("Telegram service not hooked. Send first message.");
+      let error = new Error('Telegram service not hooked. Send first message.');
       return Promise.reject(error);
     }
   },
@@ -192,9 +188,8 @@ const TelegramService = {
    */
   send: function (content, reply, accepted_responses, one_time_keyboard, plain) {
     if (TelegramService.is_hooked()) {
-
       let options = {
-        parse_mode: plain == true ? null : config.get("telegram:parse_mode")
+        parse_mode: plain === true ? null : config.get('telegram:parse_mode')
       };
 
       let has_keyboard = false;
@@ -216,7 +211,7 @@ const TelegramService = {
             }
           });
           accepted_responses = _.map(accepted_responses, function (el) {
-            return _.trim(el).toString().toLowerCase()
+            return _.trim(el).toString().toLowerCase();
           });
         }
 
@@ -229,10 +224,8 @@ const TelegramService = {
 
       if (options.reply_markup) {
         return new Promise(function (resolve, reject) {
-
           return api.sendMessage(TelegramService.get_hook_id(), content, options).then(function (output) {
             if (output && output.message_id) {
-
               let chat_id = (output.chat.id || TelegramService.get_hook_id());
 
               let manage_reply = function (reply_message) {
@@ -242,14 +235,13 @@ const TelegramService = {
                     if (_.contains(accepted_responses, reply_message_compare)) {
                       resolve(reply_message);
                     } else {
-                      reject(new Error("Reply response invalid"));
+                      reject(new Error('Reply response invalid'));
                     }
                   } else {
                     resolve(reply_message);
                   }
-
                 } else {
-                  reject(new Error("Reply message not received"));
+                  reject(new Error('Reply message not received'));
                 }
               };
 
@@ -261,18 +253,16 @@ const TelegramService = {
               } else {
                 api.onReplyToMessage(chat_id, output.message_id, manage_reply);
               }
-
             } else {
-              reject(new Error("Reply message not sent"));
+              reject(new Error('Reply message not sent'));
             }
           }).catch(reject);
         });
       } else {
         return api.sendMessage(TelegramService.get_hook_id(), content, options);
       }
-
     } else {
-      let error = new Error("Telegram service not hooked. Send first message.");
+      let error = new Error('Telegram service not hooked. Send first message.');
       return Promise.reject(error);
     }
   },
@@ -282,7 +272,7 @@ const TelegramService = {
    * @description Initialize Telegram Manager
    * @static
    * @param {Number} tcid Chat ID (if provided)
-   * @param {Boolean} is_command If it's an "one shot" command will not poll or log.
+   * @param {Boolean} is_command If it's an 'one shot' command will not poll or log.
    * @memberof TelegramService
    * @public
    * @returns {Promise}
@@ -290,29 +280,25 @@ const TelegramService = {
 
   init: function (tcid, is_command) {
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-        let token = config.get("telegram:token") || process.env.TEL_TOKEN;
+        let token = config.get('telegram:token') || process.env.TEL_TOKEN;
 
         if (tcid) {
           TelegramService.set_hook_id(tcid);
         }
 
-        let telegram_hooks = hooks.get_hooks("has_local_hook");
-
         api = new Telegram(token, {
           polling: (is_command ? false : {
-            interval: (config.get("telegram:interval") || 1000) * 1,
-            timeout: (config.get("telegram:interval") || 1000) * 6
+            interval: (config.get('telegram:interval') || 1000) * 1,
+            timeout: (config.get('telegram:interval') || 1000) * 6
           })
         });
 
         api.getMe().then(function (data) {
           data = data || {};
 
-          if(is_command !== true){
+          if (is_command !== true) {
             logger.log(`Using bot @${data.username}, ${data.first_name}, ID: ${data.id}`);
-
             if (TelegramService.is_hooked()) {
               logger.log(`Hooked to chat id #${TelegramService.get_hook_id()}`);
             } else {
@@ -320,11 +306,10 @@ const TelegramService = {
             }
           }
 
-          api.on("message", function (message) {
+          api.on('message', function (message) {
             let chat_id = (message.chat.id || TelegramService.get_hook_id());
             if (message && chat_id && next_manage_reply[chat_id]) {
               let handler = next_manage_reply[chat_id];
-              let text = _.trim(message.text || "").toLowerCase();
               handler.resolve(message);
               delete next_manage_reply[chat_id];
             }
@@ -332,13 +317,10 @@ const TelegramService = {
 
           initialized = true;
           resolve(TelegramService);
-
         }).catch(reject);
-
       }).catch(reject);
-
     });
   }
-}
+};
 
 module.exports = TelegramService;

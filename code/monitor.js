@@ -1,19 +1,18 @@
-"use strict";
+'use strict';
 
 /**
  * MonitorService
  * @namespace MonitorService
  * @description Manages monitoring hooks
- * @example See ["hooks/examples/monitor_cpu.js"]{@link hooks/examples.monitor_cpu} for a monitoring hook definition
- * @example See ["hooks/examples/monitor_gpio.js"]{@link hooks/examples.monitor_gpio} for a GPIO monitoring hook definition
+ * @example See ['hooks/examples/monitor_cpu.js']{@link hooks/examples.monitor_cpu} for a monitoring hook definition
+ * @example See ['hooks/examples/monitor_gpio.js']{@link hooks/examples.monitor_gpio} for a GPIO monitoring hook definition
  */
 
 const hooks = require('./hooks');
 const config = require('./config');
 
 const _ = require('underscore');
-const s = require("underscore.string");
-const escape_string_regexp = require('escape-string-regexp');
+const s = require('underscore.string');
 const logger = require('./logger');
 _.mixin(s.exports());
 
@@ -21,7 +20,7 @@ _.mixin(s.exports());
  * @property {TelegramService} api Link to TelegramService
  * @private
  * @memberof MonitorService
-  */
+ */
 
 var api = null;
 
@@ -31,9 +30,9 @@ const Promise = require('promise');
  * @property {Boolean} initialized If initialized
  * @private
  * @memberof MonitorService
-  */
+ */
 
-var initialized = false;
+let initialized = false;
 
 /**
  * @class
@@ -52,14 +51,12 @@ const MonitorService = {
    */
   start: function (hook_or_name) {
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
-
+        var mo_hooks = hooks.get_hooks('has_monitor_hook', 'full_name');
         if (_.isString(hook_or_name)) {
           hook_or_name = _.trim(hook_or_name).toLowerCase();
           let hook_ref = mo_hooks[hook_or_name];
-          if (hook) {
+          if (hook_ref) {
             return MonitorService.start(hook_ref);
           } else {
             return reject(new Error(`Hook ${hook_or_name} was not found`));
@@ -69,7 +66,7 @@ const MonitorService = {
           logger.notify(`Starting monitor hook "${hook.full_name}"...`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
-              if (config.get("gpio") == false) {
+              if (config.get('gpio') === false) {
                 return resolve(true);
               }
               const Gpio = require('onoff').Gpio;
@@ -88,7 +85,7 @@ const MonitorService = {
                   api.send((error.message || error), null, null, null, hook.plain);
                 });
               });
-              logger.log(`Gpio Monitor hook "${hook.full_name}" started`);
+              logger.log(`Gpio Monitor hook '${hook.full_name}' started`);
               hook.started = true;
               return resolve(true);
             } catch (e) {
@@ -97,7 +94,7 @@ const MonitorService = {
           } else if (_.isFunction(hook.start_monitor)) {
             return hook.start_monitor(hook, api).then(function (arg) {
               hook.started = true;
-              logger.log(`Monitor hook "${hook.full_name}" started`);
+              logger.log(`Monitor hook '${hook.full_name}' started`);
               return resolve(arg);
             });
           } else if (_.isFunction(hook.check)) {
@@ -114,12 +111,12 @@ const MonitorService = {
             if (hook._interval) {
               clearInterval(hook._interval);
             }
-            hook._interval = setInterval(check, hook.interval || config.get("monitor:default_interval") || 5000);
+            hook._interval = setInterval(check, hook.interval || config.get('monitor:default_interval') || 5000);
             logger.notify(`Monitor hook "${hook.full_name}" started`);
             hook.started = true;
             return resolve(true);
           } else {
-            return reject(new Error("Need 'start_monitor' or 'check' functions."));
+            return reject(new Error('Need "start_monitor" or "check" functions.'));
           }
         }
       }).catch(reject);
@@ -151,9 +148,8 @@ const MonitorService = {
    */
   stop: function (hook_or_name) {
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
+        var mo_hooks = hooks.get_hooks('has_monitor_hook', 'full_name');
         if (_.isString(hook_or_name)) {
           hook_or_name = _.trim(hook_or_name).toLowerCase();
           var hook_ref = mo_hooks[hook_or_name];
@@ -167,10 +163,9 @@ const MonitorService = {
           logger.notify(`Stopping monitor hook "${hook.full_name}"`);
           if (_.isObject(hook.gpio) && _.isFunction(hook.gpio.handler)) {
             try {
-              if (config.get("gpio") == false) {
+              if (config.get('gpio') === false) {
                 return resolve(true);
               }
-              const Gpio = require('onoff').Gpio;
               if (hook.gpio.device) {
                 hook.gpio.device.unexport();
                 hook.gpio.device.unwatchAll();
@@ -182,7 +177,6 @@ const MonitorService = {
             } catch (e) {
               return reject(e);
             }
-
           } else if (_.isFunction(hook.stop_monitor)) {
             return hook.stop_monitor(hook, api).then(function (arg) {
               logger.log(`Monitor hook "${hook.full_name}" stopped`);
@@ -197,7 +191,7 @@ const MonitorService = {
             hook.started = false;
             return resolve(true);
           } else {
-            return reject(new Error("Need 'start_monitor' or 'check' functions."));
+            return reject(new Error('Need "start_monitor" or "check" functions.'));
           }
         }
       }).catch(reject);
@@ -216,12 +210,11 @@ const MonitorService = {
     api = tapi;
     return new Promise(function (resolve, reject) {
       hooks.load().then(function () {
-
-        if (config.get("monitor:active") == false) {
+        if (config.get('monitor:active') === false) {
           return resolve(api);
         }
 
-        var mo_hooks = hooks.get_hooks("has_monitor_hook", "full_name");
+        var mo_hooks = hooks.get_hooks('has_monitor_hook', 'full_name');
 
         var promises = [];
 
@@ -246,6 +239,6 @@ const MonitorService = {
       }).catch(reject);
     });
   }
-}
+};
 
 module.exports = MonitorService;

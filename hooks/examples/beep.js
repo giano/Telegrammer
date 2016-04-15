@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 /**
  * @alias beep
@@ -20,7 +20,7 @@ module.exports = {
       resolve();
     });
   },
-  description: "Example of regex matching hook. This hook will simply beep on the server/device",
-  error: "Something wrong happened: @error@",
-  response: "What was that? Did you hear it?"
+  description: 'Example of regex matching hook. This hook will simply beep on the server/device',
+  error: 'Something wrong happened: @error@',
+  response: 'What was that? Did you hear it?'
 };
