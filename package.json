@@ -74,7 +74,10 @@
     "views"
   ],
   "devDependencies": {
+    "assert": "^1.3.0",
     "docdash": "^0.1.0",
-    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git"
+    "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
+    "semistandard": "^7.0.5",
+    "vows": "^0.8.1"
   }
 }

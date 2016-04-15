@@ -21,7 +21,11 @@ _**Making IT simple?** Chat with your **server** or **device**. It will chat to 
 
 # Installation
 ## Cloning/Forking this repository
-Step **one** is cloning or forking this repository in a directory on your computer, server or device. You can get using _npm_ too.
+Step **one** is cloning or forking this repository in a directory on your computer, server or device.
+
+You can get using _npm_ too.
+
+![npm install telegrammer](https://nodei.co/npm/telegrammer.png?downloads=true&stars=true)
 
 Then _npm install_ as usual.
 
