@@ -11,7 +11,7 @@
 const hooks = require('./hooks');
 const config = require('./config');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 const logger = require('./logger');
 _.mixin(s.exports());

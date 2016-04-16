@@ -13,7 +13,7 @@
 
 
 const Config = require('nconf');
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 const fs = require('fs');
 _.mixin(s.exports());

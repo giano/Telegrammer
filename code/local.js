@@ -15,7 +15,7 @@ const hooks = require('./hooks');
 const config = require('./config');
 const logger = require('./logger');
 const path = require('path');
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 const asyncP = require('async-promises');
 _.mixin(s.exports());

@@ -11,13 +11,13 @@ const logger = require('./logger');
 
 const Promise = require('promise');
 const escape_string_regexp = require('escape-string-regexp');
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 _.mixin(s.exports());
 
 const path = require('path');
 const dir = path.resolve(__dirname, '..');
-let hooks_dir = process.env.TEL_HOOKS_DIR || path.isAbsolute(config.get('hooks:folder')) ? config.get('hooks:folder') : path.resolve(dir, config.get('hooks:folder'));
+let hooks_dir = process.env.TEL_HOOKS_DIR || (path.isAbsolute(config.get('hooks:folder')) ? config.get('hooks:folder') : path.resolve(dir, config.get('hooks:folder')));
 
 let hooks_cache = [];
 
@@ -115,7 +115,7 @@ const HooksManager = {
     }
 
     if (group_by) {
-      out_val = _.indexBy(_.sortBy(out_val, group_by), group_by);
+      out_val = _.keyBy(_.sortBy(out_val, group_by), group_by);
     }
 
     return out_val;

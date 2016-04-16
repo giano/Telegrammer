@@ -8,7 +8,7 @@
 
 const config = require('./config');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 const ansi = require('ansi-escape-sequences');
 const fs = require('fs');

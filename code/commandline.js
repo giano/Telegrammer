@@ -9,7 +9,7 @@
 
 const hooks = require('./hooks');
 const config = require('./config');
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 const escape_string_regexp = require('escape-string-regexp');
 

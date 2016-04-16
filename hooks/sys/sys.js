@@ -3,7 +3,7 @@
 const hooks = require('../../code/hooks');
 const package_def = require('../../package');
 const Promise = require('promise');
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 _.mixin(s.exports());
 

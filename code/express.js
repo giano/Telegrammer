@@ -12,7 +12,7 @@ const monitor = require('./monitor');
 const config = require('./config');
 const logger = require('./logger');
 
-const _ = require('underscore');
+const _ = require('lodash');
 const s = require('underscore.string');
 _.mixin(s.exports());
 
