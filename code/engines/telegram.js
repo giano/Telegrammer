@@ -6,9 +6,9 @@
  * @description Manages telegram service two way communication
  */
 
-const hooks = require('./hooks');
-const config = require('./config');
-const logger = require('./logger');
+const hooks = require('../hooks');
+const config = require('../config');
+const logger = require('../logger');
 
 const _ = require('lodash');
 const s = require('underscore.string');

@@ -7,7 +7,7 @@
  */
 
 const hooks = require('./hooks');
-const telegram = require('./telegram');
+const telegram = require('./engine');
 const express = require('./express');
 const monitor = require('./monitor');
 const local = require('./local');
