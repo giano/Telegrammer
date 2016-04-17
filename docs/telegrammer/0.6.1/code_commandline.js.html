@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>code/commandline.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="CommandLineService.html">CommandLineService</a><ul class='methods'><li data-type='method'><a href="CommandLineService.html#.execute">execute</a></li><li data-type='method'><a href="CommandLineService.html#.init">init</a></li></ul></li><li><a href="Config.html">Config</a><ul class='methods'><li data-type='method'><a href="Config.html#.init">init</a></li></ul></li><li><a href="ExpressService.html">ExpressService</a><ul class='methods'><li data-type='method'><a href="ExpressService.html#.authorized">authorized</a></li><li data-type='method'><a href="ExpressService.html#.init">init</a></li><li data-type='method'><a href="ExpressService.html#.list_methods">list_methods</a></li></ul></li><li><a href="HooksManager.html">HooksManager</a><ul class='methods'><li data-type='method'><a href="HooksManager.html#.get_commands">get_commands</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks">get_hooks</a></li><li data-type='method'><a href="HooksManager.html#.get_hooks_dir">get_hooks_dir</a></li><li data-type='method'><a href="HooksManager.html#.load">load</a></li><li data-type='method'><a href="HooksManager.html#.reload">reload</a></li><li data-type='method'><a href="HooksManager.html#.work_hook">work_hook</a></li></ul></li><li><a href="LocalService.html">LocalService</a><ul class='methods'><li data-type='method'><a href="LocalService.html#.connect_hook">connect_hook</a></li><li data-type='method'><a href="LocalService.html#.init">init</a></li><li data-type='method'><a href="LocalService.html#.manage_response">manage_response</a></li></ul></li><li><a href="log_file_path.html">log_file_path</a></li><li><a href="MainService.html">MainService</a><ul class='methods'><li data-type='method'><a href="MainService.html#.help">help</a></li><li data-type='method'><a href="MainService.html#.main">main</a></li><li data-type='method'><a href="MainService.html#.parse_commands">parse_commands</a></li><li data-type='method'><a href="MainService.html#.start_server">start_server</a></li><li data-type='method'><a href="MainService.html#.stop_server">stop_server</a></li></ul></li><li><a href="MonitorService.html">MonitorService</a><ul class='methods'><li data-type='method'><a href="MonitorService.html#.init">init</a></li><li data-type='method'><a href="MonitorService.html#.restart">restart</a></li><li data-type='method'><a href="MonitorService.html#.start">start</a></li><li data-type='method'><a href="MonitorService.html#.stop">stop</a></li></ul></li><li><a href="RpcService.html">RpcService</a><ul class='methods'><li data-type='method'><a href="RpcService.html#.init">init</a></li><li data-type='method'><a href="RpcService.html#.send">send</a></li></ul></li><li><a href="TelegramService.html">TelegramService</a><ul class='methods'><li data-type='method'><a href="TelegramService.html#.get_hook_id">get_hook_id</a></li><li data-type='method'><a href="TelegramService.html#.init">init</a></li><li data-type='method'><a href="TelegramService.html#.is_hooked">is_hooked</a></li><li data-type='method'><a href="TelegramService.html#.manage_message">manage_message</a></li><li data-type='method'><a href="TelegramService.html#.register_message_hook">register_message_hook</a></li><li data-type='method'><a href="TelegramService.html#.respond">respond</a></li><li data-type='method'><a href="TelegramService.html#.send">send</a></li><li data-type='method'><a href="TelegramService.html#.set_hook_id">set_hook_id</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="hooks_examples.html">hooks/examples</a></li><li><a href="hooks_sys.html">hooks/sys</a></li><li><a href="Logger.html">Logger</a><ul class='methods'><li data-type='method'><a href="Logger.html#.error">error</a></li><li data-type='method'><a href="Logger.html#.log">log</a></li><li data-type='method'><a href="Logger.html#.notify">notify</a></li><li data-type='method'><a href="Logger.html#.setLogFile">setLogFile</a></li><li data-type='method'><a href="Logger.html#.trace">trace</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">code/commandline.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+
+/**
+ * CommandLineService
+ * @namespace CommandLineService
+ * @description Manages command line hooks. Callable using .tel.sh file or directly using index.js + command
+ * @example See ['hooks/examples/spammer.js']{@link hooks/examples.spammer} for a commandline hook definition
+ */
+
+const hooks = require('./hooks');
+const config = require('./config');
+const _ = require('lodash');
+const s = require('underscore.string');
+const escape_string_regexp = require('escape-string-regexp');
+
+_.mixin(s.exports());
+
+/**
+ * @property {TelegramService} api Link to TelegramService
+ * @private
+ * @memberof CommandLineService
+ */
+
+var api = null;
+
+const Promise = require('promise');
+
+/**
+ * @property {Boolean} initialized If initialized
+ * @private
+ * @memberof CommandLineService
+ */
+
+let initialized = false;
+
+/**
+ * @class
+ * @classdesc Manages command line hooks. Callable using .tel.sh file or directly using index.js + command
+ */
+
+const CommandLineService = {
+  /**
+   * @function execute
+   * @description Executes the command using the registered hook.&lt;br/>You can run &lt;strong>.tel.sh help&lt;/strong> for a list of registered commands, then &lt;strong>.tel.sh help COMMAND_NAME&lt;/strong> for a more specific view.
+   * @static
+   * @param {string} command Command to be executed.
+   * @param {object} params command line passed params as defined in the hook.
+   * @memberof CommandLineService
+   * @public
+   * @returns {Promise}
+   */
+
+  execute: function (command, params) {
+    return new Promise(function (resolve, reject) {
+      hooks.load().then(function () {
+        var cm_hooks = hooks.get_hooks('has_command_line_hook', 'cmd_name');
+
+        params = params || {};
+        command = command.toLowerCase();
+
+        if (!api.is_hooked()) {
+          var error = new Error('Telegram service not hooked. Send first message.');
+          return reject(error);
+        }
+
+        if (cm_hooks[command]) {
+          var command_hook = cm_hooks[command];
+          if (command_hook.exec) {
+            if (_.isFunction(command_hook.exec)) {
+              return command_hook.exec(params, api).then(resolve).catch(reject);
+            } else if (_.isString(command_hook.exec)) {
+              var out_str = command_hook.exec;
+              for (let key in params) {
+                if (params.hasOwnProperty(key)) {
+                  let regsrc = new RegExp(`@${escape_string_regexp(key)}@`, 'img');
+                  out_str = out_str.replace(regsrc, params[key]);
+                }
+              }
+              return api.send(out_str);
+            } else {
+              let error = new Error('Command not implemented.');
+              return reject(error);
+            }
+          } else {
+            let error = new Error('Command not implemented.');
+            return reject(error);
+          }
+        } else {
+          let error = new Error('Command not found.');
+          return reject(error);
+        }
+      }).catch(reject);
+    });
+  },
+
+  /**
+   * @function init
+   * @description Initialize command line hooks manager
+   * @static
+   * @param {TelegramService} tapi Link to Telegram service
+   * @memberof CommandLineService
+   * @public
+   * @returns {Promise}
+   */
+
+  init: function (tapi) {
+    api = tapi;
+
+    return new Promise(function (resolve, reject) {
+      if (config.get('commandline:active') === false) {
+        initialized = true;
+        return resolve(api);
+      }
+
+      process.nextTick(function () {
+        initialized = true;
+        resolve(api);
+      });
+    });
+  }
+};
+
+module.exports = CommandLineService;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.0-dev</a> on Sun Apr 17 2016 21:43:04 GMT+0200 (CEST) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

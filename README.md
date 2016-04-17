@@ -8,7 +8,7 @@ Manage your device or server using [**Telegram Messenger**](https://telegram.org
 
 --------------------------------------------------------------------------------
 
-![Travis Build](https://travis-ci.org/giano/Telegrammer.svg) ![Dependencies](https://david-dm.org/giano/Telegrammer.svg)
+![Travis Build](https://travis-ci.org/giano/Telegrammer.svg?branch=master) ![Dependencies](https://david-dm.org/giano/Telegrammer.svg)
 
 # Synopsis
 Telegrammer is a little resident server born to allow easy device/server management via private Telegram chat.
