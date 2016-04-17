@@ -1,21 +1,19 @@
 {
-  "allowed_usernames": ["YOUR-TELEGRAM-USERNAME", "YOUR-FIANCEE-TELEGRAM-USERNAME", "YOUR-DOG-TELEGRAM-USERNAME"],
+  "allowed_usernames": ["fakeuser"],
   "telegram": {
-    "token": "YOUR-TELEGRAM-BOT-TOKEN",
-    "chat_id": "YOU-CAN-OBTAIN-THAT-RUNNING-LOCALLY-AND-CHATTING-WITH-YOUR-BOT",
+    "token": "999999999999",
+    "chat_id": "4321",
     "parse_mode": "Markdown"
   },
+  "engine": "./engines/test",
   "hooks": {
-    "folder": "hooks",
-    "config": {
-      "monitor_cpu": {
-        "percent_limit": 70
-      }
-    }
+    "folder": "tests/test_hooks"
   },
+  "gpio": false,
   "commandline": {
     "active": true
   },
+  "verbose": true,
   "monitor": {
     "active": true,
     "default_interval": 5000
@@ -25,8 +23,9 @@
   },
   "leave_me_here_for_tests": true,
   "express": {
+    "port": 9078,
     "active": true,
-    "auth": "EXTRA-SECURITY-FOR-WEB-HOOKS",
+    "auth": "cantGuessMe",
     "auth_token_name": "X-Auth"
   }
 }

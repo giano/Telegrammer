@@ -41,6 +41,10 @@ const work_hook = function (hook_def, hook_path) {
       return out_array;
     }
 
+    if (hook_def.enabled === false) {
+      return false;
+    }
+
     if (((hook_def.match || hook_def.command) && (hook_def.action || hook_def.shell || hook_def.signal)) || (hook_def.route) || (hook_def.exec) || (hook_def.gpio) || (hook_def.parse_response) || (hook_def.check) || (hook_def.start_monitor && hook_def.stop_monitor)) {
       hook_def.path = hook_path;
       hook_def.namespace = hook_def.namespace || path.dirname(hook_path) || 'default';

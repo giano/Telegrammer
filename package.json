@@ -10,7 +10,7 @@
     "start": "./tel.sh start",
     "stop": "./tel.sh stop",
     "help": "./tel.sh help",
-    "test": "vows tests/* --spec"
+    "test": "NODE_ENV=test vows tests/* --spec"
   },
   "repository": {
     "type": "git",

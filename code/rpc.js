@@ -119,18 +119,18 @@ const RpcService = {
   init: function (tapi) {
     return new Promise(function (resolve, reject) {
       initialized = true;
-      server = dnode(function (remote, conn) {
-        for (let action in actions) {
-          let action_fn = actions[action];
-          this[action] = _.bind(action_fn, this);
-        }
-
+      server = dnode(actions);
+      let local_server = server.listen(port);
+      local_server.on('listening', function () {
         process.nextTick(function () {
           resolve(tapi);
         });
       });
-
-      server.listen(port);
+      local_server.on('error', function (err) {
+        process.nextTick(function () {
+          reject(err);
+        });
+      });
     });
   }
 };

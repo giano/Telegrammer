@@ -45,6 +45,8 @@ let app = null;
 
 let initialized = false;
 
+let server = null;
+
 /**
  * @function authorized
  * @description Check if call is authorized
@@ -96,6 +98,22 @@ const ExpressService = {
     }
   },
 
+  close: function () {
+    return new Promise(function (resolve, reject) {
+      if(server){
+        server.close(function (err) {
+          if (err) {
+            return reject(err);
+          }
+          resolve(true);
+        });
+      }else{
+        resolve(false);
+      }
+
+    });
+  },
+
   /**
    * @function init
    * @description Initialize web hooks manager
@@ -137,9 +155,9 @@ const ExpressService = {
 
         app.use(express.static('public'));
 
-        let port = (process.env.PORT || config.get('express:port') || 3000);
+        let port = (config.get('express:port') || process.env.PORT || 3000);
 
-        app.listen(port, function (error) {
+        server = app.listen(port, function (error) {
           if (error) {
             reject(error);
           } else {

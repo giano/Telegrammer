@@ -20,6 +20,8 @@ const commandLineCommands = require('command-line-commands');
 const getUsage = require('command-line-usage');
 const ansi = require('ansi-escape-sequences');
 const package_desc = require('../package.json');
+const EventEmitter = require('events').EventEmitter;
+const util = require('util');
 
 const _ = require('lodash');
 const s = require('underscore.string');
@@ -27,6 +29,7 @@ _.mixin(s.exports());
 
 let tcid = null;
 let pid_path = path.resolve(__dirname, '..', '.pid');
+let main_server_singleton = null;
 
 const cli_common_conf = [{
   name: 'verbose',
@@ -72,8 +75,18 @@ let help_def = _.union([], cli_common_conf, [{
  * @class
  * @classdesc Manages main init function and commands dispatching.
  */
+const MainService = function () {
+  if (main_server_singleton) {
+    return main_server_singleton;
+  }
+  EventEmitter.call(this);
+  main_server_singleton = this;
+  return this;
+};
 
-const MainService = {
+util.inherits(MainService, EventEmitter);
+
+MainService.prototype = _.extend(MainService.prototype, {
   /**
    * @function help
    * @description Returns command line help interface.<br/>Will include commandline hooks' help.
@@ -305,7 +318,6 @@ const MainService = {
         resolve(command);
 
       }).catch(reject);
-
     });
   },
   /**
@@ -317,11 +329,9 @@ const MainService = {
    * @returns {Promise}
    */
   start_server: function () {
+    let self = this;
     return new Promise(function (resolve, reject) {
-
       hooks.load().then(function () {
-        let cm_hooks = hooks.get_hooks('has_command_line_hook');
-
         const npid = require('npid');
         const pid = npid.create(pid_path, true);
         pid.removeOnExit();
@@ -337,6 +347,7 @@ const MainService = {
 
         return telegram.init(tcid).then(local.init).then(monitor.init).then(express.init).then(rpc.init).then(function () {
           logger.log(`${package_desc.name} v${package_desc.version} started.`);
+          self.emit('started', self);
         }).catch(function (error) {
           reject(error);
         });
@@ -353,15 +364,18 @@ const MainService = {
    * @returns {Promise}
    */
   stop_server: function () {
+    let self = this;
     return new Promise(function (resolve, reject) {
       let fs = require('fs');
       let terminate = Promise.denodeify(require('terminate'));
       const read = Promise.denodeify(fs.readFile);
       let mainpid = '';
+
       return read(pid_path, 'utf8').then(function (running_pid) {
         mainpid = running_pid;
+        self.emit('stopping');
         return Promise.resolve(mainpid);
-      }).then(terminate).then(function (done) {
+      }).then(express.close).then(terminate).then(function (done) {
         return new Promise(function (resolve, reject) {
           if (done) {
             const exec = require('child_process').exec;
@@ -379,15 +393,15 @@ const MainService = {
           } else {
             resolve(false);
           }
-        });
+        }).then(resolve).catch(reject);
       }).catch(function (error) {
-        if (error.code != 'ENOENT') {
+        if (error.code !== 'ENOENT') {
           logger.error(error);
         } else {
           logger.log(`${package_desc.name} v${package_desc.version} is not running.`);
         }
       }).finally(function () {
-        resolve();
+        resolve(true);
       });
     });
   },
@@ -404,7 +418,7 @@ const MainService = {
 
   main: function (config, cmd_arguments) {
     return new Promise(function (resolve, reject) {
-      return MainService.parse_commands(config, cmd_arguments).then(function (command) {
+      return main_server_singleton.parse_commands(config, cmd_arguments).then(function (command) {
         if (command.options.verbose) {
           config.set('verbose', true);
         }
@@ -413,7 +427,7 @@ const MainService = {
         }
         switch (command.name) {
         case 'help':
-          MainService.help(config, command.options.hook).then(resolve).catch(reject);
+          main_server_singleton.help(config, command.options.hook).then(resolve).catch(reject);
           break;
         case '':
           return reject('No command specified');
@@ -427,10 +441,10 @@ const MainService = {
           rpc.send('restart_monitor', command.options.hook).then(resolve).catch(reject);
           break;
         case 'stop':
-          return MainService.stop_server().then(resolve).catch(reject);
+          return main_server_singleton.stop_server().then(resolve).catch(reject);
           break;
         case 'start':
-          return MainService.start_server().then(resolve).catch(reject);
+          return main_server_singleton.start_server().then(resolve).catch(reject);
           break;
         case 'reload':
           rpc.send('reload_hooks').then(resolve).catch(reject);
@@ -450,6 +464,7 @@ const MainService = {
       }).catch(reject);
     });
   }
-};
+});
 
-module.exports = MainService;
+main_server_singleton = new MainService();
+module.exports = main_server_singleton;
