@@ -77,7 +77,7 @@ const register_message_hook = function (hook) {
  */
 
 const manage_message = function (message, matches, hook) {
-  if (message.from && message.from.username && (!config.get('allowed_usernames') || ((config.get('allowed_usernames') && _.contains(config.get('allowed_usernames')), message.from.username.toLowerCase())))) {
+  if (message.from && message.from.username && (!config.get('allowed_usernames') || ((config.get('allowed_usernames') && _.includes(config.get('allowed_usernames')), message.from.username.toLowerCase())))) {
     let message_text = message.text || message.caption;
     if (message_text) {
       message_text = _.clean(message_text);
