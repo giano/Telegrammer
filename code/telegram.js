@@ -232,7 +232,7 @@ const TelegramService = {
                 if (reply_message && reply_message.text) {
                   let reply_message_compare = _.trim(reply_message.text).toLowerCase();
                   if (accepted_responses && _.isArray(accepted_responses) && accepted_responses.length) {
-                    if (_.contains(accepted_responses, reply_message_compare)) {
+                    if (_.includes(accepted_responses, reply_message_compare)) {
                       resolve(reply_message);
                     } else {
                       reject(new Error('Reply response invalid'));
