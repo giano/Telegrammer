@@ -57,7 +57,7 @@
     "nconf": "^0.8.4",
     "node-telegram-bot-api": "^0.21.1",
     "npid": "^0.4.0",
-    "onoff": "^1.0.4",
+    "onoff": "^1.1.0",
     "promise": "^7.1.1",
     "singleton-symbol": "0.0.5",
     "terminate": "^1.0.8",
