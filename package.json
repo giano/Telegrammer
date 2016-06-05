@@ -74,7 +74,7 @@
     "views"
   ],
   "devDependencies": {
-    "docdash": "^0.3.0",
+    "docdash": "^0.4.0",
     "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
     "semistandard": "^7.0.5",
     "vows": "^0.8.1"
