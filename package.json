@@ -55,7 +55,7 @@
     "jade": "^1.11.0",
     "lodash": "^4.11.0",
     "nconf": "^0.8.4",
-    "node-telegram-bot-api": "^0.21.1",
+    "node-telegram-bot-api": "^0.23.0",
     "npid": "^0.4.0",
     "onoff": "^1.1.0",
     "promise": "^7.1.1",
