@@ -43,7 +43,7 @@
     "express"
   ],
   "dependencies": {
-    "ansi-escape-sequences": "^2.2.2",
+    "ansi-escape-sequences": "^3.0.0",
     "async-promises": "^0.1.2",
     "body-parser": "^1.15.0",
     "command-line-commands": "^0.1.2",
