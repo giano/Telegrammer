@@ -47,7 +47,7 @@
     "async-promises": "^0.1.2",
     "body-parser": "^1.15.0",
     "command-line-commands": "^0.1.2",
-    "command-line-usage": "^2.0.3",
+    "command-line-usage": "^3.0.5",
     "dnode": "^1.2.2",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
