@@ -60,7 +60,7 @@
     "onoff": "^1.1.0",
     "promise": "^7.1.1",
     "singleton-symbol": "0.0.5",
-    "terminate": "^1.0.8",
+    "terminate": "^2.1.0",
     "underscore.string": "^3.3.4"
   },
   "files": [
