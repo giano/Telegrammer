@@ -8,6 +8,8 @@ Manage your device or server using [**Telegram Messenger**](https://telegram.org
 
 --------------------------------------------------------------------------------
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/giano/Telegrammer.svg)](https://greenkeeper.io/)
+
 ![Travis Build](https://travis-ci.org/giano/Telegrammer.svg?branch=master) ![Dependencies](https://david-dm.org/giano/Telegrammer.svg)
 
 # Synopsis
