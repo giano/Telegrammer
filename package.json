@@ -43,24 +43,24 @@
     "express"
   ],
   "dependencies": {
-    "ansi-escape-sequences": "^2.2.2",
-    "async-promises": "^0.1.2",
+    "ansi-escape-sequences": "^4.0.0",
+    "async-promises": "^0.2.1",
     "body-parser": "^1.15.0",
-    "command-line-commands": "^0.1.2",
-    "command-line-usage": "^2.0.3",
+    "command-line-commands": "^2.0.1",
+    "command-line-usage": "^4.0.1",
     "dnode": "^1.2.2",
     "escape-string-regexp": "^1.0.5",
     "express": "^4.13.4",
     "glob": "^7.0.3",
     "jade": "^1.11.0",
     "lodash": "^4.11.0",
-    "nconf": "^0.8.4",
-    "node-telegram-bot-api": "^0.21.1",
+    "nconf": "^0.9.1",
+    "node-telegram-bot-api": "^0.29.0",
     "npid": "^0.4.0",
     "onoff": "^1.1.0",
-    "promise": "^7.1.1",
+    "promise": "^8.0.1",
     "singleton-symbol": "0.0.5",
-    "terminate": "^1.0.8",
+    "terminate": "^2.1.0",
     "underscore.string": "^3.3.4"
   },
   "files": [
@@ -74,9 +74,9 @@
     "views"
   ],
   "devDependencies": {
-    "docdash": "^0.3.0",
+    "docdash": "^0.4.0",
     "jsdoc": "git+https://github.com/jsdoc3/jsdoc.git",
-    "semistandard": "^7.0.5",
+    "semistandard": "^11.0.0",
     "vows": "^0.8.1"
   }
 }
